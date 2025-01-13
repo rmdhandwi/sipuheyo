@@ -1,0 +1,9 @@
+POST https://console.zenziva.net/wareguler/api/sendWA/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "userkey": "1a82d6a37985",
+    "passkey": "534a6cd809f01c281382d741",
+    "to": "085186810279",
+    "message" :"INI PESAN"
+ }
