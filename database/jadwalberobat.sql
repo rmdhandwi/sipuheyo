@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 13, 2025 at 08:02 AM
+-- Generation Time: Jan 15, 2025 at 09:07 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.13
 
@@ -32,22 +32,6 @@ CREATE TABLE `cache` (
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('admin|127.0.0.1', 'i:1;', 1736610842),
-('admin|127.0.0.1:timer', 'i:1736610842;', 1736610842),
-('dokter123@gmail.com|127.0.0.1', 'i:2;', 1736304313),
-('dokter123@gmail.com|127.0.0.1:timer', 'i:1736304313;', 1736304313),
-('pasirn@pasien.tech|127.0.0.1', 'i:1;', 1736355504),
-('pasirn@pasien.tech|127.0.0.1:timer', 'i:1736355504;', 1736355504),
-('sitiaisa237@gmail.com|127.0.0.1', 'i:1;', 1736355484),
-('sitiaisa237@gmail.com|127.0.0.1:timer', 'i:1736355484;', 1736355484),
-('wotafok@mailinator.com|127.0.0.1', 'i:1;', 1736350684),
-('wotafok@mailinator.com|127.0.0.1:timer', 'i:1736350684;', 1736350684);
 
 -- --------------------------------------------------------
 
@@ -83,7 +67,10 @@ CREATE TABLE `dokters` (
 --
 
 INSERT INTO `dokters` (`id`, `nid`, `nama`, `jk`, `email`, `spesialis`, `kontak`, `user_id`) VALUES
-(2, '333232323313', 'Quia libero repudian', 'Perempuan', 'nutiqewok@mailinator.com', 'Officiis a illum vo', '483131313131', 2);
+(3, '453453454534', 'Dokter 1', 'Laki-Laki', 'zilivorugi@mailinator.com', 'Penyakit 1', '635345435345', 6),
+(4, '433434343434', 'Dokter 2', 'Laki-Laki', 'zyzecar@mailinator.com', 'Penyakit 2', '7553454354353', 7),
+(5, '123456789876', 'Dokter 3', 'Laki-Laki', 'pumy@mailinator.com', 'Penyakit 3', '5943412343413', 8),
+(6, '453454534545', 'Dokter 4', 'Perempuan', 'qozokin@mailinator.com', 'Penyakit 4', '933434342342', 9);
 
 -- --------------------------------------------------------
 
@@ -160,23 +147,6 @@ CREATE TABLE `migrations` (
   `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `migrations`
---
-
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '0001_01_01_000000_create_users_table', 1),
-(2, '0001_01_01_000001_create_cache_table', 1),
-(3, '0001_01_01_000002_create_jobs_table', 1),
-(4, '2024_05_20_055210_create_obats_table', 1),
-(5, '2024_05_20_080851_create_polis_table', 1),
-(6, '2024_05_20_081023_create_dokters_table', 1),
-(7, '2024_05_20_081056_create_pegawais_table', 1),
-(8, '2024_05_20_081102_create_pasiens_table', 1),
-(9, '2024_05_20_081216_create_rekam_mediks_table', 1),
-(10, '2024_05_20_081228_create_jadwal_berobats_table', 1),
-(11, '2024_06_02_020456_create_personal_access_tokens_table', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -197,7 +167,8 @@ CREATE TABLE `obats` (
 --
 
 INSERT INTO `obats` (`id`, `nama`, `merek`, `dosis`, `kemasan`, `deskripsi`) VALUES
-(2, 'Recusandae Omnis mo', 'In qui voluptatem an', 'Esse Nam sed non por', 'Cupidatat dolore dol', 'Lorem officiis vel q');
+(1, 'Et enim porro impedi', 'Eveniet voluptatem', 'Velit minim quibusd', 'Rerum incidunt nihi', 'Anim dolor dicta ali'),
+(2, 'Perferendis qui saep', 'Tempora enim distinc', 'Nostrud porro delect', 'Similique quia volup', 'Magni minim voluptas');
 
 -- --------------------------------------------------------
 
@@ -223,7 +194,8 @@ CREATE TABLE `pasiens` (
 --
 
 INSERT INTO `pasiens` (`id`, `nik`, `email`, `nama`, `jk`, `tempat_lahir`, `tanggal_lahir`, `kontak`, `alamat`, `user_id`) VALUES
-(2, '123456789876523', 'pasien@pasien.tech', 'saya ini sudah', 'Laki-Laki', 'diamana saja', '2016-01-12', '123456789876', 'diamana saja', '4');
+(3, '6565656535635565', 'xelucez@mailinator.com', 'Pasien 1', 'Perempuan', 'In eveniet error el', '1990-02-16', '082238458937', 'Commodo exercitation', '10'),
+(4, '1212121212121212', 'pasien@123.tech', 'Pasien 2', 'Laki-Laki', 'Dimana saja', '2016-07-25', '082253304042', 'Dimana saja', '11');
 
 -- --------------------------------------------------------
 
@@ -258,7 +230,14 @@ CREATE TABLE `pegawais` (
 --
 
 INSERT INTO `pegawais` (`id`, `nama`, `jk`, `email`, `bagian`, `kontak`, `user_id`) VALUES
-(1, 'Nulla aliquam irure', 'Laki-Laki', 'vabag@mailinator.com', 'In voluptas qui dolo', '27', '5');
+(1, 'Pegawai 1', 'Perempuan', 'zovymep@mailinator.com', 'Bagian 2', '43434345353', '3'),
+(2, 'Pegawai 2', 'Laki-Laki', 'hylewob@mailinator.com', 'Bagian 2', '353524543254', '4'),
+(3, 'Pegawai 3', 'Perempuan', 'fogugunofo@mailinator.com', 'Bagian 3', '455243524554', '5'),
+(4, 'Pegawai 4', 'Laki-Laki', 'catadih@mailinator.com', 'Ea et facere accusan', '5435345435435', '12'),
+(5, 'Pegawai 5', 'Perempuan', 'wuhimapeq@mailinator.com', 'Dolor non aliqua Fu', '9745636356354', '13'),
+(6, 'Pegawai 6', 'Laki-Laki', 'sigupe@mailinator.com', 'Quia vero error corr', '8045245245345', '14'),
+(7, 'Pegawai 7', 'Laki-Laki', 'jidacywe@mailinator.com', 'Quod repellendus Qu', '893454352354', '15'),
+(8, 'Pegawai 8', 'Perempuan', 'lumyqu@mailinator.com', 'Odit quia laudantium', '325325452343', '16');
 
 -- --------------------------------------------------------
 
@@ -291,7 +270,6 @@ CREATE TABLE `polis` (
   `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `penyakit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keterangan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `jenis` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `dokter_id` bigint UNSIGNED NOT NULL,
   `pegawai_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -300,8 +278,11 @@ CREATE TABLE `polis` (
 -- Dumping data for table `polis`
 --
 
-INSERT INTO `polis` (`id`, `kode`, `nama`, `penyakit`, `keterangan`, `jenis`, `dokter_id`, `pegawai_id`) VALUES
-(1, 'fdfdfdf', 'Quis voluptatem Sin', 'Corrupti dolores si', 'Consequatur Nesciun', 'TB', 1, 1);
+INSERT INTO `polis` (`id`, `kode`, `nama`, `penyakit`, `keterangan`, `dokter_id`, `pegawai_id`) VALUES
+(1, 'PD001', 'Poli Dewasa', 'Penyakit 1', 'Non nulla veniam ex', 3, 1),
+(2, 'PA001', 'Poli Anak', 'Penyakit 2', 'In aliquam nihil opt', 4, 2),
+(7, 'PGM001', 'Poli Gigi & Mulut', 'Penyakit 3', 'dfdafadf', 5, 3),
+(8, 'RK001', 'Ruang KIA/KB', 'Penyakit 4', 'fdafdafdfa', 6, 4);
 
 -- --------------------------------------------------------
 
@@ -320,14 +301,21 @@ CREATE TABLE `rekam_mediks` (
   `keluhan` json DEFAULT NULL,
   `penanganan` json DEFAULT NULL,
   `resep` json DEFAULT NULL,
-  `hasil_lab` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hasil_lab` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `konsultasi_berikut` datetime DEFAULT NULL,
   `kirimpesan1` datetime DEFAULT NULL,
   `kirimpesan2` datetime DEFAULT NULL,
-  `status` enum('baru','admin','poli','dokter','batal') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'baru',
+  `status` enum('baru','dokter') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'baru',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `rekam_mediks`
+--
+
+INSERT INTO `rekam_mediks` (`id`, `antrian`, `tanggal`, `pasien_id`, `dokter_id`, `poli_id`, `kondisi`, `keluhan`, `penanganan`, `resep`, `hasil_lab`, `konsultasi_berikut`, `kirimpesan1`, `kirimpesan2`, `status`, `created_at`, `updated_at`) VALUES
+(3, 'PD001-15012025-001', '2025-01-15', 4, 3, 1, NULL, '[]', '[]', '[]', NULL, NULL, NULL, NULL, 'baru', '2025-01-14 20:27:14', '2025-01-14 20:27:14');
 
 -- --------------------------------------------------------
 
@@ -349,8 +337,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('0XYwyhHgNZ1IVePbmD5CJIx8pkwgBDBG6VqBtnYL', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRVlWU21GMDJPaGlOWWZuS1p4VzMzQ29JQ2lIMlpBSEx3MjgxOHVkcyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQ7fQ==', 1736676035),
-('pGTryzsxIAW6vmAuXmzFaYIHK0WcSQufZYvIxqLg', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiY2NhMnR4cmhqejlPUFBkclZrUkRKd251S1ZQaVpKTVBuREhWWXQ0VSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM5OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vcGVnYXdhaS9hZGQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1736674087);
+('84WiBZ13fHdzHtAUblZwHnzPvptIOohrrDFmPWco', 11, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQjhSTER4Wkt0S0EzbUliNWRWWmF4dGNRU0E1TWd3VDlvdG1SMTZjYyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wYXNpZW4/Mz0iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxMTt9', 1736923328),
+('mTdTXMUBM2Q97FTIcHX6Heha0zhRXtevt9zCnDj0', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSEFXVG9VNXlnQ1IwV093VEhkVWs1WHRrUFJRSm54em9xOXFpaHRyTCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM0OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vZG9rdGVyIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1736923327),
+('xvbsulSVSoYEZp6k1U46QDH62FPFk6f96FjjpY6K', 6, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidWx3V3phd3UxVjRoOWhiaHY4V1NvNFZRTlU4VWM5d3h1QUV3YzBXTiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kb2t0ZXIvcGFzaWVuLzQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O30=', 1736925994);
 
 -- --------------------------------------------------------
 
@@ -375,12 +364,22 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', 'admin@puskesmasyoka.ocph23.tech', NULL, '$2y$12$2MjSqxhgylfh.lJYk8wn2OakVjCCuHKBx6RtfuDhvTlOiqNTSUbe2', 'admin', NULL, NULL, NULL),
-(2, 'saya dokter', 'dokter123@dokter.tech', NULL, '$2y$12$IBwoBsXLjUCiMa6asUbzzuq55/Ud6yDWI6UtYTNm5HL019ioPNN7.', 'dokter', NULL, '2025-01-07 17:42:58', '2025-01-11 16:10:22'),
-(3, 'In fugiat culpa sunt', 'qeja@mailinator.com', NULL, '$2y$12$joeSnShARc/ryK6DOg80HuSz6Xaq/vU5bRQaA3kKK7SsiZ93lWwIK', 'pegawai', NULL, '2025-01-07 17:48:54', '2025-01-07 17:48:54'),
-(4, 'saya sdh ini', 'pasien@pasien.tech', NULL, '$2y$12$JU7yAT/KSrdNRL7dboTxWuPfaNcyrZuhQIihLHmn3lWehFhGT70tK', 'pasien', NULL, '2025-01-08 06:13:08', '2025-01-10 18:47:42'),
-(5, 'Nulla aliquam irure', 'vabag@mailinator.com', NULL, '$2y$12$0AIsRYDM/aLtjiYAr5DC7eg5mgv30MeqprtNDmr9j59pY2i7hLNTi', 'pegawai', NULL, '2025-01-11 14:22:07', '2025-01-11 14:22:07'),
-(6, 'Quia libero repudian', 'nutiqewok@mailinator.com', NULL, '$2y$12$m/aNI2jyfEeSAHLST5idnOYHf9tkra.Ppgm/OVPFmLmTo8G./bJfO', 'dokter', NULL, '2025-01-11 15:44:04', '2025-01-11 15:44:04');
+(1, 'Adminisator', 'admin@admin.tech', NULL, '$2y$12$b1dpnBzicBbpGorIKO.Gw.gRSrl75GFO4xbK.557APYykk2giAzbK', 'admin', NULL, '2024-11-22 11:46:19', '2025-01-13 01:04:33'),
+(2, 'Illum amet fugiat', 'fome@mailinator.com', NULL, '$2y$12$otglZXYFKD443bx.DUYNFe3IAbKdGZ16wqA2YlSPtJZRACrONBESe', 'dokter', NULL, '2025-01-13 18:09:25', '2025-01-13 18:09:25'),
+(3, 'Dolorum quia autem n', 'zovymep@mailinator.com', NULL, '$2y$12$esnm2aBrgPLAYwxpAKPo1eHS2bfkd7F1SFNj..Yfa5/elpfXONEcu', 'pegawai', NULL, '2025-01-14 03:10:07', '2025-01-14 03:10:07'),
+(4, 'Earum aliquam delect', 'hylewob@mailinator.com', NULL, '$2y$12$GPYyymVG18T7whEa5ANvSOcRg6fYknZKq7gh4Munw9BnjvHxLwrL6', 'pegawai', NULL, '2025-01-14 03:10:15', '2025-01-14 03:10:15'),
+(5, 'Voluptas commodo vel', 'fogugunofo@mailinator.com', NULL, '$2y$12$pGTZwzlR8nOb6ri9ga.LQ.d3yKX.0UB.5IjsR1RvCCt0kvSrGF7FK', 'pegawai', NULL, '2025-01-14 03:10:24', '2025-01-14 03:10:24'),
+(6, 'Consequuntur occaeca', 'zilivorugi@mailinator.com', NULL, '$2y$12$5pePsZumpkOtFN4ih5oy0uK2VDPA6u82q5JyqBpZoJaDisEqu2Y9y', 'dokter', NULL, '2025-01-14 03:15:16', '2025-01-14 03:15:16'),
+(7, 'Totam sint autem nul', 'zyzecar@mailinator.com', NULL, '$2y$12$9jIjza/dalQnNhe95bcZluY7V6QfnM3PCtnhSc9jzFTyIsuihCWOG', 'dokter', NULL, '2025-01-14 03:15:39', '2025-01-14 03:15:39'),
+(8, 'Et quidem sint dese', 'pumy@mailinator.com', NULL, '$2y$12$CwKzBqBRIaxvmqdco6b9QOOxvUSASmdMKZoWmksE3XVV1shraWdGu', 'dokter', NULL, '2025-01-14 03:16:10', '2025-01-14 03:16:10'),
+(9, 'Consequatur est et', 'qozokin@mailinator.com', NULL, '$2y$12$21N9ZN0sNKO8oC1suqn2K.8TXkavDn4gMax/pwl7uNj7T2D/Wt1Aq', 'dokter', NULL, '2025-01-14 03:25:21', '2025-01-14 03:25:21'),
+(10, 'Est corrupti nobis', 'xelucez@mailinator.com', NULL, '$2y$12$Xhr9X1dqKpWK0Izekfcb7.qiMnhByUOaHQ3ZVHuSXkkMqPFFQf/9a', 'pasien', NULL, '2025-01-14 03:33:23', '2025-01-14 03:33:23'),
+(11, 'Saya Ini Sudah', 'pasien@123.tech', NULL, '$2y$12$NbI/TES1KrHJxcwMDfUpS.C.bfZjcHmqcUX6/o2/KNwPiRqdzzruK', 'pasien', NULL, '2025-01-14 12:13:45', '2025-01-14 12:13:45'),
+(12, 'Pegawai 4', 'catadih@mailinator.com', NULL, '$2y$12$orpudDcKblbj3r3GH91y.eaYB94AhXDIZBH2Jzf668./Va5SKr0Qi', 'pegawai', NULL, '2025-01-14 16:11:15', '2025-01-14 16:11:15'),
+(13, 'Pegawai 5', 'wuhimapeq@mailinator.com', NULL, '$2y$12$Qu8/IGVLd/a6j4O7F9.u2.QC2OobX4WjexfdiQ2e3KjKLAB2sySKu', 'pegawai', NULL, '2025-01-14 16:11:33', '2025-01-14 16:11:33'),
+(14, 'Pegawai 6', 'sigupe@mailinator.com', NULL, '$2y$12$UeJN35DbmSF9J6UW1h59ZO8qH6aPms0Q2w3dJ3x39faz7pn79T2mW', 'pegawai', NULL, '2025-01-14 16:11:51', '2025-01-14 16:11:51'),
+(15, 'Pegawai 7', 'jidacywe@mailinator.com', NULL, '$2y$12$IfVqT8J3f/Pn4UuZKXG/SulESZJp/JeZ9uFm7cCDqJ.nXBXHu1P2O', 'pegawai', NULL, '2025-01-14 16:12:00', '2025-01-14 16:12:00'),
+(16, 'Pegawai 8', 'lumyqu@mailinator.com', NULL, '$2y$12$xyD/X7Jb3n3GX9RqnosFoOMOn8Qo7k97E5uSOupfGaY7Zg7eS/WdC', 'pegawai', NULL, '2025-01-14 16:12:18', '2025-01-14 16:12:18');
 
 --
 -- Indexes for dumped tables
@@ -475,7 +474,7 @@ ALTER TABLE `personal_access_tokens`
 --
 ALTER TABLE `polis`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `polis_kode_unique` (`kode`);
+  ADD UNIQUE KEY `kode` (`kode`);
 
 --
 -- Indexes for table `rekam_mediks`
@@ -506,7 +505,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `dokters`
 --
 ALTER TABLE `dokters`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -530,7 +529,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `obats`
@@ -542,13 +541,13 @@ ALTER TABLE `obats`
 -- AUTO_INCREMENT for table `pasiens`
 --
 ALTER TABLE `pasiens`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `pegawais`
 --
 ALTER TABLE `pegawais`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -560,19 +559,19 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `polis`
 --
 ALTER TABLE `polis`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `rekam_mediks`
 --
 ALTER TABLE `rekam_mediks`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
