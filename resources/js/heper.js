@@ -14,8 +14,6 @@ export default class Helper {
       var pad = "000000";
       var ans = pad.substring(0, pad.length - str.length) + str
       switch (obj.toLowerCase()) {
-         case 'poli':
-            return "PL" + ans;
          case 'obat':
             return "OB" + ans;
          case 'dokter':

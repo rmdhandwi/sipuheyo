@@ -23,6 +23,12 @@ class DokterService
 
     public function all()
     {
+        $result = Dokter::paginate(10);
+        return $result;
+    }
+
+    public function data()
+    {
         $result = Dokter::all();
         return $result;
     }
@@ -50,7 +56,7 @@ class DokterService
             $user = User::create([
                 'name' => $req->nama,
                 'email' => $req->email,
-                'password' => Hash::make("Password@123"),
+                'password' => Hash::make($req->email),
                 'role' => 'dokter',
             ]);
 

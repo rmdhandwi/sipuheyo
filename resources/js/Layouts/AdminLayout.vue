@@ -43,7 +43,11 @@ const showingNavigationDropdown = ref(false);
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
-                                <Dropdown align="right" width="48">
+                                <Dropdown
+                                    class="bg-white"
+                                    align="right"
+                                    width="48"
+                                >
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
@@ -70,6 +74,7 @@ const showingNavigationDropdown = ref(false);
 
                                     <template #content>
                                         <DropdownLink
+                                            class="bg-white"
                                             :href="route('profile.edit')"
                                         >
                                             Profile
@@ -147,12 +152,10 @@ const showingNavigationDropdown = ref(false);
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div
-                        class="pt-4 pb-1 border-t border-gray-200"
-                    >
+                    <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
                             <div
-                                class="font-medium text-base text-gray-800 dark:text-gray-200"
+                                class="font-medium text-base text-gray-800"
                             >
                                 {{ $page.props.auth.user.name }}
                             </div>

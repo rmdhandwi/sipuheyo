@@ -28,60 +28,59 @@ const page = usePage();
             >
                 <AllAppIcon color="black" />
             </SidebarItem>
+
             <SidebarItem
                 title="Obat"
                 :href="'/admin/obat'"
-                :active="
-                    page.url === '/admin/obat' || page.url === '/admin/obat/add'
-                "
+                :active="page.url.startsWith('/admin/obat')"
             >
                 <CapsulesIcon color="black" class="w-5 h-5" />
             </SidebarItem>
+
             <SidebarItem
                 title="Pegawai"
                 :href="'/admin/pegawai'"
-                :active="
-                    page.url === '/admin/pegawai' ||
-                    page.url === '/admin/pegawai/add' 
-                "
+                :active="page.url.startsWith('/admin/pegawai')"
             >
                 <UsersIcon color="black" class="w-5 h-5" />
             </SidebarItem>
+
             <SidebarItem
                 title="Dokter"
                 :href="'/admin/dokter'"
-                :active="
-                    page.url === '/admin/dokter' ||
-                    page.url === '/admin/dokter/add'
-                "
+                :active="page.url.startsWith('/admin/dokter')"
             >
                 <DoctorIcon color="black" class="w-5 h-auto" />
             </SidebarItem>
+
             <SidebarItem
                 title="Poli"
                 :href="'/admin/poli'"
-                :active="page.url === '/admin/poli' || page.url === '/admin/poli/add'"
+                :active="page.url.startsWith('/admin/poli')"
             >
                 <HospitalIcon color="black" class="w-5 h-5" />
             </SidebarItem>
+
             <SidebarItem
                 title="Pasien"
                 :href="'/admin/pasien'"
-                :active="page.url === '/admin/pasien' || page.url === '/admin/pasien/add'"
+                :active="page.url.startsWith('/admin/pasien')"
             >
                 <PatientIcon color="black" class="w-5 h-auto" />
             </SidebarItem>
+
             <SidebarItem
                 title="Rekam Medik"
                 :href="'/admin/rekammedik'"
-                :active="page.url === '/admin/rekammedik' || page.url === '/admin/rekammedik/add'"
+                :active="page.url.startsWith('/admin/rekammedik')"
             >
                 <ArIcon />
             </SidebarItem>
+
             <SidebarItem
                 title="Laporan Jadwal Berobat"
                 :href="'/admin/jadwalberobat'"
-                :active="page.url === '/admin/jadwalberobat'"
+                :active="page.url.startsWith('/admin/jadwalberobat')"
             >
                 <DetailListIcon color="black" class="w-5" />
             </SidebarItem>

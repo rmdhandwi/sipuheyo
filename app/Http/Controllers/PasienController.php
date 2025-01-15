@@ -31,7 +31,10 @@ class PasienController extends Controller
     {
         $userid = Auth::user()->id;
         $pasien = Pasien::where('user_id', $userid)->first();
-        return Inertia::render('Pasien/AddRekamMedikPage', ['polis' => $poliService->all(),   'dokters' => $dokterService->all(),  'pasien' => $pasien]);
-  
+        return Inertia::render('Pasien/AddRekamMedikPage', [
+            'polis' => $poliService->data(),
+            'dokters' => $dokterService->data(),
+            'pasien' => $pasien
+        ]);
     }
 }

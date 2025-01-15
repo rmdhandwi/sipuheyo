@@ -15,14 +15,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/poli/{id}', function (Request $request, $userid) {
     $pegawai = Pegawai::where('user_id', $userid)->first();
-    $poli = Poli::where('pegawai_id',$pegawai->id)->first();
+    $poli = Poli::where('pegawai_id', $pegawai->id)->first();
     return $poli;
 });
-
-
-
-
-
 
 
 Route::get('/jadwalberobat/{poliid}/{date}', function (RekamMedikService $rekamMedik, $poliid, $date) {
@@ -41,4 +36,3 @@ Route::get('/rekammedik/all', function (RekamMedikService $rekamMedik) {
 });
 
 Route::get('/dokter/jadwalberobatbydate/{dokterId}/{date}', [DokterController::class, 'jadwalberobatByDate'])->name('admin.jadwalberobatByDate');
-   

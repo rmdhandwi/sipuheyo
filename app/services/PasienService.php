@@ -19,13 +19,16 @@ class PasienService
      * Create a new class instance.
      */
 
-    
-    public function __construct(RekamMedikService $rm)
-    {
-       
-    }
+
+    public function __construct(RekamMedikService $rm) {}
 
     public function all()
+    {
+        $result = Pasien::paginate(10);
+        return $result;
+    }
+
+    public function data()
     {
         $result = Pasien::all();
         return $result;
@@ -34,11 +37,11 @@ class PasienService
     public function getByDokterId($dokterId)
     {
         $data = RekamMedik::Where("dokter_id", $dokterId)
-        ->orderBy('tanggal')
-        ->get();
+            ->orderBy('tanggal')
+            ->get();
         $pasien = [];
         foreach ($data as $key => $rm) {
-           $pasien[]=$rm->pasien;
+            $pasien[] = $rm->pasien;
         }
         return $pasien;
     }
@@ -54,36 +57,32 @@ class PasienService
     {
         DB::beginTransaction();
         try {
-
-            //create User As Dokter
-
-
+            // Buat user baru
             $user = User::create([
                 'name' => $req['nama'],
-                'email' => $req->email,
-                'password' => Hash::make('Password@123'),
+                'email' => $req['email'],
+                'password' => Hash::make($req['email']),
                 'role' => 'pasien',
             ]);
 
-
-            $result =  Pasien::create([
+            // Buat data pasien baru
+            $result = Pasien::create([
                 'nama' => $req['nama'],
                 'nik' => $req['nik'],
-                'email' => $req->email,
+                'email' => $req['email'],
                 'jk' => $req['jk'],
                 'tempat_lahir' => $req['tempat_lahir'],
                 'tanggal_lahir' => $req['tanggal_lahir'],
                 'alamat' => $req['alamat'],
                 'kontak' => $req['kontak'],
-                'user_id' => $user['id'],
+                'user_id' => $user->id,
             ]);
 
-
             DB::commit();
-            return $result;
+            return response()->json(['message' => 'Data pasien berhasil disimpan!', 'data' => $result], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
-            throw new  Error($th->getMessage());
+            return response()->json(['message' => 'Gagal menyimpan data pasien.', 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -113,10 +112,22 @@ class PasienService
     {
         try {
             $data = Pasien::find($id);
-            if (!$data)
-                throw new Error("Data Tidak Ditemukan !");
+            if (!$data) {
+                throw new Error("Data Pasien Tidak Ditemukan!");
+            }
 
+            // Menyimpan user_id yang terkait dengan pasien
+            $userId = $data->user_id;
+
+            // Menghapus data pasien
             $data->delete();
+
+            // Menghapus data user yang terkait
+            $user = User::find($userId);
+            if ($user) {
+                $user->delete();
+            }
+
             return true;
         } catch (\Throwable $th) {
             throw new Error($th->getMessage());

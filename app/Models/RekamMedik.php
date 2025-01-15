@@ -21,17 +21,15 @@ class RekamMedik extends Model
         'poli_id',
         'pasien_id',
         'dokter_id',
-        'konsultasi_berikut', 
+        'konsultasi_berikut',
         'keluhan',
         'status',
         'resep',
         'penanganan',
         'hasil_lab',
-        'kirimpesan1', 
-        'kirimpesan2', 
+        'kirimpesan1',
+        'kirimpesan2',
     ];
-
-
 
     protected function casts(): array
     {
@@ -43,17 +41,18 @@ class RekamMedik extends Model
         ];
     }
 
-    public function dokter():HasOne{
-        return  $this->hasOne(Dokter::class,'id',"dokter_id");
+    public function dokter(): HasOne
+    {
+        return  $this->hasOne(Dokter::class, 'id', "dokter_id");
     }
 
-    public function poli():HasOne{
-        return $this->hasOne(Poli::class , 'id', 'poli_id');
+    public function poli(): HasOne
+    {
+        return $this->hasOne(Poli::class, 'id', 'poli_id');
     }
-    
-    public function pasien():HasOne{
-        return $this->hasOne(Pasien::class , 'id', 'pasien_id');
-    }
-    
 
+    public function pasien(): HasOne
+    {
+        return $this->hasOne(Pasien::class, 'id', 'pasien_id');
+    }
 }

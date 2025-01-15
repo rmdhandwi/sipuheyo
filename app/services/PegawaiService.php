@@ -21,6 +21,12 @@ class PegawaiService
 
     public function all()
     {
+        $result = Pegawai::paginate(10); // Mengambil 10 data per halaman
+        return $result;
+    }
+
+    public function data()
+    {
         $result = Pegawai::all();
         return $result;
     }
@@ -42,7 +48,7 @@ class PegawaiService
             $user = User::create([
                 'name' => $req->nama,
                 'email' => $req->email,
-                'password' => Hash::make("Password@123"),
+                'password' => Hash::make($req->email),
                 'role' => 'pegawai',
             ]);
 
@@ -86,10 +92,22 @@ class PegawaiService
     {
         try {
             $data = Pegawai::find($id);
-            if (!$data)
-                throw new Error("Data Tidak Ditemukan !");
+            if (!$data) {
+                throw new Error("Data Pasien Tidak Ditemukan!");
+            }
 
+            // Menyimpan user_id yang terkait dengan pasien
+            $userId = $data->user_id;
+
+            // Menghapus data pasien
             $data->delete();
+
+            // Menghapus data user yang terkait
+            $user = User::find($userId);
+            if ($user) {
+                $user->delete();
+            }
+
             return true;
         } catch (\Throwable $th) {
             throw new Error($th->getMessage());

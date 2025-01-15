@@ -95,7 +95,7 @@ function deleteItem(item) {
 const rekamMedik = computed(() => {
     if (data) {
         var data = toRaw(data.rekamMedik);
-        return data.rekamMedik.filter(x => x.status === 'poli' || x.status === 'dokter');
+        return data.rekamMedik.filter(x => x.status === 'dokter');
     }
     return [];
 })
@@ -151,7 +151,7 @@ const rekamMedik = computed(() => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in data.rekamMedik.filter(x => x.status === 'poli' || x.status === 'dokter')">
+                        <tr v-for="item in rekamMedik">
                             <td class="border-b border-gray-200  p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.antrian }}</p>
                             </td>

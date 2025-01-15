@@ -20,7 +20,9 @@ Route::get('/admin/pasien/add', function () {
 
 
 Route::get('/admin/pasien/add/{id}', function (PasienService $pasienService, $id) {
-    return Inertia::render('Admin/AddPasienPage', ["pasien" => $pasienService->getById($id)]);
+    return Inertia::render('Admin/AddPasienPage', [
+        "pasien" => $pasienService->getById($id)
+    ]);
 })->name('admin.pasien.add');
 
 Route::post('/admin/pasien', function (PasienRequest $pasienRequest, PasienService $pasienService) {

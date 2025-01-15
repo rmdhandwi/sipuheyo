@@ -73,8 +73,8 @@ const submit = () => {
                         <InputLabel for="Jenis Kelamin" value="Jenis Kelamin" />
                         <select type="text" v-model="form.jk" 
                             class="rounded-lg bg-transparent  text-neutral-700">
-                            <option value="pria">Laki-Laki</option>
-                            <option value="wanita">Perempuan</option>
+                            <option value="Laki-Laki">Laki-Laki</option>
+                            <option value="Perempuan">Perempuan</option>
                         </select>
                         <InputError :message="form.errors['jk']" />
                     </div>
@@ -96,7 +96,6 @@ const submit = () => {
                             class=" rounded-lg bg-transparent  text-neutral-700">
                         <InputError :message="form.errors['password_confirmation']" />
                     </div>
-                  
                 </div>
                 <div>
                     <div class="flex flex-col p-3">

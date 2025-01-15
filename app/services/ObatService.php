@@ -19,9 +19,15 @@ class ObatService
 
     public function all()
     {
-        
+
+        $result = Obat::paginate(10);
+        return $result;
+    }
+
+    public function data()
+    {
+
         $result = Obat::all();
-      //  ProcessJadwalBerobat::dispatch($result);
         return $result;
     }
 

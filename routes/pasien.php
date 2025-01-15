@@ -16,7 +16,9 @@ use App\Http\Controllers\PasienController;
 
 Route::group(['middleware' => 'role:pasien'], function () {
     Route::get('/pasien', [PasienController::class, 'index'])->name('pasien.index');
+
     Route::get('/pasien/rekammedik/add', [PasienController::class, 'daftar'])->name('pasien.rekammedik.add');
+
     Route::get('/pasien/rekammedik/{id}', function (
         ObatService $obatService,
         PoliService $poliService,
@@ -31,10 +33,10 @@ Route::group(['middleware' => 'role:pasien'], function () {
         return Inertia::render(
             'Pasien/AddRekamMedikPage',
             [
-                'polis' => $poliService->all(),
+                'polis' => $poliService->data(),
                 'pasien' => $pasien,
-                'dokters' => $dokterService->all(),
-                'obats' => $obatService->all(),
+                'dokters' => $dokterService->data(),
+                'obats' => $obatService->data(),
                 "rekammedik" => $rekammedikService->getById($id),
             ],
         );
@@ -63,7 +65,8 @@ Route::group(['middleware' => 'role:pasien'], function () {
             return Redirect::back()->withErrors("error", $th->getMessage());
         }
     })->name('pasien.rekammedik.post');
-    
+
+
 
 
     Route::delete('/pasien/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {

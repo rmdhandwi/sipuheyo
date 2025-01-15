@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/admin/obat', function (ObatService $obatService) {
-    return Inertia::render('Admin/ObatPage', ['data' => $obatService->all()]);
+    return Inertia::render('Admin/ObatPage', 
+    ['data' => $obatService->all()]);
 })->name('admin.obat');
 
 Route::get('/admin/obat/add', function (ObatService $obatService) {
@@ -21,7 +22,9 @@ Route::get('/admin/obat/add', function (ObatService $obatService) {
 
 
 Route::get('/admin/obat/add/{id}', function (ObatService $obatService, $id) {
-    return Inertia::render('Admin/AddObatPage', ["obat" => $obatService->getById($id)]);
+    return Inertia::render('Admin/AddObatPage', [
+        "obat" => $obatService->getById($id)
+    ]);
 })->name('admin.obat.add');
 
 Route::post('/admin/obat', function (ObatRequest $obatRequest, ObatService $obatService) {

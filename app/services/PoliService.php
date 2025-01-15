@@ -5,6 +5,7 @@ namespace App\services;
 use App\Http\Requests\PoliRequest;
 use App\Models\Poli;
 use Error;
+use Illuminate\Support\Facades\DB;
 
 class PoliService
 {
@@ -16,12 +17,14 @@ class PoliService
         //
     }
 
-    public function all()
+    public function all($perPage = 10)
     {
+        $result = Poli::with('dokter')->paginate($perPage);
+        return $result;
+    }
+
+    public function data(){
         $result = Poli::with('dokter')->get();
-        foreach ($result as $key => $poli) {
-            $poli->dokter;
-        }
         return $result;
     }
 
@@ -35,12 +38,12 @@ class PoliService
     public function post(PoliRequest $req)
     {
         try {
+            $kode = Poli::generateKode($req['nama']);
             $result =  Poli::create([
-                'kode' => $req['kode'],
+                'kode' => $kode,
                 'nama' => $req['nama'],
                 'penyakit' => $req['penyakit'],
                 'keterangan' => $req['keterangan'],
-                'jenis' => $req['jenis'],
                 'dokter_id' => $req['dokter_id'],
                 'pegawai_id' => $req['pegawai_id'],
             ]);
@@ -52,24 +55,42 @@ class PoliService
 
     public function put(PoliRequest $req, $id)
     {
+        DB::beginTransaction();
         try {
+            // Temukan data Poli berdasarkan ID
             $data = Poli::find($id);
             if (!$data) {
                 throw new Error("Data Poli Tidak Ditemukan!");
             }
-            $data->kode = $req['kode'];
-            $data->nama = $req['nama'];
-            $data->penyakit = $req['penyakit'];
-            $data->keterangan = $req['keterangan'];
-            $data->jenis = $req['jenis'];
-            $data->dokter_id = $req['dokter_id'];
-            $data->pegawai_id = $req['pegawai_id'];
-            $data->save();
+
+            // Periksa apakah nama diubah
+            if ($req['nama'] !== $data->nama) {
+                // Nama diubah, generate kode baru
+                $kode = Poli::generateKode($req['nama']);
+            } else {
+                // Nama tidak diubah, gunakan kode lama
+                $kode = $data->kode;
+            }
+
+            // Perbarui data menggunakan mass assignment
+            $data->update([
+                'kode' => $kode,
+                'nama' => $req['nama'],
+                'penyakit' => $req['penyakit'] ?? $data->penyakit,
+                'keterangan' => $req['keterangan'] ?? $data->keterangan,
+                'dokter_id' => $req['dokter_id'] ?? $data->dokter_id,
+                'pegawai_id' => $req['pegawai_id'] ?? $data->pegawai_id,
+            ]);
+
+            DB::commit();
             return true;
         } catch (\Throwable $th) {
+            DB::rollBack();
             throw new Error($th->getMessage());
         }
     }
+
+
 
     public function delete($id)
     {

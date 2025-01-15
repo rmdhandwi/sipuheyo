@@ -20,14 +20,15 @@ class RekamMedikService
         //
     }
 
-    public function all()
+    public function all($perPage = 10)
     {
-        $result = RekamMedik::all();
-        foreach ($result as $key => $rekamMedik) {
-            $rekamMedik->dokter;
-            $rekamMedik->poli;
-            $rekamMedik->pasien;
-        }
+        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])->paginate($perPage);
+        return $result;
+    }
+
+    public function data()
+    {
+        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])->get();
         return $result;
     }
 
@@ -189,8 +190,7 @@ class RekamMedikService
             throw new Error($th->getMessage());
         }
     }
-
-
+ 
     public function infoKunjunganBerikut()
     {
         try {
@@ -201,7 +201,7 @@ class RekamMedikService
                         ->orWhere('kirimpesan2', null);
                 })->get();
 
-            $sekarang =  Carbon::create(date("Y/m/d H:s"));
+            $sekarang =  Carbon::create(date("d/m/Y H:s"));
             $sekarang->setTimezone("Asia/Jayapura");
             foreach ($data as $key => $rm) {
                 $rm->konsultasi_berikut->setTimezone('Asia/Jayapura');

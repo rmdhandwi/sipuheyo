@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/admin/pegawai', function (PegawaiService $pegawaiService) {
-    return Inertia::render('Admin/PegawaiPage', ['data' => $pegawaiService->all()]);
+    return Inertia::render('Admin/PegawaiPage', [
+        'data' => $pegawaiService->all(),
+    ]);
 })->name('admin.pegawai');
+
 
 Route::get('/admin/pegawai/add', function (PegawaiService $pegawaiService) {
     return Inertia::render('Admin/AddPegawaiPage');
@@ -21,7 +24,9 @@ Route::get('/admin/pegawai/add', function (PegawaiService $pegawaiService) {
 
 
 Route::get('/admin/pegawai/add/{id}', function (PegawaiService $pegawaiService, $id) {
-    return Inertia::render('Admin/AddPegawaiPage', ["pegawai" => $pegawaiService->getById($id)]);
+    return Inertia::render('Admin/AddPegawaiPage', [
+        "pegawai" => $pegawaiService->getById($id)
+    ]);
 })->name('admin.pegawai.edit');
 
 Route::post('/admin/pegawai', function (PegawaiRequest $PegawaiRequest, PegawaiService $pegawaiService) {

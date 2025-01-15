@@ -17,7 +17,10 @@ use Inertia\Inertia;
 Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService, DokterService $dokterService) {
     $user = Auth::user();
     $dokter = Dokter::where("user_id", $user->id)->first();
-    return Inertia::render('Dokter/RekamMedikPage', ['poli' => $dokterService->getPoli(), 'data' => $rekammedikService->getByDokterId($dokter->id)]);
+    return Inertia::render('Dokter/RekamMedikPage', [
+        'poli' => $dokterService->getPoli(),
+        'data' => $rekammedikService->getByDokterId($dokter->id)
+    ]);
 })->name('dokter.rekammedik');
 
 
@@ -33,7 +36,7 @@ Route::get('/dokter/rekammedik/{id}', function (
         'Dokter/RekamMedikPasienPage',
         [
             'poli' => $dokterService->getPoli(),
-            "obats" => $obatService->all(),
+            "obats" => $obatService->data(),
             "rekammedik" => $rekammedikService->getById($id),
         ],
     );
@@ -42,7 +45,7 @@ Route::get('/dokter/rekammedik/{id}', function (
 
 Route::put('/dokter/rekammedik/{id}', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
     try {
-        $rekamMedikRequest['status']='dokter';
+        $rekamMedikRequest['status'] = 'dokter';
         $result = $rekamMedikService->put($rekamMedikRequest, $id);
         if ($result) {
             return Redirect::back()->with('success');

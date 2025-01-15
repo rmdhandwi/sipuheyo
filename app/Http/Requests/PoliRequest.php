@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PoliRequest extends FormRequest
 {
@@ -21,23 +22,44 @@ class PoliRequest extends FormRequest
      */
     public function rules(): array
     {
+        $poliId = request()->route('id'); 
+
         return [
             'nama' => ['required', 'string', 'max:255'],
             'penyakit' => ['required', 'string', 'max:255'],
-            'jenis' => ['required'],
-            'dokter_id' => ['required'],
-            'pegawai_id' => ['required'],
+            'dokter_id' => [
+                'required',
+                'exists:dokters,id',
+                Rule::unique('polis')->where(function ($query) use ($poliId) {
+                    return $query->where('id', '!=', $poliId);
+                }),
+            ],
+            'pegawai_id' => [
+                'required',
+                'exists:pegawais,id',
+                Rule::unique('polis')->where(function ($query) use ($poliId) {
+                    return $query->where('id', '!=', $poliId);
+                }),
+            ],
             'keterangan' => ['required', 'string', 'max:255'],
         ];
     }
 
 
-    public function messages()
+
+    public function messages(): array
     {
         return [
-            'jenis.required' => 'field jenis required',
-            'dokter_id.required' => 'field dokter required',
-            'pegawai_id.required' => 'field pegawai tidak boleh kosong'
+            'nama.required' => 'Kolom nama tidak boleh kosong.',
+            'penyakit.required' => 'Kolom penyakit tidak boleh kosong.',
+            'dokter_id.required' => 'Kolom dokter tidak boleh kosong.',
+            'dokter_id.exists' => 'Dokter yang dipilih tidak valid.',
+            'dokter_id.unique' => 'Dokter ini sudah digunakan.',
+            'pegawai_id.required' => 'Kolom pegawai tidak boleh kosong.',
+            'pegawai_id.unique' => 'Pegawai ini sudah digunakan.',
+            'pegawai_id.exists' => 'Pegawai yang dipilih tidak valid.',
+            'keterangan.required' => 'Kolom keterangan tidak boleh kosong.',
         ];
     }
+
 }

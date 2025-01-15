@@ -14,16 +14,23 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/admin/poli', function (PoliService $poliService) {
-    return Inertia::render('Admin/PoliPage', ['data' => $poliService->all()]);
+    return Inertia::render('Admin/PoliPage', ['data' => $poliService->all(10)]);
 })->name('admin.poli');
 
 Route::get('/admin/poli/add', function (DokterService $dokterService, PegawaiService $pegawaiService) {
-    return Inertia::render('Admin/AddPoliPage', ["dokters" =>$dokterService->all(),'pegawais'=> $pegawaiService->all() ]);
+    return Inertia::render('Admin/AddPoliPage', [
+        'dokters' => $dokterService->data(),
+        'pegawais' => $pegawaiService->data()
+    ]);
 })->name('admin.poli.add');
 
 
-Route::get('/admin/poli/add/{id}', function ( DokterService $dokterService,PoliService $poliService, PegawaiService $pegawaiService, $id) {
-    return Inertia::render('Admin/AddPoliPage', ["dokters" =>$dokterService->all(),  "pegawais" => $pegawaiService->all() , "poli" => $poliService->getById($id)]);
+Route::get('/admin/poli/add/{id}', function (DokterService $dokterService, PoliService $poliService, PegawaiService $pegawaiService, $id) {
+    return Inertia::render('Admin/AddPoliPage', [
+        "dokters" => $dokterService->data(),
+        "pegawais" => $pegawaiService->data(),
+        "poli" => $poliService->getById($id)
+    ]);
 })->name('admin.poli.add');
 
 Route::post('/admin/poli', function (PoliRequest $poliRequest, PoliService $poliService) {

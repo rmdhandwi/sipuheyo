@@ -15,11 +15,18 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/admin/rekammedik', function (RekamMedikService $rekamMedikService, PoliService $poliService) {
-    return Inertia::render('Admin/RekamMedikPage', [ 'data' => $rekamMedikService->all(),  "polis" => $poliService->all(),]);
+    return Inertia::render('Admin/RekamMedikPage', [
+        'data' => $rekamMedikService->all(),
+        'polis' => $poliService->data(),
+    ]);
 })->name('admin.rekammedik');
 
 Route::get('/admin/rekammedik/add', function (PoliService $poliService, DokterService $dokterService, PasienService $pasienService) {
-    return Inertia::render('Admin/AddRekamMedikPage', ['polis' => $poliService->all(), 'dokters' => $dokterService->all(), 'pasiens' => $pasienService->all()]);
+    return Inertia::render('Admin/AddRekamMedikPage', [
+        'polis' => $poliService->data(),
+        'dokters' => $dokterService->data(),
+        'pasiens' => $pasienService->data()
+    ]);
 })->name('admin.rekammedik.add');
 
 
@@ -34,10 +41,10 @@ Route::get('/admin/rekammedik/add/{id}', function (
     return Inertia::render(
         'Admin/AddRekamMedikPage',
         [
-            "dokters" => $dokterService->all(),
-            "pasiens" => $pasienService->all(),
-            "polis" => $poliService->all(),
-            "obats" => $obatService->all(),
+            "dokters" => $dokterService->data(),
+            "pasiens" => $pasienService->data(),
+            "polis" => $poliService->data(),
+            "obats" => $obatService->data(),
             "rekammedik" => $rekamMedikService->getById($id)
         ]
     );
