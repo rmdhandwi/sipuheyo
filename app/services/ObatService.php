@@ -41,12 +41,12 @@ class ObatService
     public function post(ObatRequest $req)
     {
         try {
-            $result =  Obat::create([
-                'nama' => $req['nama'],
-                'merek' => $req['merek'],
-                'dosis' => $req['dosis'],
-                'deskripsi' => $req['deskripsi'],
-                'kemasan' => $req['kemasan'],
+            $result = Obat::create([
+                'nama' => strtoupper($req['nama']),
+                'merek' => ucwords($req['merek']),
+                'dosis' => ucwords($req['dosis']),
+                'deskripsi' => ucwords($req['deskripsi']),
+                'kemasan' => ucwords($req['kemasan']),
             ]);
             return $result;
         } catch (\Throwable $th) {
@@ -62,11 +62,11 @@ class ObatService
                 throw new Error("Data Obat Tidak Ditemukan!");
             }
 
-            $data->nama = $req['nama'];
-            $data->merek = $req['merek'];
-            $data->dosis = $req['dosis'];
-            $data->kemasan = $req['kemasan'];
-            $data->deskripsi = $req['deskripsi'];
+            $data->nama = strtoupper($req['nama']);
+            $data->merek = ucwords($req['merek']);
+            $data->dosis = ucwords($req['dosis']);
+            $data->kemasan = ucwords($req['deskripsi']);
+            $data->deskripsi = ucwords($req['kemasan']);
             $data->save();
             return true;
         } catch (\Throwable $th) {

@@ -137,7 +137,7 @@ onMounted(() => {
                                 <InputError :message="form.errors['jk']" />
                             </div>
                             <div class="flex flex-col p-3">
-                                <label class="mb-2">Kotak</label>
+                                <label class="mb-2">Kontak</label> 
                                 <input
                                     type="number"
                                     v-model="form.kontak"

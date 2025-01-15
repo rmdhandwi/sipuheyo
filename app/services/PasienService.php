@@ -59,7 +59,7 @@ class PasienService
         try {
             // Buat user baru
             $user = User::create([
-                'name' => $req['nama'],
+                'name' => strtoupper($req['nama']),
                 'email' => $req['email'],
                 'password' => Hash::make($req['email']),
                 'role' => 'pasien',
@@ -67,13 +67,13 @@ class PasienService
 
             // Buat data pasien baru
             $result = Pasien::create([
-                'nama' => $req['nama'],
+                'nama' => strtoupper($req['nama']),
                 'nik' => $req['nik'],
                 'email' => $req['email'],
                 'jk' => $req['jk'],
-                'tempat_lahir' => $req['tempat_lahir'],
+                'tempat_lahir' => ucfirst($req['tempat_lahir']),
                 'tanggal_lahir' => $req['tanggal_lahir'],
-                'alamat' => $req['alamat'],
+                'alamat' => ucwords($req['alamat']),
                 'kontak' => $req['kontak'],
                 'user_id' => $user->id,
             ]);
@@ -94,12 +94,12 @@ class PasienService
                 throw new Error("Data Pasien Tidak Ditemukan!");
             }
 
-            $data->nama = $req['nama'];
+            $data->nama = strtoupper($req['nama']);
             $data->nik = $req['nik'];
             $data->jk = $req['jk'];
-            $data->tempat_lahir = $req['tempat_lahir'];
+            $data->tempat_lahir = ucfirst($req['tempat_lahir']);
             $data->tanggal_lahir = $req['tanggal_lahir'];
-            $data->alamat = $req['alamat'];
+            $data->alamat = ucwords($req['alamat']);
             $data->kontak = $req['kontak'];
             $data->save();
             return true;

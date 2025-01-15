@@ -46,21 +46,21 @@ class PegawaiService
 
             //create User As Pegawai
             $user = User::create([
-                'name' => $req->nama,
-                'email' => $req->email,
+                'name' => strtoupper($req->nama),
+                'email' => strtolower($req->email),
                 'password' => Hash::make($req->email),
                 'role' => 'pegawai',
             ]);
 
             $result =  Pegawai::create([
-                'nama' => $req['nama'],
+                'nama' => strtoupper($req['nama']),
                 'jk' => $req['jk'],
-                'email' => $req['email'],
-                'bagian' => $req['bagian'],
+                'email' => strtolower($req['email']),
+                'bagian' => ucwords($req['bagian']),
                 'kontak' => $req['kontak'],
                 'user_id' => $user->id,
             ]);
-            
+
             DB::commit();
             return $result;
         } catch (\Throwable $th) {
@@ -77,9 +77,9 @@ class PegawaiService
                 throw new Error("Data Pegawai Tidak Ditemukan!");
             }
 
-            $data->nama = $req['nama'];
+            $data->nama = strtoupper($req['nama']);
             $data->jk = $req['jk'];
-            $data->bagian = $req['bagian'];
+            $data->bagian = ucwords($req['bagian']);
             $data->kontak = $req['kontak'];
             $data->save();
             return true;

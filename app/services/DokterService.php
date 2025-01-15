@@ -39,7 +39,8 @@ class DokterService
         return $result;
     }
 
-    public function getPoli(){
+    public function getPoli()
+    {
         $user  =  Auth::user();
         $dokter = Dokter::where("user_id", $user->id)->first();
         $poli = Poli::where("dokter_id", $dokter->id)->first();
@@ -54,7 +55,7 @@ class DokterService
 
             //create User As Dokter
             $user = User::create([
-                'name' => $req->nama,
+                'name' => strtoupper($req->nama),
                 'email' => $req->email,
                 'password' => Hash::make($req->email),
                 'role' => 'dokter',
@@ -62,14 +63,14 @@ class DokterService
 
             $result =  Dokter::create([
                 'nid' => $req['nid'],
-                'nama' => $req['nama'],
+                'nama' => strtoupper($req['nama']),
                 'email' => $req['email'],
                 'jk' => $req['jk'],
-                'spesialis' => $req['spesialis'],
+                'spesialis' => ucwords($req['spesialis']),
                 'kontak' => $req['kontak'],
                 'user_id' => $user['id'],
             ]);
-            
+
             DB::commit();
             return $result;
         } catch (\Throwable $th) {
@@ -87,9 +88,10 @@ class DokterService
             }
 
             $data->nid = $req['nid'];
-            $data->nama = $req['nama'];
+            $data->nama = strtoupper($req['nama']);
+            $data->email = $req['email'];
             $data->jk = $req['jk'];
-            $data->spesialis = $req['spesialis'];
+            $data->spesialis = ucwords($req['spesialis']);
             $data->kontak = $req['kontak'];
             $data->save();
             return true;
