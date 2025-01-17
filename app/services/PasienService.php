@@ -52,30 +52,33 @@ class PasienService
         return $result;
     }
 
-
     public function post(PasienRequest $req)
     {
         DB::beginTransaction();
         try {
+            // Jika email tidak diisi, buat email dari nama, jika diisi gunakan email inputan
+            $email = $req['email'] ?? $this->generateEmailFromName($req['nama']);
+
             // Buat user baru
             $user = User::create([
                 'name' => strtoupper($req['nama']),
-                'email' => $req['email'],
-                'password' => Hash::make($req['email']),
+                'email' => $email,
+                'password' => Hash::make($req['kontak']),
                 'role' => 'pasien',
             ]);
 
             // Buat data pasien baru
             $result = Pasien::create([
-                'nama' => strtoupper($req['nama']),
-                'nik' => $req['nik'],
-                'email' => $req['email'],
-                'jk' => $req['jk'],
-                'tempat_lahir' => ucfirst($req['tempat_lahir']),
+                'nama'      => strtoupper($req['nama']),
+                'nik'       => $req['nik'],
+                'layanan'   => $req['layanan'],
+                'email'     => $email,
+                'jk'        => $req['jk'],
+                'tempat_lahir'  => ucfirst($req['tempat_lahir']),
                 'tanggal_lahir' => $req['tanggal_lahir'],
-                'alamat' => ucwords($req['alamat']),
-                'kontak' => $req['kontak'],
-                'user_id' => $user->id,
+                'alamat'        => ucwords($req['alamat']),
+                'kontak'        => $req['kontak'],
+                'user_id'       => $user->id,
             ]);
 
             DB::commit();
@@ -86,27 +89,62 @@ class PasienService
         }
     }
 
+    /**
+     * Membuat email dari nama pasien.
+     *
+     * @param string $name
+     * @return string
+     */
+    private function generateEmailFromName(string $name): string
+    {
+        // Hilangkan spasi dan karakter non-alfanumerik dari nama
+        $cleanedName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($name));
+
+        // Tambahkan domain
+        $domain = '@puskesmas.tech';
+
+        // Gabungkan nama dan domain untuk email
+        return $cleanedName . $domain;
+    }
+
     public function put(PasienRequest $req, $id)
     {
         try {
-            $data = Pasien::find($id);
-            if (!$data) {
-                throw new Error("Data Pasien Tidak Ditemukan!");
+            // Temukan data pasien berdasarkan ID
+            $pasien = Pasien::find($id);
+            if (!$pasien) {
+                throw new \Exception("Data Pasien Tidak Ditemukan!");
             }
 
-            $data->nama = strtoupper($req['nama']);
-            $data->nik = $req['nik'];
-            $data->jk = $req['jk'];
-            $data->tempat_lahir = ucfirst($req['tempat_lahir']);
-            $data->tanggal_lahir = $req['tanggal_lahir'];
-            $data->alamat = ucwords($req['alamat']);
-            $data->kontak = $req['kontak'];
-            $data->save();
+            // Jika pasien memiliki user terkait, perbarui email di tabel users
+            if ($pasien->user_id) {
+                $user = User::find($pasien->user_id);
+                if ($user) {
+                    $user->email = $req['email'];
+                    $user->name = strtoupper($req['nama']);
+                    $user->password = $req['kontak'];
+                    $user->save();
+                }
+            }
+
+            // Perbarui data pasien
+            $pasien->nama = strtoupper($req['nama']);
+            $pasien->nik = $req['nik'];
+            $pasien->layanan = $req['layanan'];
+            $pasien->email = $req['email'];
+            $pasien->jk = $req['jk'];
+            $pasien->tempat_lahir = ucfirst($req['tempat_lahir']);
+            $pasien->tanggal_lahir = $req['tanggal_lahir'];
+            $pasien->alamat = ucwords($req['alamat']);
+            $pasien->kontak = $req['kontak'];
+            $pasien->save();
+
             return true;
         } catch (\Throwable $th) {
-            throw new Error($th->getMessage());
+            throw new \Exception($th->getMessage());
         }
     }
+
 
     public function delete($id)
     {

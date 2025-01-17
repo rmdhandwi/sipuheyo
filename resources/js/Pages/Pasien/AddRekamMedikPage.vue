@@ -16,23 +16,22 @@ const props = defineProps({
         type: Array,
     },
     pasien: {
-        type: Pasien,
+        type: Array,
     },
     dokters: {
         type: Array,
     },
 });
+console.log(props.pasien.id);
 
 const selectedTab = reactive({ id: 1 });
 
 const form = useForm({
     id: 0,
-    kode: "",
     nama: "",
     dokter_id: "",
     pasien_id: props.pasien.id,
     poli_id: "",
-    tanggal: new Date().toISOString().split("T")[0],
     konsultasi_berikut: null,
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0 },
     keluhan: [],
@@ -62,58 +61,28 @@ function onChange(event) {
 }
 
 const save = () => {
-    if (form.id <= 0) {
-        form.post(route("pasien.rekammedik.post"), {
-            onSuccess: (res) => {
+    form.post(route("pasien.rekammedik.post"), {
+        onSuccess: () => {
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: "Pendaftaran berhasil!",
+                timer: 5000,
+                showConfirmButton: false,
+            });
+        },
+        onError: (errors) => {
+            if (errors.error) {
                 Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Data Berhasil Disimpan ",
+                    icon: "error",
+                    title: "Gagal!",
+                    text: errors.error,
+                    timer: 5000,
                     showConfirmButton: false,
-                    timer: 1500,
                 });
-                form.reset();
-            },
-            onError: (err) => {
-                if (err.message) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "error",
-                        title: err,
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
-                } else {
-                    // form.errors = err;
-                }
-            },
-        });
-    } else {
-        form.put(route("pasien.rekammedik.put", form.id), {
-            onSuccess: (res) => {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Data Berhasil Disimpan ",
-                    showConfirmButton: false,
-                    timer: 1500,
-                });
-            },
-            onError: (err) => {
-                if (err.message) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "error",
-                        title: err.msg,
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
-                } else {
-                    // form.errors = err;
-                }
-            },
-        });
-    }
+            }
+        },
+    });
 };
 
 const selectPasien = (pasien) => {
@@ -159,10 +128,7 @@ function deleteResep(item) {
 let tabs = [{ id: 1, name: "Kondisi dan Keluhan" }];
 
 onMounted(() => {
-    if (
-        !props.polis.length ||
-        !props.dokters.length
-    ) {
+    if (!props.polis.length || !props.dokters.length) {
         Swal.fire({
             icon: "info",
             title: "Data Tidak Lengkap",
@@ -175,7 +141,6 @@ onMounted(() => {
 
     if (props.rekammedik) {
         form.id = props.rekammedik.id;
-        form.kode = Helper.getKode(props.rekammedik.id, "RekamMedik");
         form.pasien_id = props.rekammedik.pasien_id;
         form.dokter_id = props.rekammedik.dokter_id;
         form.poli_id = props.rekammedik.poli_id;

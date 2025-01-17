@@ -18,10 +18,10 @@ class PasienController extends Controller
     {
         $userid = Auth::user()->id;
         $pasien = Pasien::where('user_id', $userid)->first();
+       
         return  Inertia::render(
             "Pasien/Index",
             [
-                'pasien' =>  $pasien,
                 'rekammedik' =>  $rekamMedikService->getByPasienId($pasien->id),
             ]
         );

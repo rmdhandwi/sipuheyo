@@ -1,12 +1,11 @@
 <script setup>
 import Layout from "@/dashboard/Layout.vue";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, Head } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import { onMounted } from "vue";
 import Pasien from "@/Models/Pasien";
 import InputError from "@/Components/InputError.vue";
 import Helper from "@/heper";
-
 
 const props = defineProps({
     pasien: {
@@ -16,6 +15,7 @@ const props = defineProps({
 
 const form = useForm({
     id: 0,
+    layanan: "",
     nik: "",
     email: "",
     nama: "",
@@ -24,8 +24,8 @@ const form = useForm({
     tanggal_lahir: null,
     kontak: "",
     alamat: "",
-    password:"",
-    password_confirmation: ""
+    password: "",
+    password_confirmation: "",
 });
 
 function addNewItem() {
@@ -93,6 +93,7 @@ onMounted(() => {
         form.id = props.pasien.id;
         form.kode = Helper.getKode(props.pasien.id, "Pasien");
         form.nik = props.pasien.nik;
+        form.layanan = props.pasien.layanan;
         form.nama = props.pasien.nama;
         form.email = props.pasien.email;
         form.jk = props.pasien.jk;
@@ -105,6 +106,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <Head title="Pasien" />
     <Layout>
         <div class="p-5 mt-5 flex justify-between">
             <h1 class="text-xl">Pasien</h1>
@@ -115,9 +117,23 @@ onMounted(() => {
                     <div class="grid grid-cols-2">
                         <div>
                             <div class="flex flex-col p-3">
+                                <label class="mb-2">Layanan</label>
+                                <select
+                                    type="text"
+                                    v-model="form.layanan"
+                                    class="rounded-lg bg-transparent text-neutral-700"
+                                >
+                                    <option value="BPJS">BPJS</option>
+                                    <option value="UMUM">UMUM</option>
+                                </select>
+                                <InputError :message="form.errors['layanan']" />
+                            </div>
+                            <div class="flex flex-col p-3">
                                 <label class="mb-2">NIK</label>
                                 <input
                                     type="text"
+                                    maxlength="16"
+                                    inputmode="number"
                                     v-model="form.nik"
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
@@ -133,7 +149,12 @@ onMounted(() => {
                                 <InputError :message="form.errors['nama']" />
                             </div>
                             <div class="flex flex-col p-3">
-                                <label class="mb-2">Email</label>
+                                <label class="mb-2"
+                                    >Email
+                                    <i class="text-gray-500 text-sm"
+                                        >(Opsional jika ada)</i
+                                    ></label
+                                >
                                 <input
                                     type="email"
                                     v-model="form.email"
@@ -153,6 +174,8 @@ onMounted(() => {
                                 </select>
                                 <InputError :message="form.errors['jk']" />
                             </div>
+                        </div>
+                        <div>
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Tempat Lahir</label>
                                 <input
@@ -164,8 +187,6 @@ onMounted(() => {
                                     :message="form.errors['tempat_lahir']"
                                 />
                             </div>
-                        </div>
-                        <div>
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Tanggal Lahir</label>
                                 <input
@@ -181,6 +202,8 @@ onMounted(() => {
                                 <label class="mb-2">Kotak</label>
                                 <input
                                     type="text"
+                                    maxlength="13"
+                                    inputmode="number"
                                     v-model="form.kontak"
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
@@ -216,4 +239,3 @@ onMounted(() => {
         </div>
     </Layout>
 </template>
-

@@ -159,7 +159,7 @@ const onChangeSearch = (text) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in data.rekamMedik">
+                        <tr v-for="item in props.rekammedik">
                             <td class="border-b border-gray-200  p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.antrian }}</p>
                             </td>

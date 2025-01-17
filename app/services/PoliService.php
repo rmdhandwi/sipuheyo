@@ -19,11 +19,14 @@ class PoliService
 
     public function all($perPage = 10)
     {
-        $result = Poli::with('dokter')->paginate($perPage);
+        $result = Poli::with('dokter', 'pegawai')
+            ->orderBy('kode', 'asc')
+            ->paginate($perPage);
         return $result;
     }
 
-    public function data(){
+    public function data()
+    {
         $result = Poli::with('dokter')->get();
         return $result;
     }
@@ -38,12 +41,12 @@ class PoliService
     public function post(PoliRequest $req)
     {
         try {
-            $kode = Poli::generateKode($req['nama']);
+            $kode = Poli::generateKode(strtoupper($req['nama']));
             $result =  Poli::create([
                 'kode' => $kode,
-                'nama' => $req['nama'],
-                'penyakit' => $req['penyakit'],
-                'keterangan' => $req['keterangan'],
+                'nama' => strtoupper($req['nama']),
+                'penyakit' => ucwords($req['penyakit']),
+                'keterangan' => ucwords($req['keterangan']),
                 'dokter_id' => $req['dokter_id'],
                 'pegawai_id' => $req['pegawai_id'],
             ]);
@@ -63,10 +66,12 @@ class PoliService
                 throw new Error("Data Poli Tidak Ditemukan!");
             }
 
+            $nama = strtoupper($req['nama']);
+
             // Periksa apakah nama diubah
-            if ($req['nama'] !== $data->nama) {
+            if ($nama !== $data->nama) {
                 // Nama diubah, generate kode baru
-                $kode = Poli::generateKode($req['nama']);
+                $kode = Poli::generateKode($nama);
             } else {
                 // Nama tidak diubah, gunakan kode lama
                 $kode = $data->kode;
@@ -75,9 +80,9 @@ class PoliService
             // Perbarui data menggunakan mass assignment
             $data->update([
                 'kode' => $kode,
-                'nama' => $req['nama'],
-                'penyakit' => $req['penyakit'] ?? $data->penyakit,
-                'keterangan' => $req['keterangan'] ?? $data->keterangan,
+                'nama' => $nama,
+                'penyakit' => ucwords($req['penyakit']) ?? $data->penyakit,
+                'keterangan' => ucwords($req['keterangan']) ?? $data->keterangan,
                 'dokter_id' => $req['dokter_id'] ?? $data->dokter_id,
                 'pegawai_id' => $req['pegawai_id'] ?? $data->pegawai_id,
             ]);

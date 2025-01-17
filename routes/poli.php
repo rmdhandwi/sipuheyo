@@ -5,22 +5,20 @@ use App\Models\Pasien;
 use App\services\ObatService;
 use App\services\PoliService;
 use App\services\DokterService;
-use App\services\PasienService;
 use App\services\RekamMedikService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Requests\RekamMedikRequest;
 use Illuminate\Support\Facades\Redirect;
-use App\Http\Controllers\DokterController;
-use App\Http\Controllers\PasienController;
 use App\Http\Controllers\PoliController;
-use Illuminate\Http\Request;
+use App\Http\Requests\PoliRekamMedikRequest;
+use App\Models\RekamMedik;
 use Illuminate\Support\Facades\Storage;
 
 Route::group(['middleware' => 'role:pegawai'], function () {
     Route::get('/poli', [PoliController::class, 'index'])->name('poli.index');
     Route::get('/poli/rekammedik', [PoliController::class, 'rekammedik'])->name('poli.rekammedik');
     Route::get('/poli/rekammedik/add', [PoliController::class, 'daftar'])->name('poli.rekammedik.add');
+
     Route::get('/poli/rekammedik/{id}', function (
         ObatService $obatService,
         PoliService $poliService,
@@ -34,48 +32,68 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         return Inertia::render(
             'Poli/AddRekamMedikPage',
             [
-                'polis' => $poliService->all(),
+                'polis' => $poliService->data(),
                 'pasien' => $pasien,
-                'dokters' => $dokterService->all(),
-                'obats' => $obatService->all(),
+                'dokters' => $dokterService->data(),
+                'obats' => $obatService->data(),
                 "rekammedik" => $rekammedikService->getById($id),
             ],
         );
     })->name('poli.rekammedik.detail');
 
 
-    Route::put('/poli/rekammedik/{id}', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
+    Route::post('/poli/rekammedik/{id}', function (PoliRekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
         try {
-            if ($rekamMedikRequest->file) {
-                $base64_image = $rekamMedikRequest->input('file'); // your base64 encoded     
-                $decodedFile = base64_decode($base64_image);
-                $filename = uniqid() . '.png'; // You can change the extension based on the file type
-                Storage::disk('public')->put($filename, $decodedFile);
-                $rekamMedikRequest['hasil_lab']  = $filename;
+            // Dapatkan rekam medik yang sedang diupdate
+            $rekamMedik = RekamMedik::findOrFail($id);
+
+            // Proses upload file jika ada
+            if ($rekamMedikRequest->hasFile('file')) {
+                $file = $rekamMedikRequest->file('file');
+
+                if (
+                    $rekamMedik->hasil_lab &&
+                    Storage::disk('public')->exists(str_replace('/storage/', '', $rekamMedik->hasil_lab))
+                ) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $rekamMedik->hasil_lab));
+                }
+
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = 'upload/' . $filename;
+
+                // Simpan file ke storage publik
+                $insertFile = Storage::disk('public')->put($path, file_get_contents($file));
+
+                if ($insertFile) {
+                    $rekamMedikRequest->merge(['hasil_lab' => Storage::url($path)]);
+                } else {
+                    throw new \Exception("Gagal Upload Gambar.");
+                }
             }
-            $rekamMedikRequest['status'] = "poli";
+
+            // Update data
             $result = $rekamMedikService->put($rekamMedikRequest, $id);
+
             if ($result) {
-                return Redirect::back()->with('success');
+                return redirect()->route('poli.rekammedik')->with('success', 'Data berhasil disimpan.');
             }
         } catch (\Throwable $th) {
-            return Redirect::back()->withErrors(["msg" => "Data Tidak Berhasil Disimpan/ Diubah ! "]);
+            return Redirect::back()->withErrors(["error" => $th->getMessage()]);
         }
     })->name('poli.rekammedik.put');
 
 
-    Route::post('/poli/rekammedik', function (Request $rekamMedikRequest, RekamMedikService $rekamMedikService) {
-        try {
-            $result = $rekamMedikService->post($rekamMedikRequest);
-            if ($result) {
-                return Redirect::route('poli.index', $result->id);
-            }
-        } catch (\Throwable $th) {
-            return Redirect::back()->withErrors("error", $th->getMessage());
-        }
-    })->name('poli.rekammedik.post');
+    // Route::get('/{filename}', function ($filename) {
+    //     $filePath = "$filename";
 
-    Route::delete('/poli/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {
+    //     if (Storage::exists($filePath)) {
+    //         return response()->file(storage_path("$filePath"));
+    //     }
+
+    //     abort(404, 'File tidak ditemukan');
+    // });
+
+    Route::delete('/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {
         try {
             $result = $rekamMedikService->delete($id);
             if ($result) {

@@ -77,6 +77,13 @@ const filterDataPoli = computed(() => {
         }
     });
 });
+
+// Handle pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url; // Navigate to the new page URL for pagination
+    }
+};
 </script>
 
 <template>
@@ -122,6 +129,12 @@ const filterDataPoli = computed(() => {
                             </th>
                             <th
                                 scope="col"
+                                class="border-b border-gray-200 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Pengawai
+                            </th>
+                            <th
+                                scope="col"
                                 class="w-auto border-b border-gray-200 p-4 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Keterangan
@@ -154,6 +167,11 @@ const filterDataPoli = computed(() => {
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.dokter.nama }}
+                                </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <p class="whitespace-nowrap">
+                                    {{ item.pegawai.nama }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">

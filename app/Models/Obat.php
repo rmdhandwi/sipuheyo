@@ -14,7 +14,6 @@ class Obat extends Model
 
     public $fillable =[
         'id',
-        'kode',
         'nama',
         'merek',
         'dosis',
@@ -22,11 +21,4 @@ class Obat extends Model
         'kemasan',
         'exp'
     ];
-    protected function casts(): array
-    {
-        return [
-            'kode' => Kode::class,
-        ];
-    }
-
 }

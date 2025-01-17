@@ -2,11 +2,14 @@
 
 namespace App\services;
 
+use App\Http\Requests\PoliRekamMedikRequest;
 use App\Http\Requests\RekamMedikRequest;
+use App\Models\Pasien;
 use App\Models\Poli;
 use App\Models\RekamMedik;
 use Carbon\Carbon;
 use Error;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -44,15 +47,12 @@ class RekamMedikService
 
     public function getByPoli($poliId)
     {
-
-        $results = RekamMedik::where('poli_id', $poliId)
+        // Ambil data rekam medis beserta relasinya
+        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
+            ->where("poli_id", $poliId)
             ->get();
-        foreach ($results as $key => $result) {
-            $result->poli;
-            $result->dokter;
-            $result->pasien;
-        }
-        return $results;
+
+        return $result;
     }
 
 
@@ -95,11 +95,10 @@ class RekamMedikService
 
     public function getByPasienId($id)
     {
-        $result = RekamMedik::Where("pasien_id", $id)->get();
-        foreach ($result as $key => $rekamMedik) {
-            $rekamMedik->poli;
-            $rekamMedik->dokter;
-        }
+        // Ambil data rekam medis beserta relasinya
+        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
+            ->where("pasien_id", $id)
+            ->get();
 
         return $result;
     }
@@ -119,63 +118,101 @@ class RekamMedikService
         return $result;
     }
 
-    public function post(RekamMedikRequest $req)
+
+    public function antrian(RekamMedikRequest $req)
     {
         try {
-            $sekarang =  Carbon::create(date("Y/m/d"));
-            $sekarang->setTimezone("Asia/Jayapura");
+            $sekarang = Carbon::now('Asia/Jayapura');
+            // $sekarang = Carbon::createFromFormat('Y-d-m', '2025-17-01', 'Asia/Jayapura');
+            $jamSekarang = (int) $sekarang->format('H');
 
-            $data = RekamMedik::where('tanggal', $sekarang)->count();
+            // Validasi jam pendaftaran
+            if ($jamSekarang < 5 || $jamSekarang > 10) {
+                throw new \Exception("Pendaftaran hanya dibuka antara pukul 05:00 hingga 10:00 WIT.");
+            }
 
-            $poli = Poli::find($req['poli_id']);
-            $antrian = $poli->kode . '-' . $sekarang->format('dmY') . '-' . str_pad($data + 1, 3, '0', STR_PAD_LEFT);
-            $result =  RekamMedik::create([
-                'tanggal' => $req['tanggal'],
+            $user = auth()->user();
+            if (!in_array($user->role, ['pasien', 'admin'])) {
+                throw new \Exception("Hanya pasien dan admin yang dapat mendaftar antrian.");
+            }
+
+            $antrianHariIni = RekamMedik::where('tanggal', $sekarang->toDateString())
+                ->where('pasien_id', $user->id)
+                ->where('poli_id', $req->poli_id)
+                ->exists();
+
+            if ($antrianHariIni) {
+                throw new \Exception("Anda telah mendaftar di poli ini untuk hari ini.");
+            }
+
+            $jumlahAntrian = RekamMedik::where('tanggal', $sekarang->toDateString())
+                ->where('poli_id', $req->poli_id)
+                ->count();
+
+            //  $jumlahAntrian = 10;
+
+            if ($jumlahAntrian >= 10) {
+                throw new \Exception("Nomor antrean di poli ini telah penuh.");
+            }
+
+            $pasien = Pasien::findOrFail($req->pasien_id);
+
+            $poli = Poli::findOrFail($req->poli_id);
+            $antrian = $poli->kode . '-' . $sekarang->format('dmY') . '-' . str_pad($jumlahAntrian + 1, 2, '0', STR_PAD_LEFT);
+
+            return RekamMedik::create([
+                'tanggal' => $sekarang->toDateString(),
                 'antrian' => $antrian,
-                'poli_id' => $req['poli_id'],
-                'pasien_id' => $req['pasien_id'],
-                'dokter_id' => $req['dokter_id'],
+                'poli_id' => $req->poli_id,
+                'pasien_id' => $pasien->id,
+                'dokter_id' => $req->dokter_id,
                 'status' => 'baru',
-                'keluhan' => json_encode($req['keluhan']),
-                'penanganan' => json_encode($req['penanganan']),
-                'resep' => json_encode($req['resep'])
+                'keluhan' => json_encode($req->keluhan),
+                'penanganan' => json_encode($req->penanganan),
+                'resep' => json_encode($req->resep),
             ]);
-
-            Log::info("success insert" . $result->id);
-            return $result;
         } catch (\Throwable $th) {
-            Log::info($th->getMessage());
-            throw new Error($th->getMessage());
+            throw new \Exception($th->getMessage());
         }
     }
 
-    public function put(RekamMedikRequest $req, $id)
+
+    public function put(PoliRekamMedikRequest $req, $id)
     {
         try {
+            DB::beginTransaction();
+
+            // dd($req->all());
+
             $data = RekamMedik::find($id);
             if (!$data) {
-                throw new Error("Data RekamMedik Tidak Ditemukan!");
+                throw new \Exception("Data RekamMedik tidak ditemukan.");
             }
-            $data->tanggal = $req['tanggal'];
-            $data->poli_id = $req['poli_id'];
-            $data->dokter_id = $req['dokter_id'];
-            $data->pasien_id = $req['pasien_id'];
-            $data->konsultasi_berikut = $req['konsultasi_berikut'];
-            $data->kondisi = $req['kondisi'];
-            $data->keluhan = $req['keluhan'];
-            $data->penanganan = $req['penanganan'];
-            $data->resep = $req['resep'];
-            $data->status = $req['status'];
-            if ($req['hasil_lab']) {
+
+            $user = auth()->user();
+            if ($user->role !== 'pegawai') {
+                throw new \Exception("Hanya pegawai yang dapat mengakses.");
+            }
+
+            $status = $req['status'] = 'poli';
+
+            $data->kondisi = json_encode($req['kondisi']); // Pastikan dalam format JSON
+            $data->keluhan = json_encode($req['keluhan']); // Pastikan dalam format JSON
+            $data->status = $status;
+
+            if (isset($req['hasil_lab'])) {
                 $data->hasil_lab = $req['hasil_lab'];
             }
+
             $data->save();
-            $this->infoKunjunganBerikut();
+            DB::commit();
             return true;
         } catch (\Throwable $th) {
-            throw new Error($th->getMessage());
+            DB::rollBack();
+            throw new \Exception($th->getMessage());
         }
     }
+
 
     public function delete($id)
     {
@@ -190,7 +227,7 @@ class RekamMedikService
             throw new Error($th->getMessage());
         }
     }
- 
+
     public function infoKunjunganBerikut()
     {
         try {

@@ -120,7 +120,9 @@ onMounted(() => {
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">NID</label>
                                 <input
-                                    type="number"
+                                    type="text"
+                                    maxlength="18"
+                                    inputmode="number"
                                     v-model="form.nid"
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
@@ -172,8 +174,10 @@ onMounted(() => {
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Kotak</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     v-model="form.kontak"
+                                    maxlength="13"
+                                    inputmode="number"
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
                                 <InputError :message="form.errors['kontak']" />
@@ -200,16 +204,3 @@ onMounted(() => {
         </div>
     </Layout>
 </template>
-
-<style scoped>
-/* Menghilangkan spinner pada input number */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type="number"] {
-    -moz-appearance: textfield; /* Untuk Firefox */
-}
-</style>

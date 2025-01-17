@@ -77,6 +77,13 @@ const filterPasien = computed(() => {
         }
     });
 });
+
+// Handle pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url; // Navigate to the new page URL for pagination
+    }
+};
 </script>
 
 <template>
@@ -97,12 +104,6 @@ const filterPasien = computed(() => {
                 <table class="w-full leading-normal">
                     <thead>
                         <tr>
-                            <th
-                                scope="col"
-                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
-                            >
-                                Kode
-                            </th>
                             <th
                                 scope="col"
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
@@ -143,8 +144,8 @@ const filterPasien = computed(() => {
                                 scope="col"
                                 class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                            Aksi
-                        </th>
+                                Aksi
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -153,11 +154,6 @@ const filterPasien = computed(() => {
                             v-for="item in filterPasien"
                             :key="item.id"
                         >
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ Helper.getKode(item.id, "Dokter") }}
-                                </p>
-                            </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.nid }}</p>
                             </td>
@@ -216,7 +212,7 @@ const filterPasien = computed(() => {
                     </tbody>
                 </table>
             </div>
-               <!-- Custom Pagination -->
+            <!-- Custom Pagination -->
             <div class="flex justify-center mt-4">
                 <nav>
                     <ul class="flex items-center space-x-2">

@@ -82,18 +82,28 @@ class DokterService
     public function put(DokterRequest $req, $id)
     {
         try {
-            $data = Dokter::find($id);
-            if (!$data) {
+            $dokter = Dokter::find($id);
+            if (!$dokter) {
                 throw new Error("Data Dokter Tidak Ditemukan!");
             }
 
-            $data->nid = $req['nid'];
-            $data->nama = strtoupper($req['nama']);
-            $data->email = $req['email'];
-            $data->jk = $req['jk'];
-            $data->spesialis = ucwords($req['spesialis']);
-            $data->kontak = $req['kontak'];
-            $data->save();
+            // Jika dokter memiliki user terkait, perbarui email di tabel users
+            if ($dokter->user_id) {
+                $user = User::find($dokter->user_id);
+                if ($user) {
+                    $user->email = $req['email'];
+                    $user->name = strtoupper($req['nama']);
+                    $user->save();
+                }
+            }
+
+            $dokter->nid = $req['nid'];
+            $dokter->nama = strtoupper($req['nama']);
+            $dokter->email = $req['email'];
+            $dokter->jk = $req['jk'];
+            $dokter->spesialis = ucwords($req['spesialis']);
+            $dokter->kontak = $req['kontak'];
+            $dokter->save();
             return true;
         } catch (\Throwable $th) {
             //throw $th;

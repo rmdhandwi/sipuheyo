@@ -191,7 +191,7 @@ const filterDataRekamMedik = computed(() => {
                 item.pasien.nama
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) ||
-                item.kode
+                item.antrian
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) ||
                 item.tanggal

@@ -54,6 +54,7 @@ class PegawaiService
 
             $result =  Pegawai::create([
                 'nama' => strtoupper($req['nama']),
+                'nip' => $req['nip'],
                 'jk' => $req['jk'],
                 'email' => strtolower($req['email']),
                 'bagian' => ucwords($req['bagian']),
@@ -72,16 +73,28 @@ class PegawaiService
     public function put(PegawaiRequest $req, $id)
     {
         try {
-            $data = Pegawai::find($id);
-            if (!$data) {
+            $pegawai = Pegawai::find($id);
+            if (!$pegawai) {
                 throw new Error("Data Pegawai Tidak Ditemukan!");
             }
 
-            $data->nama = strtoupper($req['nama']);
-            $data->jk = $req['jk'];
-            $data->bagian = ucwords($req['bagian']);
-            $data->kontak = $req['kontak'];
-            $data->save();
+            // Jika pasien memiliki user terkait, perbarui email di tabel users
+            if ($pegawai->user_id) {
+                $user = User::find($pegawai->user_id);
+                if ($user) {
+                    $user->email = $req['email'];
+                    $user->name = strtoupper($req['nama']);
+                    $user->save();
+                }
+            }
+
+            $pegawai->nama = strtoupper($req['nama']);
+            $pegawai->nip = $req['nip'];
+            $pegawai->email = $req['email'];
+            $pegawai->jk = $req['jk'];
+            $pegawai->bagian = ucwords($req['bagian']);
+            $pegawai->kontak = $req['kontak'];
+            $pegawai->save();
             return true;
         } catch (\Throwable $th) {
             throw new Error($th->getMessage());

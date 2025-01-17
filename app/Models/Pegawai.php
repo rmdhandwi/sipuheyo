@@ -14,8 +14,8 @@ class Pegawai extends Model
 
     public $fillable = [
         'id',
-        'kode',
         'nama',
+        'nip',
         'jk',
         'email',
         'bagian',
@@ -23,11 +23,10 @@ class Pegawai extends Model
         'user_id'
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'kode' => Kode::class,
-        ];
-    }
-   
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'kode' => Kode::class,
+    //     ];
+    // }
 }

@@ -22,7 +22,7 @@ class DokterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nid' => ['required', 'numeric', 'digits_between:12,12'], 
+            'nid' => ['required', 'numeric', 'digits:18'], 
             'kontak' => ['required', 'numeric', 'digits_between:11,13'], 
             'nama' => ['required', 'string', 'max:255'], 
             'email' => ['required', 'email', 'max:255'], 
@@ -36,7 +36,7 @@ class DokterRequest extends FormRequest
         return [
             'nid.required' => 'Kolom NID wajib diisi.',
             'nid.numeric' => 'Kolom NID harus berupa angka.',
-            'nid.digits_between' => 'Kolom NID harus berisi 12 digit.',
+            'nid.digits' => 'Kolom NID harus berisi 18 digit.',
 
             'kontak.required' => 'Kolom Kontak wajib diisi.',
             'kontak.numeric' => 'Kolom Kontak harus berupa angka.',

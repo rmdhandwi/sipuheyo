@@ -16,6 +16,7 @@ const props = defineProps({
 const form = useForm({
     id: 0,
     nama: "",
+    nip: "",
     jk: "",
     email: "",
     bagian: "",
@@ -86,6 +87,7 @@ onMounted(() => {
     if (props.pegawai) {
         form.id = props.pegawai.id;
         form.kode = Helper.getKode(props.pegawai.id, "Pegawai");
+        form.nip = props.pegawai.nip;
         form.nama = props.pegawai.nama;
         form.jk = props.pegawai.jk;
         form.email = props.pegawai.email;
@@ -96,7 +98,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Tambah Pegawai"/>
+    <Head title="Tambah Pegawai" />
     <Layout>
         <div class="p-5 mt-5 flex justify-between">
             <h1 class="text-xl">Pegawai</h1>
@@ -114,6 +116,17 @@ onMounted(() => {
                                     disabled
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
+                            </div>
+                            <div class="flex flex-col p-3">
+                                <label class="mb-2">NIP</label>
+                                <input
+                                    type="text"
+                                    maxlength="18"
+                                    inputmode="number"
+                                    v-model="form.nip"
+                                    class="rounded-lg bg-transparent text-neutral-700"
+                                />
+                                <InputError :message="form.errors['nip']" />
                             </div>
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Nama Pegawai</label>
@@ -136,15 +149,6 @@ onMounted(() => {
                                 </select>
                                 <InputError :message="form.errors['jk']" />
                             </div>
-                            <div class="flex flex-col p-3">
-                                <label class="mb-2">Kontak</label> 
-                                <input
-                                    type="number"
-                                    v-model="form.kontak"
-                                    class="rounded-lg bg-transparent text-neutral-700"
-                                />
-                                <InputError :message="form.errors['kontak']" />
-                            </div>
                         </div>
                         <div>
                             <div class="flex flex-col p-3">
@@ -164,6 +168,16 @@ onMounted(() => {
                                     class="rounded-lg bg-transparent text-neutral-700"
                                 />
                                 <InputError :message="form.errors['bagian']" />
+                            </div>
+                            <div class="flex flex-col p-3">
+                                <label class="mb-2">Kontak</label>
+                                <input
+                                    type="text"
+                                    maxlength="13"
+                                    v-model="form.kontak"
+                                    class="rounded-lg bg-transparent text-neutral-700"
+                                />
+                                <InputError :message="form.errors['kontak']" />
                             </div>
                         </div>
                     </div>

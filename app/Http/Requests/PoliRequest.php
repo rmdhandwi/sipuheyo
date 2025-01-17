@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Poli;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,7 +23,8 @@ class PoliRequest extends FormRequest
      */
     public function rules(): array
     {
-        $poliId = request()->route('id'); 
+        $poliId = request()->route('id'); // ID poli yang sedang diedit (jika ada)
+        $kodePoli = request()->input('kode'); // Kode poli dari request
 
         return [
             'nama' => ['required', 'string', 'max:255'],
@@ -37,9 +39,6 @@ class PoliRequest extends FormRequest
             'pegawai_id' => [
                 'required',
                 'exists:pegawais,id',
-                Rule::unique('polis')->where(function ($query) use ($poliId) {
-                    return $query->where('id', '!=', $poliId);
-                }),
             ],
             'keterangan' => ['required', 'string', 'max:255'],
         ];
@@ -56,10 +55,8 @@ class PoliRequest extends FormRequest
             'dokter_id.exists' => 'Dokter yang dipilih tidak valid.',
             'dokter_id.unique' => 'Dokter ini sudah digunakan.',
             'pegawai_id.required' => 'Kolom pegawai tidak boleh kosong.',
-            'pegawai_id.unique' => 'Pegawai ini sudah digunakan.',
             'pegawai_id.exists' => 'Pegawai yang dipilih tidak valid.',
             'keterangan.required' => 'Kolom keterangan tidak boleh kosong.',
         ];
     }
-
 }

@@ -7,7 +7,6 @@ import { useForm, Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import Search from "@/Components/Search.vue";
 import AddIcon from "@/Icons/AddIcon.vue";
-import Helper from "@/heper";
 
 const props = defineProps({
     data: {
@@ -79,16 +78,28 @@ const filterDataPasien = computed(() => {
     }
 
     let matches = 0;
+    const searchTermLower = searchTerm.value.toLowerCase();
+
     return data.filter((item) => {
         if (
-            item.nama.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
-            matches < 10
+            matches < 10 &&
+            (
+                item.nama.toLowerCase().includes(searchTermLower) || 
+                item.nik.toLowerCase().includes(searchTermLower)
+            )
         ) {
             matches++;
             return item;
         }
     });
 });
+
+// Handle pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url; // Navigate to the new page URL for pagination
+    }
+};
 </script>
 
 <template>
@@ -115,7 +126,7 @@ const filterDataPasien = computed(() => {
                                 scope="col"
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                NIK
                             </th>
                             <th
                                 scope="col"
@@ -134,6 +145,12 @@ const filterDataPasien = computed(() => {
                                 class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 TTL
+                            </th>
+                            <th
+                                scope="col"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Layanan
                             </th>
                             <th
                                 scope="col"
@@ -163,7 +180,7 @@ const filterDataPasien = computed(() => {
                         >
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{ Helper.getKode(item.id, "Pasien") }}
+                                    {{ item.nik }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -176,6 +193,11 @@ const filterDataPasien = computed(() => {
                                 <p class="whitespace-nowrap">
                                     {{ item.tempat_lahir }},
                                     {{ getDate(item.tanggal_lahir) }}
+                                </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <p class="whitespace-nowrap">
+                                    {{ item.layanan }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -216,7 +238,7 @@ const filterDataPasien = computed(() => {
                     </tbody>
                 </table>
             </div>
-            <!-- Custom Pagination -->
+             <!-- Custom Pagination -->
             <div class="flex justify-center mt-4">
                 <nav>
                     <ul class="flex items-center space-x-2">
@@ -251,7 +273,7 @@ const filterDataPasien = computed(() => {
                             :key="index"
                         >
                             <button
-                                v-if="link.url && filterDataPasien.length > 0"
+                                v-if="link.url && filterDataPasien.length"
                                 @click.prevent="paginate(link.url)"
                                 :class="{
                                     'px-4 py-2 bg-blue-500 text-white rounded-lg':

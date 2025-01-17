@@ -15,7 +15,6 @@ class RekamMedik extends Model
 
     public $fillable = [
         'id',
-        'kode',
         'antrian',
         'tanggal',
         'poli_id',
@@ -43,7 +42,7 @@ class RekamMedik extends Model
 
     public function dokter(): HasOne
     {
-        return  $this->hasOne(Dokter::class, 'id', "dokter_id");
+        return  $this->hasOne(Dokter::class, 'id', 'dokter_id');
     }
 
     public function poli(): HasOne

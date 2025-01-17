@@ -77,6 +77,13 @@ const filterDataObat = computed(() => {
         }
     });
 });
+
+// Handle pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url; 
+    }
+};
 </script>
 
 <template>

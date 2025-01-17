@@ -6,6 +6,7 @@ use App\Models\Pasien;
 use App\Models\User;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PasienRequest extends FormRequest
@@ -36,38 +37,66 @@ class PasienRequest extends FormRequest
         // Mengembalikan aturan validasi
         return [
             'nama' => 'required|string|max:255',
+            'nik' => [
+                'required',
+                'numeric',
+                'digits:16',
+                Rule::unique('pasiens')->ignore($pasienId, 'id'), // Pengecualian untuk NIK berdasarkan pasien ID
+            ],
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
             'jk' => ['required', 'in:Laki-Laki,Perempuan'],
+            'layanan' => ['required', 'in:BPJS,UMUM'],
             'alamat' => 'required|string|max:255',
             'kontak' => [
                 'required',
                 'numeric',
                 'digits_between:11,13',
-                Rule::unique('pasiens')->ignore($pasienId, 'id') // Pengecualian untuk kontak berdasarkan pasien ID
+                Rule::unique('pasiens')->ignore($pasienId, 'id'), // Pengecualian untuk kontak berdasarkan pasien ID
             ],
-            'nik' => ['required', 'numeric', 'digits:16'],
             'email' => [
-                'required',
+                'nullable',
                 'string',
                 'email',
                 'lowercase',
                 'max:255',
-                Rule::unique('users')->ignore($userId) // Pengecualian berdasarkan user_id pasien
-            ]
+                function ($attribute, $value, $fail) use ($userId, $pasienId) {
+                    // Periksa keberadaan email di tabel users
+                    $existsInUsers = DB::table('users')
+                        ->where('email', $value)
+                        ->when($userId, function ($query, $userId) {
+                            $query->where('id', '!=', $userId);
+                        })
+                        ->exists();
+
+                    // Periksa keberadaan email di tabel pasiens
+                    $existsInPasiens = DB::table('pasiens')
+                        ->where('email', $value)
+                        ->when($pasienId, function ($query, $pasienId) {
+                            $query->where('id', '!=', $pasienId);
+                        })
+                        ->exists();
+
+                    // Jika email ditemukan di salah satu tabel, gagal
+                    if ($existsInUsers || $existsInPasiens) {
+                        $fail(__('Email ini sudah digunakan oleh pengguna lain.'));
+                    }
+                }
+            ],
         ];
     }
 
-
-
-
-
-    public function messages()
+    public function messages(): array
     {
         return [
             'nama.required' => 'Kolom nama tidak boleh kosong.',
             'nama.string' => 'Kolom nama harus berupa teks.',
             'nama.max' => 'Kolom nama tidak boleh lebih dari 255 karakter.',
+
+            'nik.required' => 'Kolom NIK tidak boleh kosong.',
+            'nik.numeric' => 'Kolom NIK harus berupa angka.',
+            'nik.digits' => 'Kolom NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK ini sudah digunakan oleh pengguna lain.',
 
             'tanggal_lahir.required' => 'Kolom tanggal lahir tidak boleh kosong.',
             'tanggal_lahir.date' => 'Kolom tanggal lahir harus berupa tanggal yang valid.',
@@ -76,8 +105,11 @@ class PasienRequest extends FormRequest
             'tempat_lahir.string' => 'Kolom tempat lahir harus berupa teks.',
             'tempat_lahir.max' => 'Kolom tempat lahir tidak boleh lebih dari 255 karakter.',
 
-            'jk.required' => 'Kolom Jenis Kelamin wajib diisi.',
-            'jk.in' => 'Kolom Jenis Kelamin hanya boleh berisi Laki-laki atau Perempuan.',
+            'jk.required' => 'Kolom jenis kelamin wajib diisi.',
+            'jk.in' => 'Kolom jenis kelamin hanya boleh berisi Laki-Laki atau Perempuan.',
+
+            'layanan.required' => 'Kolom layanan wajib diisi.',
+            'layanan.in' => 'Kolom layanan hanya boleh berisi BPJS atau UMUM.',
 
             'alamat.required' => 'Kolom alamat tidak boleh kosong.',
             'alamat.string' => 'Kolom alamat harus berupa teks.',
@@ -85,19 +117,14 @@ class PasienRequest extends FormRequest
 
             'kontak.required' => 'Kolom kontak tidak boleh kosong.',
             'kontak.numeric' => 'Kolom kontak harus berupa angka.',
-            'kontak.digits_between' => 'Kolom kontak harus terdiri dari 11 atau 13 digit.',
-            'kontak.unique' => 'Kontak ini sudah digunakan oleh pengguna lain',
+            'kontak.digits_between' => 'Kolom kontak harus terdiri dari 11 hingga 13 digit.',
+            'kontak.unique' => 'Kontak ini sudah digunakan oleh pengguna lain.',
 
-            'nik.required' => 'Kolom NIK tidak boleh kosong.',
-            'nik.numeric' => 'Kolom NIK harus berupa angka.',
-            'nik.digits' => 'Kolom NIK harus terdiri dari 16 digit.',
-
-            'email.required' => 'Kolom email tidak boleh kosong.',
             'email.string' => 'Kolom email harus berupa teks.',
             'email.email' => 'Kolom email harus berformat valid (contoh: user@example.com).',
             'email.lowercase' => 'Email harus menggunakan huruf kecil.',
             'email.max' => 'Kolom email tidak boleh lebih dari 255 karakter.',
-            'email.unique' => 'Email ini sudah digunakan oleh pengguna lain.',
         ];
     }
+
 }

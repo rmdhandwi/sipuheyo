@@ -5,7 +5,6 @@ import DeleteIcon from "@/Icons/DeleteIcon.vue";
 import Swal from "sweetalert2";
 import { useForm, Head } from "@inertiajs/vue3";
 import AddIcon from "@/Icons/AddIcon.vue";
-import Helper from "@/heper";
 import Search from "@/Components/Search.vue";
 import { ref, computed } from "vue";
 
@@ -34,10 +33,13 @@ const filterDataPegawai = computed(() => {
     }
 
     let matches = 0;
+    const searchTermLower = searchTerm.value.toLowerCase();
+
     return data.filter((item) => {
         if (
-            item.nama.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
-            matches < 10
+            matches < 10 &&
+            (item.nama.toLowerCase().includes(searchTermLower) ||
+                item.nip.toLowerCase().includes(searchTermLower))
         ) {
             matches++;
             return item;
@@ -111,72 +113,71 @@ const paginate = (url) => {
                         <tr>
                             <th
                                 scope="col"
-                                class="border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                NIP
                             </th>
                             <th
                                 scope="col"
-                                class="border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Nama Pegawai
                             </th>
                             <th
                                 scope="col"
-                                class="border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Jenis Kelamin
                             </th>
                             <th
                                 scope="col"
-                                class="w-auto border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Bagian
                             </th>
                             <th
                                 scope="col"
-                                class="w-auto border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Kontak
                             </th>
                             <th
                                 scope="col"
-                                class="w-20 border-b border-gray-200 px-5 p-4 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                            Aksi
-                        </th>
+                                Aksi
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
-
                             v-if="filterDataPegawai.length"
                             v-for="item in filterDataPegawai"
                             :key="item.id"
                         >
-                            <td class="border-b border-gray-200 p-4 text-sm">
+                            <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{ Helper.getKode(item.id, "Pegawai") }}
+                                    {{ item.nip }}
                                 </p>
                             </td>
-                            <td class="border-b border-gray-200 p-4 text-sm">
+                            <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.nama }}</p>
                             </td>
-                            <td class="border-b border-gray-200 p-4 text-sm">
+                            <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.jk }}</p>
                             </td>
-                            <td class="border-b border-gray-200 p-4 text-sm">
+                            <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.bagian }}
                                 </p>
                             </td>
-                            <td class="border-b border-gray-200 p-4 text-sm">
+                            <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.kontak }}
                                 </p>
                             </td>
                             <td
-                                class="border-b border-gray-200 p-4 text-sm flex"
+                                class="border-b border-gray-200 p-3 text-sm flex"
                             >
                                 <a
                                     :href="'/admin/pegawai/add/' + item.id"
@@ -238,7 +239,7 @@ const paginate = (url) => {
                             :key="index"
                         >
                             <button
-                                v-if="link.url && filterDataPegawai.length > 0"
+                                v-if="link.url && filterDataPegawai.length"
                                 @click.prevent="paginate(link.url)"
                                 :class="{
                                     'px-4 py-2 bg-blue-500 text-white rounded-lg':

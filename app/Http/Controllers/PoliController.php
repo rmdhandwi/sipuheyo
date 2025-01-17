@@ -43,19 +43,17 @@ class PoliController extends Controller
     }
 
 
-
     public function rekammedik(PasienService $pasienService, RekamMedikService $rekamMedikService)
     {
         $userid = Auth::user()->id;
         $pegawai = Pegawai::where('user_id', $userid)->first();
         $poli = Poli::where('pegawai_id', $pegawai->id)->first();
 
+        // dd($rekamMedikService->getByPoli($poli->id));
 
         return  Inertia::render(
             "Poli/RekamMedik",
             [
-                'pegawai' =>  $pegawai,
-                'poli' =>  $poli,
                 'rekammedik' =>  $rekamMedikService->getByPoli($poli->id),
             ]
         );
