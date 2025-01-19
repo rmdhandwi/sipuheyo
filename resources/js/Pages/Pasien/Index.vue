@@ -10,6 +10,7 @@ import Check from "@/Icons/Check.vue";
 import Info from "@/Icons/Info.vue";
 import Panding from "@/Icons/Panding.vue";
 import Wrong from "@/Icons/Wrong.vue";
+import DetailListIcon from "@/Icons/DetailListIcon.vue";
 
 const props = defineProps({
     rekammedik: {
@@ -47,7 +48,7 @@ function getDate(dateString) {
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
 
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
 }
 
 function deleteItem(item) {
@@ -194,7 +195,11 @@ const onChangeSearch = (text) => {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap capitalize">
-                                    {{ formattedDateTime(item.konsultasi_berikut) }}
+                                    {{
+                                        formattedDateTime(
+                                            item.konsultasi_berikut
+                                        )
+                                    }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -232,6 +237,16 @@ const onChangeSearch = (text) => {
                                 class="border-l border-gray-200 p-3 text-sm flex"
                             >
                                 <a
+                                    v-if="item.status !== 'Baru'"
+                                    :href="
+                                        '/pasien/rekammedik/detail/' + item.id
+                                    "
+                                    class="text-blue-500 hover:text-blue-700"
+                                >
+                                    <DetailListIcon class="w-5" />
+                                </a>
+                                <a
+                                    v-if="item.status === 'Baru'"
                                     @click="deleteItem(item)"
                                     class="cursor-pointer text-rose-600 hover:text-rose-900"
                                 >

@@ -1,7 +1,7 @@
 <script setup>
-import Layout from "@/dashboard/Layout.vue";
 import LogoKota from "@/Icons/LogoKota.vue";
 import LogoPuskesmas from "@/Icons/LogoPuskesmas.vue";
+import DokterLayout from "@/Layouts/DokterLayout.vue";
 import RekamMedik from "@/Models/RekamMedik";
 import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
@@ -22,7 +22,7 @@ function printResep() {
 }
 
 function backAction() {
-    window.location = "/admin/rekammedik";
+    window.location = "/dokter/rekammedik";
 }
 
 // Function to calculate age from birthdate
@@ -56,7 +56,7 @@ const activeTab = ref("kondisi");
 
 <template>
     <Head title="Detail Rekam Medik" />
-    <Layout class="noprint">
+    <DokterLayout class="noprint">
         <div class="p-5 mt-5 flex flex-col justify-center items-center">
             <h1 class="text-2xl font-semibold text-gray-800 uppercase">
                 Detail Rekam Medik
@@ -67,6 +67,13 @@ const activeTab = ref("kondisi");
         </div>
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
+            <button
+                type="button"
+                @click="backAction"
+                class="bg-red-700 mb-2 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-all"
+            >
+                Kembali
+            </button>
             <div
                 class="bg-white rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
             >
@@ -406,7 +413,7 @@ const activeTab = ref("kondisi");
                 </div>
             </div>
         </div>
-    </Layout>
+    </DokterLayout>
 </template>
 
 <style scoped>

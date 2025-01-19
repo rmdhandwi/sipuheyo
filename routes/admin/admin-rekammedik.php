@@ -66,7 +66,6 @@ Route::get('/admin/rekammedik/detail/{id}', function (
     return Inertia::render(
         'Admin/DetailRekamMedik',
         [
-            "obats" => $obatService->data(),
             "rekammedik" => $rekamMedikService->getByDetailId($id)
         ]
     );

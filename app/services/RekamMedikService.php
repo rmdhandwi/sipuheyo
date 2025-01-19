@@ -57,6 +57,16 @@ class RekamMedikService
         return $result;
     }
 
+    public function getByDetailPasienId($id)
+    {
+        $result = RekamMedik::with(['dokter', 'pasien', 'poli'])
+            ->where('pasien_id', $id) 
+            ->get();
+
+        return $result;
+    }
+
+
 
     public function getByPoli($poliId, $paginate = 10)
     {

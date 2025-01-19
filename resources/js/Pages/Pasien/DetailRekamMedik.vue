@@ -22,10 +22,6 @@ function printResep() {
     window.location.reload();
 }
 
-function backAction() {
-    window.location = "/admin/rekammedik";
-}
-
 // Function to calculate age from birthdate
 function calculateAge(birthDate) {
     const birthDateObj = new Date(birthDate);
@@ -68,8 +64,15 @@ const activeTab = ref("kondisi");
         </div>
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
+            <a
+                type="button"
+                :href="route('pasien.index')"
+                class="bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-all"
+            >
+                Kembali
+            </a>
             <div
-                class="bg-white rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
+                class="bg-white mt-4 rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
             >
                 <h2 class="text-lg font-semibold text-black">
                     {{ props.rekammedik[0].poli.nama }}
@@ -254,6 +257,7 @@ const activeTab = ref("kondisi");
                             Data Resep
                         </h3>
                         <button
+                            v-if="props.rekammedik[0].pasien.nama === 'admin'"
                             @click="printResep"
                             class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-all"
                         >

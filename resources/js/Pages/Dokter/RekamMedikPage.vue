@@ -8,6 +8,7 @@ import Check from "@/Icons/Check.vue";
 import Info from "@/Icons/Info.vue";
 import Panding from "@/Icons/Panding.vue";
 import Wrong from "@/Icons/Wrong.vue";
+import DetailListIcon from "@/Icons/DetailListIcon.vue";
 
 const props = defineProps({
     poli: Array,
@@ -95,9 +96,15 @@ function deleteItem(item) {
                             </th>
                             <th
                                 scope="col"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Status
+                            </th>
+                            <th
+                                scope="col"
                                 class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Action
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -163,12 +170,23 @@ function deleteItem(item) {
                                 class="border-b border-gray-200 p-3 text-sm flex"
                             >
                                 <a
+                                    v-if="item.status === 'Dokter'"
+                                    :href="
+                                        '/dokter/rekammedik/detail/' + item.id
+                                    "
+                                    class="text-blue-500 hover:text-blue-700"
+                                >
+                                    <DetailListIcon class="w-5" />
+                                </a>
+                                <a
+                                    v-else-if="item.status === 'Poli'"
                                     :href="'/dokter/rekammedik/' + item.id"
                                     class="text-amber-500 hover:text-amber-700"
                                 >
                                     <EditIcon class="w-5" />
                                 </a>
                                 <a
+                                    v-else
                                     @click="deleteItem(item)"
                                     class="cursor-pointer text-rose-600 hover:text-rose-900"
                                 >

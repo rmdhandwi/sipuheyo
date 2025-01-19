@@ -3,7 +3,6 @@ import SidebarItemSection from "@/dashboard/sidebar/SidebarItemSection.vue";
 import SidebarItem from "@/dashboard/sidebar/SidebarItem.vue";
 import AllAppIcon from "@/dashboard/sidebar/icons/AllAppIcon.vue";
 import PatientIcon from "@/Icons/PatientIcon.vue";
-import { onMounted } from "vue";
 import SidebarHeader from "@/dashboard/sidebar/SidebarHeader.vue";
 import { usePage } from "@inertiajs/vue3";
 
@@ -17,9 +16,7 @@ const emit = defineEmits(["titleChange"]);
 
 const page = usePage();
 
-onMounted(() => {
-    emit("titleChange", prop.pasien.nama);
-});
+
 </script>
 
 <template>
@@ -28,8 +25,11 @@ onMounted(() => {
         <SidebarItemSection name="PASIEN">
             <SidebarItem
                 title="Rekam Medik"
-                :href="'/pasien'"
-                :active="page.url == '/pasien'"
+                :href="route('pasien.index')"
+                :active="
+                    page.url === '/pasien' ||
+                    page.url.startsWith('/pasien/rekammedik/detail')
+                "
             >
                 <AllAppIcon class="text-black" />
             </SidebarItem>

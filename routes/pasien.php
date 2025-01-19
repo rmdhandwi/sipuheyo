@@ -40,13 +40,26 @@ Route::group(['middleware' => 'role:pasien'], function () {
         );
     })->name('pasien.rekammedik.detail');
 
+    Route::get('/pasien/rekammedik/detail/{id}', function (
+        RekamMedikService $rekamMedikService,
+        $id
+
+    ) {
+        return Inertia::render(
+            'Pasien/DetailRekamMedik',
+            [
+                "rekammedik" => $rekamMedikService->getByDetailId($id)
+            ]
+        );
+    })->name('pasien.rekammedik.detail');
+
 
     Route::post('/pasien/rekammedik', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService) {
         try {
             $result = $rekamMedikService->antrian($rekamMedikRequest);
             if ($result) {
                 return redirect()->route('pasien.index')->with('success', 'Pendaftaran berhasil!');
-            } 
+            }
         } catch (\Throwable $th) {
             return back()->withErrors(['error' => $th->getMessage()]);
         }

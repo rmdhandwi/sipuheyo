@@ -24,8 +24,6 @@ Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService)
 })->name('dokter.rekammedik');
 
 
-
-
 Route::get('/dokter/rekammedik/{id}', function (
     ObatService $obatService,
     DokterService $dokterService,
@@ -42,6 +40,18 @@ Route::get('/dokter/rekammedik/{id}', function (
     );
 })->name('dokter.pasien.rekammedik');
 
+Route::get('/dokter/rekammedik/detail/{id}', function (
+    RekamMedikService $rekamMedikService,
+    $id
+
+) {
+    return Inertia::render(
+        'Dokter/DetailRekamMedik',
+        [
+            "rekammedik" => $rekamMedikService->getByDetailId($id)
+        ]
+    );
+})->name('dokter.rekammedik.detail');
 
 Route::put('/dokter/rekammedik/{id}', function (DokterRekamMedikRequest $DokterRekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
     try {

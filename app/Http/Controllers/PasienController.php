@@ -14,7 +14,7 @@ use Inertia\Inertia;
 
 class PasienController extends Controller
 {
-    public function index(PasienService $pasienService, RekamMedikService $rekamMedikService)
+    public function index(RekamMedikService $rekamMedikService)
     {
         $userid = Auth::user()->id;
         $pasien = Pasien::where('user_id', $userid)->first();
@@ -28,7 +28,7 @@ class PasienController extends Controller
         );
     }
 
-    public function daftar(PasienService $pasienService, PoliService $poliService, DokterService  $dokterService)
+    public function daftar(PoliService $poliService, DokterService  $dokterService)
     {
         $userid = Auth::user()->id;
         $pasien = Pasien::where('user_id', $userid)->first();
