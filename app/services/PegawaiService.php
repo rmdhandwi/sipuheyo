@@ -46,9 +46,9 @@ class PegawaiService
 
             //create User As Pegawai
             $user = User::create([
-                'name' => strtoupper($req->nama),
-                'email' => strtolower($req->email),
-                'password' => Hash::make($req->email),
+                'name' => strtoupper($req['nama']),
+                'email' => $req['email'],
+                'password' => Hash::make($req['email']),
                 'role' => 'pegawai',
             ]);
 
@@ -56,7 +56,7 @@ class PegawaiService
                 'nama' => strtoupper($req['nama']),
                 'nip' => $req['nip'],
                 'jk' => $req['jk'],
-                'email' => strtolower($req['email']),
+                'email' => $req['email'],
                 'bagian' => ucwords($req['bagian']),
                 'kontak' => $req['kontak'],
                 'user_id' => $user->id,
@@ -83,6 +83,7 @@ class PegawaiService
                 $user = User::find($pegawai->user_id);
                 if ($user) {
                     $user->email = $req['email'];
+                    $user->password = $req['email'];
                     $user->name = strtoupper($req['nama']);
                     $user->save();
                 }
