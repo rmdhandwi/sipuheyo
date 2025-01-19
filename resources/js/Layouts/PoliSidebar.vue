@@ -1,46 +1,48 @@
 <script setup lang="ts">
+const data = reactive({ poli: {} as Poli });
 
-const data=reactive({poli:{} as Poli});
+const emit = defineEmits(["titleChange"]);
 
-const emit = defineEmits(['titleChange']);
+import SidebarItemSection from "@/dashboard/sidebar/SidebarItemSection.vue";
+import SidebarItem from "@/dashboard/sidebar/SidebarItem.vue";
+import AllAppIcon from "@/dashboard/sidebar/icons/AllAppIcon.vue";
+import MedicalIcon from "@/Icons/MedicalIcon.vue";
+import Poli from "@/Models/Poli";
+import { usePage } from "@inertiajs/vue3";
+import SidebarHeader from "@/dashboard/sidebar/SidebarHeader.vue";
+import { reactive } from "vue";
+import RealtimeClock from "@/Components/RealtimeClock.vue";
 
-import SidebarItemSection from '@/dashboard/sidebar/SidebarItemSection.vue';
-import SidebarItem from '@/dashboard/sidebar/SidebarItem.vue';
-import AllAppIcon from '@/dashboard/sidebar/icons/AllAppIcon.vue';
-import UpdatesIcon from '@/dashboard/sidebar/icons/UpdatesIcon.vue';
-import PatientIcon from '@/Icons/PatientIcon.vue';
-import MedicalIcon from '@/Icons/MedicalIcon.vue';
-import Poli from '@/Models/Poli';
-import { onMounted } from 'vue';
-import Pasien from '@/Models/Pasien';
-import Helper from '@/heper';
-import axios from 'axios';
-import { usePage } from '@inertiajs/vue3'
-import SidebarHeader from '@/dashboard/sidebar/SidebarHeader.vue';
-import { reactive } from 'vue';
+const page = usePage();
 
-const page = usePage()
-
-onMounted(() => {
-    axios
-        .get(Helper.apiUrl + `/poli/`+page.props.auth.user.id)
-        .then((response) => {
-            data.poli = response.data as Poli;
-        })
-})
-
-
+const props = defineProps({
+    poli: {
+        type: Array,
+    },
+    pegawai: {
+        type: Array,
+    },
+});
 </script>
 <template>
-  <div >
-    <SidebarHeader></SidebarHeader>
-    <SidebarItemSection name="APP POLI" :subname="data.poli.nama">
-      <SidebarItem title="Dashboard" to="/poli">
-        <AllAppIcon class=" text-black" />
-      </SidebarItem>
-      <SidebarItem title="Rekam Medik" to="/poli/rekammedik">
-        <MedicalIcon class="w-5 h-5" />
-      </SidebarItem>
-    </SidebarItemSection>
-  </div>
+    <div>
+        <SidebarHeader></SidebarHeader>
+        <SidebarItemSection name="APP POLI" :subname="props.poli.nama">
+
+            <SidebarItem
+                title="Dashboard"
+                :href="'/poli'"
+                :active="page.url === '/poli'"
+            >
+                <AllAppIcon class="text-black" />
+            </SidebarItem>
+            <SidebarItem
+                title="Rekam Medik"
+                :href="'/poli/rekammedik'"
+                :active="page.url.startsWith('/poli/rekammedik')"
+            >
+                <MedicalIcon class="w-5 h-5" />
+            </SidebarItem>
+        </SidebarItemSection>
+    </div>
 </template>

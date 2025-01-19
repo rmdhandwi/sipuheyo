@@ -6,6 +6,7 @@ import TopBar from "./TopBar.vue";
 import Overlay from "./Overlay.vue";
 import Sidebar from "./sidebar/Sidebar.vue";
 import { closeSidebar, sidebarOpen } from "./store";
+import RealtimeClock from "@/Components/RealtimeClock.vue";
 
 // const route = useRoute();
 
@@ -37,6 +38,7 @@ watch(route, () => {
                     <main
                         class="main h-screen px-2 pb-36 pt-4 md:px-4 md:pb-8 lg:px-6"
                     >
+                        <RealtimeClock />
                         <slot />
                     </main>
                 </div>

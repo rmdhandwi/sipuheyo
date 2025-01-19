@@ -3,6 +3,7 @@
 namespace App\services;
 
 use App\Http\Requests\PoliRekamMedikRequest;
+use App\Http\Requests\DokterRekamMedikRequest;
 use App\Http\Requests\RekamMedikRequest;
 use App\Models\Pasien;
 use App\Models\Poli;
@@ -25,7 +26,10 @@ class RekamMedikService
 
     public function all($perPage = 10)
     {
-        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])->paginate($perPage);
+        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
+            ->orderBy('tanggal', 'DESC')
+            ->paginate($perPage);
+
         return $result;
     }
 
@@ -45,12 +49,22 @@ class RekamMedikService
         return $result;
     }
 
-    public function getByPoli($poliId)
+    public function getByDetailId($id)
+    {
+        $result = RekamMedik::with(['dokter', 'pasien', 'poli'])
+            ->where('id', $id)
+            ->get();
+        return $result;
+    }
+
+
+    public function getByPoli($poliId, $paginate = 10)
     {
         // Ambil data rekam medis beserta relasinya
         $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
             ->where("poli_id", $poliId)
-            ->get();
+            ->orderBy('tanggal', 'DESC')
+            ->paginate($paginate);
 
         return $result;
     }
@@ -95,27 +109,52 @@ class RekamMedikService
 
     public function getByPasienId($id)
     {
-        // Ambil data rekam medis beserta relasinya
         $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
             ->where("pasien_id", $id)
             ->get();
-
         return $result;
+    }
+
+
+    public function getByDetailPasien($pasienId, $dokterId)
+    {
+        // Ambil data rekam medis berdasarkan pasien_id dan dokter_id, dengan data pasien digrupkan
+        return RekamMedik::with('pasien', 'dokter', 'poli')
+            ->where('pasien_id', $pasienId)
+            ->where('dokter_id', $dokterId)
+            ->selectRaw('
+            pasien_id,
+            dokter_id,
+            COUNT(*) as total_pemeriksaan,
+            MAX(tanggal) as terakhir_diperiksa
+        ')
+            ->groupBy('pasien_id', 'dokter_id') // Pastikan semua kolom non-agregat ada di klausa groupBy
+            ->get();
     }
 
 
     public function getByDokterId($id)
     {
-        $result = RekamMedik::Where("dokter_id", $id)
-            ->orderBy('tanggal')
+        $result = RekamMedik::with('dokter', 'pasien', 'poli')
+            ->where("dokter_id", $id)
+            ->where('status', '=', 'poli')
+            ->orWhere('status', '=', 'dokter')
+            ->orderBy('tanggal', 'DESC')
             ->get();
-        foreach ($result as $key => $rekamMedik) {
-            $rekamMedik->poli;
-            $rekamMedik->dokter;
-            $rekamMedik->pasien;
-        }
-
         return $result;
+    }
+
+    public function getPasienByDokter($dokterId)
+    {
+        // Ambil data rekam medik berdasarkan dokter_id, dikelompokkan berdasarkan pasien_id
+        $dataPasien = RekamMedik::with('pasien')
+            ->where('dokter_id', $dokterId)
+            ->selectRaw('pasien_id, COUNT(*) as total_pemeriksaan, MAX(tanggal) as terakhir_diperiksa')
+            ->groupBy('pasien_id')
+            ->orderBy('terakhir_diperiksa', 'desc') // Mengurutkan berdasarkan tanggal terakhir diperiksa
+            ->get();
+
+        return $dataPasien;
     }
 
 
@@ -123,7 +162,6 @@ class RekamMedikService
     {
         try {
             $sekarang = Carbon::now('Asia/Jayapura');
-            // $sekarang = Carbon::createFromFormat('Y-d-m', '2025-17-01', 'Asia/Jayapura');
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
@@ -136,8 +174,22 @@ class RekamMedikService
                 throw new \Exception("Hanya pasien dan admin yang dapat mendaftar antrian.");
             }
 
+            // Jika role admin, ambil pasien_id dari request
+            if ($user->role === 'admin') {
+                $pasien = Pasien::findOrFail($req->pasien_id);
+                if (!$pasien) {
+                    throw new \Exception("Pasien tidak ditemukan.");
+                }
+            } else {
+                // Jika role pasien, ambil pasien berdasarkan user_id
+                $pasien = Pasien::where('user_id', $user->id)->first();
+                if (!$pasien) {
+                    throw new \Exception("Pasien tidak ditemukan.");
+                }
+            }
+
             $antrianHariIni = RekamMedik::where('tanggal', $sekarang->toDateString())
-                ->where('pasien_id', $user->id)
+                ->where('pasien_id', $pasien->id)
                 ->where('poli_id', $req->poli_id)
                 ->exists();
 
@@ -149,15 +201,24 @@ class RekamMedikService
                 ->where('poli_id', $req->poli_id)
                 ->count();
 
-            //  $jumlahAntrian = 10;
-
             if ($jumlahAntrian >= 10) {
                 throw new \Exception("Nomor antrean di poli ini telah penuh.");
             }
 
-            $pasien = Pasien::findOrFail($req->pasien_id);
+            // Menangani exception untuk pasien
+            try {
+                $pasien = Pasien::findOrFail($req->pasien_id);
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                throw new \Exception("Pasien tidak ditemukan.");
+            }
 
-            $poli = Poli::findOrFail($req->poli_id);
+            // Menangani exception untuk poli
+            try {
+                $poli = Poli::findOrFail($req->poli_id);
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                throw new \Exception("Poli tidak ditemukan.");
+            }
+
             $antrian = $poli->kode . '-' . $sekarang->format('dmY') . '-' . str_pad($jumlahAntrian + 1, 2, '0', STR_PAD_LEFT);
 
             return RekamMedik::create([
@@ -181,8 +242,6 @@ class RekamMedikService
     {
         try {
             DB::beginTransaction();
-
-            // dd($req->all());
 
             $data = RekamMedik::find($id);
             if (!$data) {
@@ -213,6 +272,38 @@ class RekamMedikService
         }
     }
 
+    public function dokterput(DokterRekamMedikRequest $req, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = RekamMedik::find($id);
+            if (!$data) {
+                throw new \Exception("Data RekamMedik tidak ditemukan.");
+            }
+
+            $user = auth()->user();
+            if ($user->role !== 'dokter') {
+                throw new \Exception("Hanya Dokter yang dapat mengakses.");
+            }
+
+            $data->kondisi = json_encode($req['kondisi']);
+            $data->keluhan = json_encode($req['keluhan']);
+            $data->penanganan = json_encode($req['penanganan']);
+            $data->resep = json_encode($req['resep']);
+            $data->resep_manual = $req['resep_manual'];
+            $data->konsultasi_berikut = $req['konsultasi_berikut'];
+            $data->status = 'dokter';
+
+            $data->save();
+            DB::commit();
+            return true;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new \Exception($th->getMessage());
+        }
+    }
+
 
     public function delete($id)
     {
@@ -228,65 +319,64 @@ class RekamMedikService
         }
     }
 
-    public function infoKunjunganBerikut()
-    {
-        try {
-            Log::info('Start Check Kunjungan ');
-            $data = RekamMedik::where('konsultasi_berikut', "<>", null)
-                ->where(function ($q) {
-                    $q->where('kirimpesan1', null)
-                        ->orWhere('kirimpesan2', null);
-                })->get();
+    // public function infoKunjunganBerikut()
+    // {
+    //     try {
+    //         $data = RekamMedik::where('konsultasi_berikut', "<>", null)
+    //             ->where(function ($q) {
+    //                 $q->where('kirimpesan1', null)
+    //                     ->orWhere('kirimpesan2', null);
+    //             })->get();
 
-            $sekarang =  Carbon::create(date("d/m/Y H:s"));
-            $sekarang->setTimezone("Asia/Jayapura");
-            foreach ($data as $key => $rm) {
-                $rm->konsultasi_berikut->setTimezone('Asia/Jayapura');
-                $diff  = date_diff($sekarang, $rm->konsultasi_berikut);
-                if ($diff->h <= 24 && !$rm->kirimpesan1) {
-                    $sended = $this->sendWA($rm);
-                    if ($sended) {
-                        $rm->kirimpesan1 = $sekarang;
-                        $rm->save();
-                    }
-                } else if ($diff->h <= 3 && !$rm->kirimpesan2) {
-                    $sended = $this->sendWA($rm);
-                    if ($sended) {
-                        $rm->kirimpesan2 = $sekarang;
-                        $rm->save();
-                    }
-                }
-            }
-        } catch (\Throwable $th) {
-            Log::error($th->getMessage());
-        }
-    }
+    //         $sekarang =  Carbon::create(date("d/m/Y H:s"));
+    //         $sekarang->setTimezone("Asia/Jayapura");
+    //         foreach ($data as $key => $rm) {
+    //             $rm->konsultasi_berikut->setTimezone('Asia/Jayapura');
+    //             $diff  = date_diff($sekarang, $rm->konsultasi_berikut);
+    //             if ($diff->h <= 24 && !$rm->kirimpesan1) {
+    //                 $sended = $this->sendWA($rm);
+    //                 if ($sended) {
+    //                     $rm->kirimpesan1 = $sekarang;
+    //                     $rm->save();
+    //                 }
+    //             } else if ($diff->h <= 3 && !$rm->kirimpesan2) {
+    //                 $sended = $this->sendWA($rm);
+    //                 if ($sended) {
+    //                     $rm->kirimpesan2 = $sekarang;
+    //                     $rm->save();
+    //                 }
+    //             }
+    //         }
+    //     } catch (\Throwable $th) {
+    //         Log::error($th->getMessage());
+    //     }
+    // }
 
-    public function sendWA($rm)
-    {
-        try {
-            $pasien = $rm->pasien;
-            $poli = $rm->poli;
-            $pesan = 'Bapak/Ibu ' . $pasien->nama . ' Kami mengingatkan kembali untuk jadwal konsultasi pemeriksaan '
-                . $poli->penyakit . ' akan dilakukan pada tanggal ' . $rm->konsultasi_berikut . '. terimakasih.';
-            $data = [
-                "userkey" => env('ZIVA_USERKEY', ''),
-                "passkey" => env('ZIVA_PASSKEY'),
-                "to" => $pasien->kontak,
-                "message" => $pesan
-            ];
+    // public function sendWA($rm)
+    // {
+    //     try {
+    //         $pasien = $rm->pasien;
+    //         $poli = $rm->poli;
+    //         $pesan = 'Bapak/Ibu ' . $pasien->nama . ' Kami mengingatkan kembali untuk jadwal konsultasi pemeriksaan '
+    //             . $poli->penyakit . ' akan dilakukan pada tanggal ' . $rm->konsultasi_berikut . '. terimakasih.';
+    //         $data = [
+    //             "userkey" => env('ZIVA_USERKEY', ''),
+    //             "passkey" => env('ZIVA_PASSKEY'),
+    //             "to" => $pasien->kontak,
+    //             "message" => $pesan
+    //         ];
 
-            $response = Http::post('https://console.zenziva.net/wareguler/api/sendWA/', $data);
-            if ($response->successful()) {
-                Log::info("sended ");
-                return true;
-            } else {
-                $users = $response->json();
-                Log::info("error sended ");
-                return false;
-            }
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
+    //         $response = Http::post('https://console.zenziva.net/wareguler/api/sendWA/', $data);
+    //         if ($response->successful()) {
+    //             Log::info("sended ");
+    //             return true;
+    //         } else {
+    //             $users = $response->json();
+    //             Log::info("error sended ");
+    //             return false;
+    //         }
+    //     } catch (\Throwable $th) {
+    //         throw $th;
+    //     }
+    // }
 }

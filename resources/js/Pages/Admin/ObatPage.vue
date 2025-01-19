@@ -81,7 +81,7 @@ const filterDataObat = computed(() => {
 // Handle pagination
 const paginate = (url) => {
     if (url) {
-        window.location.href = url; 
+        window.location.href = url;
     }
 };
 </script>
@@ -190,7 +190,7 @@ const paginate = (url) => {
                             </td>
 
                             <td
-                                class="border-b border-gray-200 p-3 text-sm flex"
+                                class="border-l border-gray-200 p-3 text-sm flex"
                             >
                                 <a
                                     :href="'/admin/obat/add/' + item.id"

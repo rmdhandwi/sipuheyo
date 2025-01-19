@@ -34,18 +34,6 @@ class PasienService
         return $result;
     }
 
-    public function getByDokterId($dokterId)
-    {
-        $data = RekamMedik::Where("dokter_id", $dokterId)
-            ->orderBy('tanggal')
-            ->get();
-        $pasien = [];
-        foreach ($data as $key => $rm) {
-            $pasien[] = $rm->pasien;
-        }
-        return $pasien;
-    }
-
     public function getById($id)
     {
         $result = Pasien::find($id);

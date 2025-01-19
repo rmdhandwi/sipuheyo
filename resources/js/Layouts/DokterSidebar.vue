@@ -1,47 +1,59 @@
 <script setup lang="ts">
+import SidebarItemSection from "@/dashboard/sidebar/SidebarItemSection.vue";
+import SidebarItem from "@/dashboard/sidebar/SidebarItem.vue";
+import AllAppIcon from "@/dashboard/sidebar/icons/AllAppIcon.vue";
+import PatientIcon from "@/Icons/PatientIcon.vue";
+import MedicalIcon from "@/Icons/MedicalIcon.vue";
+import SidebarHeader from "@/dashboard/sidebar/SidebarHeader.vue";
+import DetailListIcon from "@/Icons/DetailListIcon.vue";
+import { usePage } from "@inertiajs/vue3";
 
 const prop = defineProps({
-  poli: {
-    type: Poli,
-    default: ''
-  }
+    poli: {
+        type: Array,
+    },
+    dokter: {
+        type: Array,
+    },
 });
 
-const emit = defineEmits(['titleChange']);
 
-import SidebarItemSection from '@/dashboard/sidebar/SidebarItemSection.vue';
-import SidebarItem from '@/dashboard/sidebar/SidebarItem.vue';
-import AllAppIcon from '@/dashboard/sidebar/icons/AllAppIcon.vue';
-import UpdatesIcon from '@/dashboard/sidebar/icons/UpdatesIcon.vue';
-import PatientIcon from '@/Icons/PatientIcon.vue';
-import MedicalIcon from '@/Icons/MedicalIcon.vue';
-import Poli from '@/Models/Poli';
-import { onMounted } from 'vue';
-import SidebarHeader from '@/dashboard/sidebar/SidebarHeader.vue';
-import DetailListIcon from '@/Icons/DetailListIcon.vue';
-
-onMounted(() => {
-    emit('titleChange', prop.poli.nama);
-})
-
-
+// Mengambil informasi halaman saat ini
+const page = usePage();
 </script>
 <template>
-  <div>
- <SidebarHeader></SidebarHeader>
-    <SidebarItemSection name="APP DOKTER">
-      <SidebarItem title="Dashboard" to="/dokter">
-        <AllAppIcon class="text-black" />
-      </SidebarItem>
-      <SidebarItem title="Pasien" to="/dokter/pasien">
-        <PatientIcon class="w-5 h-5" />
-      </SidebarItem>
-      <SidebarItem title="Rekam Medik" to="/dokter/rekammedik">
-        <MedicalIcon class="w-5 h-5" />
-      </SidebarItem>
-      <SidebarItem title="Laporan Jadwal Berobat" to="/dokter/jadwalberobat">
-        <DetailListIcon class="w-5 text-black" />
-      </SidebarItem>
-    </SidebarItemSection>
-  </div>
+    <div>
+        <SidebarHeader></SidebarHeader>
+        <SidebarItemSection name="APP DOKTER">
+
+            <SidebarItem
+                title="Dashboard"
+                :href="'/dokter'"
+                :active="page.url === '/dokter'"
+            >
+                <AllAppIcon class="text-black" />
+            </SidebarItem>
+            <SidebarItem
+                title="Pasien"
+                :href="'/dokter/pasien'"
+                :active="page.url.startsWith('/dokter/pasien')"
+            >
+                <PatientIcon class="w-5 h-5" />
+            </SidebarItem>
+            <SidebarItem
+                title="Rekam Medik"
+                :href="'/dokter/rekammedik'"
+                :active="page.url.startsWith('/dokter/rekammedik')"
+            >
+                <MedicalIcon class="w-5 h-5" />
+            </SidebarItem>
+            <SidebarItem
+                title="Laporan Jadwal Berobat"
+                :href="'/dokter/jadwalberobat'"
+                :active="page.url.startsWith('/dokter/jadwalberobat')"
+            >
+                <DetailListIcon class="w-5 text-black" />
+            </SidebarItem>
+        </SidebarItemSection>
+    </div>
 </template>

@@ -177,7 +177,7 @@ const paginate = (url) => {
                                 </p>
                             </td>
                             <td
-                                class="border-b border-gray-200 p-3 text-sm flex"
+                                class="border-l border-gray-200 p-3 text-sm flex"
                             >
                                 <a
                                     :href="'/admin/pegawai/add/' + item.id"

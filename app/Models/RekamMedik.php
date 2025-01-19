@@ -12,7 +12,7 @@ class RekamMedik extends Model
 {
     use HasFactory;
 
-
+    // protected $PrimaryKey = 'id';
     public $fillable = [
         'id',
         'antrian',
@@ -24,6 +24,7 @@ class RekamMedik extends Model
         'keluhan',
         'status',
         'resep',
+        'resep_manual',
         'penanganan',
         'hasil_lab',
         'kirimpesan1',

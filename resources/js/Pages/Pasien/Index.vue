@@ -6,12 +6,32 @@ import Swal from "sweetalert2";
 import { useForm } from "@inertiajs/vue3";
 import { onMounted, reactive } from "vue";
 import Search from "@/Components/Search.vue";
+import Check from "@/Icons/Check.vue";
+import Info from "@/Icons/Info.vue";
+import Panding from "@/Icons/Panding.vue";
+import Wrong from "@/Icons/Wrong.vue";
 
 const props = defineProps({
     rekammedik: {
         type: Array,
     },
+    pasien: {
+        type: Array,
+    },
 });
+
+function formattedDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString("id-ID", {
+        weekday: "long", // Nama hari (Senin, Selasa, dst)
+        day: "2-digit", // Tanggal dengan dua digit
+        month: "long", // Nama bulan (Januari, Februari, dst)
+        year: "numeric", // Tahun
+        hour: "2-digit", // Jam dengan dua digit
+        minute: "2-digit", // Menit dengan dua digit
+        hour12: false, // Menggunakan format 24 jam
+    });
+}
 
 const data = reactive({ rekamMedik: Array });
 
@@ -84,7 +104,7 @@ const onChangeSearch = (text) => {
 </script>
 
 <template>
-    <PasienLayout :poli="props.poli">
+    <PasienLayout :pasien="props.pasien">
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA REKAM MEDIKX</h1>
             <Search v-on:on-search="onChangeSearch"></Search>
@@ -133,9 +153,15 @@ const onChangeSearch = (text) => {
                             </th>
                             <th
                                 scope="col"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Status
+                            </th>
+                            <th
+                                scope="col"
                                 class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Action
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -148,7 +174,7 @@ const onChangeSearch = (text) => {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{ item.tanggal }}
+                                    {{ getDate(item.tanggal) }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -163,17 +189,47 @@ const onChangeSearch = (text) => {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap capitalize">
-                                    {{ item.status }}
+                                    {{ item.dokter.nama }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap capitalize">
-                                    {{ item.konsultasi_berikut }}
+                                    {{ formattedDateTime(item.konsultasi_berikut) }}
                                 </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <span
+                                    v-if="item.status === 'Dokter'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <Check />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Baru'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full"
+                                >
+                                    <Info />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Poli'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-black bg-yellow-500 rounded-full"
+                                >
+                                    <Panding />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Batal'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
+                                >
+                                    <Wrong />
+                                    <span>{{ item.status }}</span>
+                                </span>
                             </td>
 
                             <td
-                                class="border-b border-gray-200 p-3 text-sm flex"
+                                class="border-l border-gray-200 p-3 text-sm flex"
                             >
                                 <a
                                     @click="deleteItem(item)"

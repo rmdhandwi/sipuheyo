@@ -11,6 +11,7 @@ use App\Http\Controllers\ObatController;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
 
 Route::get('/', function () {
 
@@ -36,6 +37,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
+Route::get('/send-reminder', [ReminderController::class, 'sendReminder'])->name('send.wa');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

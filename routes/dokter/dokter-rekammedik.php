@@ -1,24 +1,24 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ObatController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Requests\RekamMedikRequest;
+use App\Http\Requests\DokterRekamMedikRequest;
 use App\Models\Dokter;
+use App\Models\Poli;
 use App\services\DokterService;
 use App\services\ObatService;
 use App\services\RekamMedikService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService, DokterService $dokterService) {
+Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService) {
     $user = Auth::user();
     $dokter = Dokter::where("user_id", $user->id)->first();
+    $poli = Poli::where("dokter_id", $dokter->id)->first();
+
     return Inertia::render('Dokter/RekamMedikPage', [
-        'poli' => $dokterService->getPoli(),
+        'poli' => $poli,
+        'dokter' => $dokter,
         'data' => $rekammedikService->getByDokterId($dokter->id)
     ]);
 })->name('dokter.rekammedik');
@@ -43,10 +43,9 @@ Route::get('/dokter/rekammedik/{id}', function (
 })->name('dokter.pasien.rekammedik');
 
 
-Route::put('/dokter/rekammedik/{id}', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
+Route::put('/dokter/rekammedik/{id}', function (DokterRekamMedikRequest $DokterRekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
     try {
-        $rekamMedikRequest['status'] = 'dokter';
-        $result = $rekamMedikService->put($rekamMedikRequest, $id);
+        $result = $rekamMedikService->dokterput($DokterRekamMedikRequest, $id);
         if ($result) {
             return Redirect::back()->with('success');
         }

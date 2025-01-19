@@ -20,39 +20,46 @@ class DokterController extends Controller
 {
     public function index(DokterService $dokterService)
     {
-        $poli = $dokterService->getPoli();
+
+        $user  =  Auth::user();
+        $dokter = Dokter::where("user_id", $user->id)->first();
+        $poli = Poli::where("dokter_id", $dokter->id)->first();
 
         $rmPasien = DB::table('rekam_mediks')
-        ->groupBy('pasien_id')
-        ->count();
+            ->where('poli_id', $poli->id)
+            ->groupBy('pasien_id')
+            ->count();
 
 
         $rmCount = DB::table('rekam_mediks')
-        ->where('poli_id',$poli->id)
-        ->count();
+            ->where('poli_id', $poli->id)
+            ->count();
 
         return Inertia::render(
             "Dokter/Index",
             [
+                'dokter' => $dokter,
+                'poli' => $poli,
                 'resep' => $rmCount,
                 'pasien' => $rmPasien,
-                'rekammedik' =>$rmCount,
+                'rekammedik' => $rmCount,
             ]
         );
     }
     public function jadwalberobat()
     {
         $user = Auth::user();
-            $dokter = Dokter::where('user_id',$user->id)->firstOrFail();
+        $dokter = Dokter::where('user_id', $user->id)->firstOrFail();
         return Inertia::render(
-            "Dokter/JadwalBerobatPage",['dokter' => $dokter]
+            "Dokter/JadwalBerobatPage",
+            ['dokter' => $dokter]
         );
     }
 
-    public function jadwalberobatByDate(RekamMedikService $rekamMedikService,$dokterId, $date)
+    public function jadwalberobatByDate(RekamMedikService $rekamMedikService, $dokterId, $date)
     {
         try {
-          
+
             $results = RekamMedik::where('dokter_id', $dokterId)
                 ->whereDate('konsultasi_berikut', '=', $date)
                 ->get();
@@ -63,7 +70,7 @@ class DokterController extends Controller
             }
             return $results->toJson();
         } catch (\Throwable $th) {
-           return Redirect()->back()->withErrors(["message"=>$th->getMessage()]);
+            return Redirect()->back()->withErrors(["message" => $th->getMessage()]);
         }
     }
 }

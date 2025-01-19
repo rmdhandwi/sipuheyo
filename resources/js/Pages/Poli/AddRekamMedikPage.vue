@@ -16,6 +16,13 @@ const props = defineProps({
     dokters: Array,
     obats: Array,
     rekammedik: RekamMedik,
+
+    poli: {
+        type: Array,
+    },
+    pegawai: {
+        type: Array,
+    },
 });
 
 const selectedTab = reactive({ id: 1 });
@@ -27,7 +34,7 @@ const form = useForm({
     pasien_id: 0,
     poli_id: "",
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0, tekanan_darah: "" },
-    keluhan: [],
+    keluhan: {},
     status: "",
     file: null,
 });
@@ -69,16 +76,6 @@ const save = () => {
         });
         return; // Menghentikan pengiriman form jika ada keluhan yang kosong
     }
-
-    // if (form.file === null && !fileData.preview) {
-    //     Swal.fire({
-    //         icon: 'error',
-    //         title: 'Gagal!',
-    //         text: 'File hasil lab harus diunggah.',
-    //         showConfirmButton: true,
-    //     });
-    //     return; // Menghentikan pengiriman form jika file belum diunggah
-    // }
 
     form.post(route("poli.rekammedik.put", form.id), {
         onSuccess: () => {
@@ -140,9 +137,9 @@ onMounted(() => {
         fileData.preview = hasil_lab || null;
 
         // Jika keluhan kosong, tambahkan satu elemen default
-    if (form.keluhan.length === 0) {
-        form.keluhan.push({ value: "" });
-    }
+        if (form.keluhan.length === 0) {
+            form.keluhan.push({ value: "" });
+        }
     }
 });
 
@@ -163,7 +160,7 @@ const readFile = () => {
 
 <template>
     <Head title="Detail Pasien" />
-    <PoliLayout class="noprint">
+    <PoliLayout class="noprint" :poli="props.poli" :pegawai="props.pegawai">
         <div class="p-5 mt-5 flex justify-between">
             <h1 class="text-xl">DETAIL BEROBAT</h1>
         </div>

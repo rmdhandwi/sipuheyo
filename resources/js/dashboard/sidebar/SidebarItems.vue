@@ -10,6 +10,7 @@ import CapsulesIcon from "@/Icons/CapsulesIcon.vue";
 import HospitalIcon from "@/Icons/HospitalIcon.vue";
 import UsersIcon from "@/Icons/UsersIcon.vue";
 import { usePage } from "@inertiajs/vue3";
+import RealtimeClock from "@/Components/RealtimeClock.vue";
 
 // Mengambil informasi halaman saat ini
 const page = usePage();

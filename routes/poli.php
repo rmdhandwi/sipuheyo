@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\PoliController;
 use App\Http\Requests\PoliRekamMedikRequest;
+use App\Models\Pegawai;
+use App\Models\Poli;
 use App\Models\RekamMedik;
+use App\services\PegawaiService;
 use Illuminate\Support\Facades\Storage;
 
 Route::group(['middleware' => 'role:pegawai'], function () {
@@ -29,17 +32,41 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         $rm = $rekammedikService->getById($id);
         $userid = Auth::user()->id;
         $pasien = Pasien::where('id', $rm->pasien_id)->first();
+        $userid = Auth::user()->id;
+        $pegawai = Pegawai::where('user_id', $userid)->first();
+        $poli = Poli::where('pegawai_id', $pegawai->id)->first();
         return Inertia::render(
             'Poli/AddRekamMedikPage',
             [
                 'polis' => $poliService->data(),
                 'pasien' => $pasien,
+                'poli' => $poli,
+                'pegawai' => $pegawai,
                 'dokters' => $dokterService->data(),
                 'obats' => $obatService->data(),
                 "rekammedik" => $rekammedikService->getById($id),
             ],
         );
     })->name('poli.rekammedik.detail');
+
+    Route::get('/poli/rekammedik/detail/{id}', function (
+        RekamMedikService $rekamMedikService,
+        $id
+
+    ) {
+        $user  =  Auth::user();
+        $pegawai = Pegawai::where("user_id", $user->id)->first();
+        $poli = Poli::where("pegawai_id", $pegawai->id)->first();
+
+        return Inertia::render(
+            'Poli/DetailRekamMedikPage',
+            [
+                "poli" => $pegawai,
+                "pegawai" => $poli,
+                "rekammedik" => $rekamMedikService->getByDetailId($id)
+            ]
+        );
+    })->name('poli.detail.rekammedik');
 
 
     Route::post('/poli/rekammedik/{id}', function (PoliRekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
@@ -82,16 +109,6 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         }
     })->name('poli.rekammedik.put');
 
-
-    // Route::get('/{filename}', function ($filename) {
-    //     $filePath = "$filename";
-
-    //     if (Storage::exists($filePath)) {
-    //         return response()->file(storage_path("$filePath"));
-    //     }
-
-    //     abort(404, 'File tidak ditemukan');
-    // });
 
     Route::delete('/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {
         try {

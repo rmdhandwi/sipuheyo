@@ -6,10 +6,8 @@ use App\Models\Poli;
 use Inertia\Inertia;
 use App\Models\Pasien;
 use App\Models\Pegawai;
-use Illuminate\Http\Request;
 use App\services\PoliService;
 use App\services\DokterService;
-use App\services\PasienService;
 use Illuminate\Support\Facades\DB;
 use App\services\RekamMedikService;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +23,7 @@ class PoliController extends Controller
         $poli = Poli::where("pegawai_id", $pegawai->id)->first();
 
         $rmPasien = DB::table('rekam_mediks')
+            ->where('poli_id', $poli->id)
             ->groupBy('pasien_id')
             ->count();
 
@@ -35,31 +34,32 @@ class PoliController extends Controller
         return Inertia::render(
             "Poli/Index",
             [
+                'pegawai' => $pegawai,
+                'poli' => $poli,
                 'resep' => $rmCount,
-                'pasien' => $rmPasien,
-                'rekammedik' => $rmCount,
+                'pasienCount' => $rmPasien,
+                'rekammedikCount' => $rmCount,
             ]
         );
     }
 
 
-    public function rekammedik(PasienService $pasienService, RekamMedikService $rekamMedikService)
+    public function rekammedik(RekamMedikService $rekamMedikService)
     {
         $userid = Auth::user()->id;
         $pegawai = Pegawai::where('user_id', $userid)->first();
         $poli = Poli::where('pegawai_id', $pegawai->id)->first();
+        $rekammedik = $rekamMedikService->getByPoli($poli->id);
 
-        // dd($rekamMedikService->getByPoli($poli->id));
-
-        return  Inertia::render(
-            "Poli/RekamMedik",
-            [
-                'rekammedik' =>  $rekamMedikService->getByPoli($poli->id),
-            ]
-        );
+       
+        return Inertia::render('Poli/RekamMedik', [
+            'pegawai' => $pegawai,
+            'poli' => $poli,
+            'data' => $rekammedik,
+        ]);
     }
 
-    public function daftar(PasienService $pasienService, PoliService $poliService, DokterService  $dokterService)
+    public function daftar(PoliService $poliService, DokterService  $dokterService)
     {
         $userid = Auth::user()->id;
         $pasien = Pasien::where('user_id', $userid)->first();

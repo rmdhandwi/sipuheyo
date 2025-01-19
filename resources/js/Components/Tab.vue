@@ -46,7 +46,7 @@ const selectTab = (param) => {
 <template>
     <ul class="flex justify-start items-end  text-black">
         <li v-for="item in items">
-            <button @click="selectTab(item)" :class="tabActive === item.id ? 'bg-purple-500 h-11 text-white' : ' bg-transparent'" 
+            <button @click="selectTab(item)" :class="tabActive === item.id ? 'bg-[#66C4EA] h-11 text-white' : ' bg-transparent'" 
                 class="inline-block px-4 py-2 ">
                 {{ item.name }}
             </button>

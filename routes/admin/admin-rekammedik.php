@@ -1,22 +1,18 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PoliController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Requests\RekamMedikRequest;
 use App\services\DokterService;
 use App\services\ObatService;
 use App\services\PasienService;
 use App\services\PoliService;
 use App\services\RekamMedikService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/admin/rekammedik', function (RekamMedikService $rekamMedikService, PoliService $poliService) {
     return Inertia::render('Admin/RekamMedikPage', [
-        'data' => $rekamMedikService->all(),
+        'data' => $rekamMedikService->all(10),
         'polis' => $poliService->data(),
     ]);
 })->name('admin.rekammedik');
@@ -52,25 +48,29 @@ Route::get('/admin/rekammedik/add/{id}', function (
 
 Route::post('/admin/rekammedik', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService) {
     try {
-        $result = $rekamMedikService->post($rekamMedikRequest);
+        $result = $rekamMedikService->antrian($rekamMedikRequest);
         if ($result) {
-            return Redirect::route('admin.rekammedik.add', $result->id);
+            return redirect()->route('admin.rekammedik')->with('success', 'Pendaftaran berhasil!');
         }
     } catch (\Throwable $th) {
-        return Redirect::back()->withErrors("error", $th->getMessage());
+        return back()->withErrors(['error' => $th->getMessage()]);
     }
 })->name('admin.rekammedik.post');
 
-Route::put('/admin/rekammedik/{id}', function (RekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
-    try {
-        $result = $rekamMedikService->put($rekamMedikRequest, $id);
-        if ($result) {
-            return Redirect::back()->with('success');
-        }
-    } catch (\Throwable $th) {
-        return Redirect::back()->withErrors(["msg" => "Data Tidak Berhasil Disimpan/ Diubah ! "]);
-    }
-})->name('admin.rekammedik.put');
+Route::get('/admin/rekammedik/detail/{id}', function (
+    RekamMedikService $rekamMedikService,
+    ObatService $obatService,
+    $id
+
+) {
+    return Inertia::render(
+        'Admin/DetailRekamMedik',
+        [
+            "obats" => $obatService->data(),
+            "rekammedik" => $rekamMedikService->getByDetailId($id)
+        ]
+    );
+})->name('admin.rekammedik.detail');
 
 Route::delete('/admin/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {
     try {

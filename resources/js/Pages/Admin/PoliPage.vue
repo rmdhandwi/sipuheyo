@@ -143,7 +143,7 @@ const paginate = (url) => {
                                 scope="col"
                                 class="w-20 border-b border-gray-200 p-4 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Action
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -180,7 +180,7 @@ const paginate = (url) => {
                                 </p>
                             </td>
                             <td
-                                class="border-b border-gray-200 p-3 text-sm flex"
+                                class="border-l border-gray-200 p-3 text-sm flex"
                             >
                                 <a
                                     :href="'/admin/poli/add/' + item.id"

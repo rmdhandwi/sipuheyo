@@ -2,15 +2,10 @@
 import Layout from '@/dashboard/Layout.vue';
 import EditIcon from '@/Icons/EditIcon.vue';
 import DeleteIcon from '@/Icons/DeleteIcon.vue';
-import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3'
-import { ref, computed, reactive } from 'vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import axios from 'axios'
 import Helper from '@/heper';
-import AddIcon from '@/Icons/AddIcon.vue';
 import PrinterIcon from '@/Icons/PrinterIcon.vue';
-import Search from '@/Components/Search.vue';
 import LogoKota from '@/Icons/LogoKota.vue';
 import LogoPuskesmas from '@/Icons/LogoPuskesmas.vue';
 

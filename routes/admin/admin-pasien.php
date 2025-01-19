@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ObatController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Requests\PasienRequest;
 use App\services\PasienService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
