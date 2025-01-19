@@ -92,6 +92,7 @@ class DokterService
                 $user = User::find($dokter->user_id);
                 if ($user) {
                     $user->email = $req['email'];
+                    $user->password = $req['email'];
                     $user->name = strtoupper($req['nama']);
                     $user->save();
                 }
