@@ -120,4 +120,62 @@ Route::group(['middleware' => 'role:pegawai'], function () {
             return Redirect::back()->withErrors($th->getMessage());
         }
     })->name('poli.rekammedik.delete');
+
+
+    Route::get('/poli/pasien', function (RekamMedikService $rekammedikService) {
+        $user = Auth::user();
+        $pegawai = Pegawai::where("user_id", $user->id)->first();
+
+        if (!$pegawai) {
+            abort(403, 'Akses Di Tolak, Pegawai Tidak Ditemukan.');
+        }
+
+        $poli = Poli::where("pegawai_id", $pegawai->id)->first();
+
+        if (!$poli) {
+            abort(403, 'Akses Di Tolak, Poli Tidak Ditemukan.');
+        }
+
+        $data = $rekammedikService->getPasienByPoli($poli->id, 10);
+
+
+        return Inertia::render('Poli/PasienPage', [
+            'poli' => $poli,
+            'pegawai' => $pegawai,
+            'data' => $data
+        ]);
+    })->name('pegawai.pasien');
+
+    Route::get('/poli/pasien/{id}', function (
+        RekamMedikService $rekammedikService,
+        $pasienId
+    ) {
+        $user = Auth::user();
+        $pegawai = Pegawai::where('user_id', $user->id)->first();
+
+        if (!$pegawai) {
+            abort(403, 'Akses Di Tolak, Pegawai Tidak Ditemukan.');
+        }
+
+        // Ambil data poli yang terhubung dengan pegawai
+        $poli = Poli::where('pegawai_id', $pegawai->id)->first();
+
+        if (!$poli) {
+            abort(403, 'Akses Di Tolak, Poli Tidak Ditemukan.');
+        }
+
+        // Ambil data rekam medis berdasarkan pasien_id dan poli
+        $rekamMedik = $rekammedikService->getByDetailPasien($pasienId, $poli->id);
+
+        // Validasi apakah data rekam medis terkait dengan poli dan pasien yang benar
+        if ($rekamMedik->isEmpty()) {
+            abort(403, 'Anda tidak diizinkan untuk melihat data ini.');
+        }
+
+        return Inertia::render('Poli/DetailPasienPage', [
+            "polis" => $poli,
+            "pegawai" => $pegawai,
+            "rekammediks" => $rekamMedik,
+        ]);
+    })->name('pegawai.pasien.detail');
 });

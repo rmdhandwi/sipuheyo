@@ -19,7 +19,7 @@ Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService)
     return Inertia::render('Dokter/RekamMedikPage', [
         'poli' => $poli,
         'dokter' => $dokter,
-        'data' => $rekammedikService->getByDokterId($dokter->id)
+        'data' => $rekammedikService->getByDokterId($dokter->id, 10)
     ]);
 })->name('dokter.rekammedik');
 

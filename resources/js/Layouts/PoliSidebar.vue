@@ -12,6 +12,7 @@ import { usePage } from "@inertiajs/vue3";
 import SidebarHeader from "@/dashboard/sidebar/SidebarHeader.vue";
 import { reactive } from "vue";
 import RealtimeClock from "@/Components/RealtimeClock.vue";
+import PatientIcon from "@/Icons/PatientIcon.vue";
 
 const page = usePage();
 
@@ -35,6 +36,13 @@ const props = defineProps({
                 :active="page.url === '/poli'"
             >
                 <AllAppIcon class="text-black" />
+            </SidebarItem>
+             <SidebarItem
+                title="Pasien"
+                :href="'/poli/pasien'"
+                :active="page.url.startsWith('/poli/pasien')"
+            >
+                <PatientIcon class="w-5 h-5" />
             </SidebarItem>
             <SidebarItem
                 title="Rekam Medik"

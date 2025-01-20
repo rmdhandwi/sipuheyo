@@ -76,4 +76,17 @@ Route::group(['middleware' => 'role:pasien'], function () {
             return Redirect::back()->withErrors($th->getMessage());
         }
     })->name('pasien.rekammedik.delete');
+
+    Route::get('/pasien/rekammedik/detail/{id}', function (
+        RekamMedikService $rekamMedikService,
+        $id
+
+    ) {
+        return Inertia::render(
+            'Pasien/DetailRekamMedik',
+            [
+                "rekammedik" => $rekamMedikService->getByDetailId($id)
+            ]
+        );
+    })->name('pasien.rekammedik.detail');
 });

@@ -7,6 +7,7 @@ import MedicalIcon from "@/Icons/MedicalIcon.vue";
 import SidebarHeader from "@/dashboard/sidebar/SidebarHeader.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
 import { usePage } from "@inertiajs/vue3";
+import Dokter from "@/Models/Dokter";
 
 const prop = defineProps({
     poli: {
@@ -17,15 +18,13 @@ const prop = defineProps({
     },
 });
 
-
 // Mengambil informasi halaman saat ini
 const page = usePage();
 </script>
 <template>
     <div>
         <SidebarHeader></SidebarHeader>
-        <SidebarItemSection name="APP DOKTER">
-
+        <SidebarItemSection name="APP DOKTER" :subname="prop.poli.nama">
             <SidebarItem
                 title="Dashboard"
                 :href="'/dokter'"
@@ -33,13 +32,7 @@ const page = usePage();
             >
                 <AllAppIcon class="text-black" />
             </SidebarItem>
-            <SidebarItem
-                title="Pasien"
-                :href="'/dokter/pasien'"
-                :active="page.url.startsWith('/dokter/pasien')"
-            >
-                <PatientIcon class="w-5 h-5" />
-            </SidebarItem>
+
             <SidebarItem
                 title="Rekam Medik"
                 :href="'/dokter/rekammedik'"

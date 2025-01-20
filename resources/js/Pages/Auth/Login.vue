@@ -1,4 +1,5 @@
 <script setup>
+import Swal from "sweetalert2";
 import Checkbox from "@/Components/Checkbox.vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
@@ -25,6 +26,14 @@ const form = useForm({
 const submit = () => {
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
+        onError: (errors) => {
+            // SweetAlert untuk pesan error
+            Swal.fire({
+                icon: "error",
+                title: "Login Gagal",
+                text: errors.message || "Terjadi kesalahan, coba lagi.",
+            });
+        },
     });
 };
 </script>

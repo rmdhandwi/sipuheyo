@@ -28,7 +28,8 @@ const page = usePage();
                 :href="route('pasien.index')"
                 :active="
                     page.url === '/pasien' ||
-                    page.url.startsWith('/pasien/rekammedik/detail')
+                    page.url.startsWith('/pasien/rekammedik/detail') ||
+                    page.url.startsWith('/pasien?page')
                 "
             >
                 <AllAppIcon class="text-black" />

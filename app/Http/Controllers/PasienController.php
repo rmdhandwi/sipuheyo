@@ -23,7 +23,7 @@ class PasienController extends Controller
             "Pasien/Index",
             [
                 'pasien' => $pasien,
-                'rekammedik' =>  $rekamMedikService->getByPasienId($pasien->id),
+                'data' =>  $rekamMedikService->getByPasienId($pasien->id, 10),
             ]
         );
     }

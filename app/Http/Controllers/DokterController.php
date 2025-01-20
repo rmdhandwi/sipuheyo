@@ -11,6 +11,7 @@ use App\Models\Pasien;
 use App\Models\Pegawai;
 use App\Models\RekamMedik;
 use App\services\DokterService;
+use App\services\PoliService;
 use Illuminate\Support\Facades\DB;
 use App\services\RekamMedikService;
 use Illuminate\Support\Facades\Auth;
@@ -46,13 +47,25 @@ class DokterController extends Controller
             ]
         );
     }
+
     public function jadwalberobat()
     {
         $user = Auth::user();
-        $dokter = Dokter::where('user_id', $user->id)->firstOrFail();
+        $dokter = Dokter::where('user_id', $user->id)->first();
+        $poli = Poli::where('dokter_id', $dokter->id)->first();
+        $rekamMedik = RekamMedik::with(['poli', 'pasien', 'dokter'])
+            ->where('dokter_id', $dokter->id)
+            ->whereNotNull('konsultasi_berikut')
+            ->orderBy('konsultasi_berikut', 'DESC')
+            ->paginate(10);
+
         return Inertia::render(
             "Dokter/JadwalBerobatPage",
-            ['dokter' => $dokter]
+            [
+                'dokter' => $dokter,
+                'poli' => $poli,
+                'data' => $rekamMedik
+            ]
         );
     }
 

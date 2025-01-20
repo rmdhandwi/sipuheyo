@@ -21,7 +21,8 @@ use Inertia\Inertia;
 
 class AdminController extends Controller
 {
-    public function index() {
+    public function index()
+    {
 
         return Inertia::render(
             "Admin/Index",
@@ -37,9 +38,24 @@ class AdminController extends Controller
     }
 
 
-    public function jadwalberobat(PoliService $poliService)
+    public function jadwalberobat(PoliService $poliService, DokterService $dokterService)
     {
-        return Inertia::render("Admin/JadwalBerobatPage", ['polis' => $poliService->all()]);
+        $rekamMedik = RekamMedik::with(['poli', 'pasien', 'dokter'])
+            ->whereNotNull('konsultasi_berikut')
+            ->orderBy('konsultasi_berikut', 'DESC')
+            ->paginate(10);
+
+        $poli = $poliService->data();
+        $dokter = $dokterService->data();
+
+        return Inertia::render(
+            "Admin/JadwalBerobatPage",
+            [
+                'poli' => $poli,
+                'dokter' => $dokter,
+                'data' => $rekamMedik
+            ]
+        );
     }
 
 

@@ -60,7 +60,7 @@ class RekamMedikService
     public function getByDetailPasienId($id)
     {
         $result = RekamMedik::with(['dokter', 'pasien', 'poli'])
-            ->where('pasien_id', $id) 
+            ->where('pasien_id', $id)
             ->get();
 
         return $result;
@@ -117,52 +117,52 @@ class RekamMedikService
     }
 
 
-    public function getByPasienId($id)
+    public function getByPasienId($id, $paginate = 10)
     {
         $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
             ->where("pasien_id", $id)
-            ->get();
+            ->paginate($paginate);
         return $result;
     }
 
 
-    public function getByDetailPasien($pasienId, $dokterId)
+    public function getByDetailPasien($pasienId, $poliId)
     {
-        // Ambil data rekam medis berdasarkan pasien_id dan dokter_id, dengan data pasien digrupkan
+        // Ambil data rekam medis berdasarkan pasien_id dan poli, dengan data pasien digrupkan
         return RekamMedik::with('pasien', 'dokter', 'poli')
             ->where('pasien_id', $pasienId)
-            ->where('dokter_id', $dokterId)
+            ->where('poli_id', $poliId)
             ->selectRaw('
             pasien_id,
-            dokter_id,
+            poli_id,
             COUNT(*) as total_pemeriksaan,
             MAX(tanggal) as terakhir_diperiksa
         ')
-            ->groupBy('pasien_id', 'dokter_id') // Pastikan semua kolom non-agregat ada di klausa groupBy
+            ->groupBy('pasien_id', 'poli_id') // Pastikan semua kolom non-agregat ada di klausa groupBy
             ->get();
     }
 
 
-    public function getByDokterId($id)
+    public function getByDokterId($id, $paginate = 10)
     {
         $result = RekamMedik::with('dokter', 'pasien', 'poli')
             ->where("dokter_id", $id)
             ->where('status', '=', 'poli')
             ->orWhere('status', '=', 'dokter')
             ->orderBy('tanggal', 'DESC')
-            ->get();
+            ->paginate($paginate);
         return $result;
     }
 
-    public function getPasienByDokter($dokterId)
+    public function getPasienByPoli($poliId, $paginate = 10)
     {
-        // Ambil data rekam medik berdasarkan dokter_id, dikelompokkan berdasarkan pasien_id
+        // Ambil data rekam medik berdasarkan pegawai, dikelompokkan berdasarkan pasien_id
         $dataPasien = RekamMedik::with('pasien')
-            ->where('dokter_id', $dokterId)
+            ->where('poli_id', $poliId)
             ->selectRaw('pasien_id, COUNT(*) as total_pemeriksaan, MAX(tanggal) as terakhir_diperiksa')
             ->groupBy('pasien_id')
             ->orderBy('terakhir_diperiksa', 'desc') // Mengurutkan berdasarkan tanggal terakhir diperiksa
-            ->get();
+            ->paginate($paginate);
 
         return $dataPasien;
     }

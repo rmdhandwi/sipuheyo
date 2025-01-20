@@ -23,13 +23,13 @@ const props = defineProps({
 <template>
     <PoliLayout :poli="props.poli" :pegawai="props.pegawai">
         <div class="grid gap-2 lg:grid-cols-3 sm:grid-cols-2">
-            <!-- <DashboarItem
+            <DashboarItem
                 :count="props.pasienCount"
                 title="jumlah pasien"
                 bgicon="bg-amber-500"
             >
                 <PatientIcon color="white" class="w-10 h-10"></PatientIcon>
-            </DashboarItem> -->
+            </DashboarItem>
             <DashboarItem
                 :count="props.rekammedikCount"
                 title="jumlah rekam medik"

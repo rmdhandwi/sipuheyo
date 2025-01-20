@@ -1,5 +1,6 @@
 <script setup>
 import DokterLayout from "@/Layouts/DokterLayout.vue";
+import PoliLayout from "@/Layouts/PoliLayout.vue";
 
 const props = defineProps({
     polis: Object,
@@ -15,12 +16,12 @@ function getDate(dateString) {
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
 
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
 }
 </script>
 
 <template>
-    <DokterLayout :poli="props.polis" :dokter="props.dokter">
+    <PoliLayout :poli="props.polis" :dokter="props.dokter">
         <div class="p-5">
             <div
                 class="max-w-full overflow-x-auto rounded-lg shadow-lg bg-white"
@@ -32,7 +33,7 @@ function getDate(dateString) {
                         </h2>
 
                         <a
-                            :href="'/dokter/pasien'"
+                            :href="'/poli/pasien'"
                             class="bg-red-500 text-white px-4 py-1 rounded-lg shadow hover:bg-red-700 transition-all focus:ring focus:ring-red-300"
                         >
                             Kembali
@@ -91,7 +92,9 @@ function getDate(dateString) {
                                 >Tanggal Lahir</label
                             >
                             <p class="text-base text-gray-800">
-                                {{ getDate(rekammediks[0].pasien.tanggal_lahir) }}
+                                {{
+                                    getDate(rekammediks[0].pasien.tanggal_lahir)
+                                }}
                             </p>
                         </div>
                         <div
@@ -131,5 +134,5 @@ function getDate(dateString) {
                 </div>
             </div>
         </div>
-    </DokterLayout>
+    </PoliLayout>
 </template>

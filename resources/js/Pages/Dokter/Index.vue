@@ -1,15 +1,9 @@
 <script setup>
 import DokterLayout from "@/Layouts/DokterLayout.vue";
-import Poli from "@/Models/Poli";
-import CapsulesIcon from "@/Icons/CapsulesIcon.vue";
-import MedicalIcon from "@/Icons/MedicalIcon.vue";
-import HospitalIcon from "@/Icons/HospitalIcon.vue";
-import DoctorIcon from "@/Icons/DoctorIcon.vue";
 import PatientIcon from "@/Icons/PatientIcon.vue";
-import Layout from "@/dashboard/Layout.vue";
-import UsersIcon from "@/Icons/UsersIcon.vue";
 import ArIcon from "@/dashboard/sidebar/icons/ArIcon.vue";
 import DashboarItem from "@/Components/DashboarItem.vue";
+import { Head } from "@inertiajs/vue3";
 
 const props = defineProps({
     resep: {
@@ -27,6 +21,7 @@ const props = defineProps({
 </script>
 
 <template>
+    <Head title="Dashboard" />
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
         <div class="grid gap-2 lg:grid-cols-3 sm:grid-cols-2">
             <DashboarItem
@@ -43,13 +38,13 @@ const props = defineProps({
             >
                 <ArIcon color="white" class="w-10 h-10"></ArIcon>
             </DashboarItem>
-            <DashboarItem
+            <!-- <DashboarItem
                 :count="props.resep"
                 title="Jumlah Resep"
                 bgicon="bg-red-500"
             >
                 <CapsulesIcon color="white" class="w-10 h-10"></CapsulesIcon>
-            </DashboarItem>
+            </DashboarItem> -->
         </div>
     </DokterLayout>
 </template>

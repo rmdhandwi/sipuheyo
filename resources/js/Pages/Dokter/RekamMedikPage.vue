@@ -3,12 +3,14 @@ import DokterLayout from "@/Layouts/DokterLayout.vue";
 import EditIcon from "@/Icons/EditIcon.vue";
 import DeleteIcon from "@/Icons/DeleteIcon.vue";
 import Swal from "sweetalert2";
-import Search from "@/Components/Search.vue";
 import Check from "@/Icons/Check.vue";
 import Info from "@/Icons/Info.vue";
 import Panding from "@/Icons/Panding.vue";
 import Wrong from "@/Icons/Wrong.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
+import { ref, computed } from "vue";
+import Search from "@/Components/Search.vue";
+import { Head } from "@inertiajs/vue3";
 
 const props = defineProps({
     poli: Array,
@@ -46,18 +48,59 @@ function deleteItem(item) {
         }
     });
 }
+
+function getDate(dateString) {
+    const date = new Date(dateString);
+
+    // Mengambil Tahun, Bulan, dan Tanggal
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+}
+
+const onChangeSearch = (text) => {
+    searchTerm.value = text;
+};
+
+const searchTerm = ref("");
+
+const searchRekammedik = computed(() => {
+    const data = props.data.data || [];
+
+    if (searchTerm.value === "") {
+        return data;
+    }
+
+    let matches = 0;
+    return data.filter((item) => {
+        if (
+            item.pasien.nama
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) &&
+            matches < 10
+        ) {
+            matches++;
+            return item;
+        }
+    });
+});
+
+// Fungsi untuk navigasi pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url;
+    }
+};
 </script>
 
 <template>
+    <Head title="Rekam Medik" />
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA REKAM MEDIK</h1>
-        </div>
-        <div class="mt-5 flex justify-between">
-            <div class="flex items-center"></div>
-            <div class="flex items-center">
-                <Search v-on:on-search="onChangeSearch"></Search>
-            </div>
+            <Search v-on:on-search="onChangeSearch"></Search>
         </div>
         <div class="py-5">
             <div class="max-w-full overflow-x-auto rounded-lg shadow">
@@ -82,17 +125,12 @@ function deleteItem(item) {
                             >
                                 Pasien
                             </th>
+                            
                             <th
                                 scope="col"
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Poli
-                            </th>
-                            <th
-                                scope="col"
-                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
-                            >
-                                Dokter
+                                Penyakit
                             </th>
                             <th
                                 scope="col"
@@ -109,7 +147,10 @@ function deleteItem(item) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in data">
+                        <tr
+                            v-if="searchRekammedik.length"
+                            v-for="item in searchRekammedik"
+                        >
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.antrian }}
@@ -117,7 +158,7 @@ function deleteItem(item) {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{ item.tanggal }}
+                                    {{ getDate(item.tanggal) }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -127,12 +168,7 @@ function deleteItem(item) {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{ item.poli.nama }}
-                                </p>
-                            </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ item.dokter.nama }}
+                                    {{ item.poli.penyakit }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -194,8 +230,85 @@ function deleteItem(item) {
                                 </a>
                             </td>
                         </tr>
+                        <tr v-else>
+                            <td
+                                colspan="8"
+                                class="text-gray-400 text-center py-4"
+                            >
+                                Data Rekam Medik Tidak Ditemukan
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
+            </div>
+            <!-- Custom Pagination -->
+            <div class="flex justify-center mt-4">
+                <nav>
+                    <ul class="flex items-center space-x-2">
+                        <li v-if="props.data.first_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.first_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                First
+                            </button>
+                        </li>
+                        <li v-if="props.data.prev_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.prev_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Prev
+                            </button>
+                        </li>
+
+                        <li
+                            v-for="(link, index) in props.data.links.filter(
+                                (link) => !isNaN(link.label)
+                            )"
+                            :key="index"
+                        >
+                            <button
+                                v-if="link.url && searchRekammedik.length > 0"
+                                @click.prevent="paginate(link.url)"
+                                :class="{
+                                    'px-4 py-2 bg-blue-500 text-white rounded-lg':
+                                        link.active,
+                                    'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300':
+                                        !link.active,
+                                }"
+                            >
+                                {{ link.label }}
+                            </button>
+                        </li>
+
+                        <li v-if="props.data.next_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.next_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Next
+                            </button>
+                        </li>
+
+                        <li v-if="props.data.last_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.last_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Last
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </DokterLayout>

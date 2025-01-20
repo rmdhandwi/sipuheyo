@@ -13,7 +13,7 @@ import Wrong from "@/Icons/Wrong.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
 
 const props = defineProps({
-    rekammedik: {
+    data: {
         type: Array,
     },
     pasien: {
@@ -34,7 +34,7 @@ function formattedDateTime(dateString) {
     });
 }
 
-const data = reactive({ rekamMedik: Array });
+const data = reactive({ data: Array });
 
 const form = useForm({
     id: 0,
@@ -62,15 +62,15 @@ function deleteItem(item) {
         confirmButtonText: "Yes, delete it!",
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route("pasien.rekammedik.delete", item.id), {
+            form.delete(route("pasien.data.delete", item.id), {
                 onSuccess: (res) => {
                     Swal.fire({
                         title: "Deleted!",
                         text: "Data Berhasil Di hapus.",
                         icon: "success",
                     });
-                    let index = data.rekamMedik.indexOf(item);
-                    data.rekamMedik.splice(index, 1);
+                    let index = data.data.indexOf(item);
+                    data.data.splice(index, 1);
                 },
                 onError: (err) => {
                     Swal.fire({
@@ -85,22 +85,29 @@ function deleteItem(item) {
 }
 
 onMounted(() => {
-    data.rekamMedik = props.rekammedik.sort(function (a, b) {
+    data.data = props.data.data.sort(function (a, b) {
         return new Date(b.tanggal) - new Date(a.tanggal);
     });
 });
 
 const onChangeSearch = (text) => {
     const sText = text.toLocaleLowerCase();
-    const xx = props.rekammedik.filter(
+    const xx = props.data.data.filter(
         (x) =>
             x.antrian.toLowerCase().includes(sText) ||
             x.dokter.nama.toLowerCase().includes(sText) ||
             x.poli.nama.toLowerCase().includes(sText)
     );
-    data.rekamMedik = xx.sort(function (a, b) {
+    data.data = xx.sort(function (a, b) {
         return new Date(b.tanggal) - new Date(a.tanggal);
     });
+};
+
+// Fungsi untuk navigasi pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url;
+    }
 };
 </script>
 
@@ -167,7 +174,7 @@ const onChangeSearch = (text) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in data.rekamMedik">
+                        <tr v-if="data.data.length" v-for="item in data.data">
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.antrian }}
@@ -254,8 +261,85 @@ const onChangeSearch = (text) => {
                                 </a>
                             </td>
                         </tr>
+                        <tr v-else>
+                            <td
+                                colspan="8"
+                                class="text-gray-400 text-center py-4"
+                            >
+                                Data Rekam Medik Tidak Ditemukan
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
+            </div>
+            <!-- Custom Pagination -->
+            <div class="flex justify-center mt-4">
+                <nav>
+                    <ul class="flex items-center space-x-2">
+                        <li v-if="props.data.first_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.first_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                First
+                            </button>
+                        </li>
+                        <li v-if="props.data.prev_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.prev_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Prev
+                            </button>
+                        </li>
+
+                        <li
+                            v-for="(link, index) in props.data.links.filter(
+                                (link) => !isNaN(link.label)
+                            )"
+                            :key="index"
+                        >
+                            <button
+                                v-if="link.url && data.data.length > 0"
+                                @click.prevent="paginate(link.url)"
+                                :class="{
+                                    'px-4 py-2 bg-blue-500 text-white rounded-lg':
+                                        link.active,
+                                    'px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300':
+                                        !link.active,
+                                }"
+                            >
+                                {{ link.label }}
+                            </button>
+                        </li>
+
+                        <li v-if="props.data.next_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.next_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Next
+                            </button>
+                        </li>
+
+                        <li v-if="props.data.last_page_url">
+                            <button
+                                @click.prevent="
+                                    paginate(props.data.last_page_url)
+                                "
+                                class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                                Last
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </PasienLayout>

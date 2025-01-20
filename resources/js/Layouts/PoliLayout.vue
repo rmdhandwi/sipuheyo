@@ -16,6 +16,10 @@ const props = defineProps({
     pegawai: {
         type: Array,
     },
+
+    countPasienBaru: {
+        type: Number,
+    },
 });
 
 onMounted(() => {
@@ -41,6 +45,7 @@ watch(route, () => {
                 <PoliSidebar
                     :poli="props.poli"
                     :pegawai="props.pegawai"
+                    :baru="props.countPasienBaru"
                     mobile-orientation="end"
                 />
                 <div
@@ -52,6 +57,14 @@ watch(route, () => {
                     >
                         <RealtimeClock />
                         <slot />
+
+                        <!-- Notifikasi
+                        <div class="notifications">
+                            <div class="notification">
+                                Rekam Medik Terbaru :
+                                {{ props.countPasienBaru }}
+                            </div>
+                        </div> -->
                     </main>
                 </div>
             </div>
@@ -84,5 +97,33 @@ watch(route, () => {
 .main::-webkit-scrollbar-thumb {
     background: rgb(1 2 3 / 40%);
     border-radius: 10px;
+}
+
+/* Notifikasi */
+.notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: rgba(27, 27, 27, 0.575); /* Text transparan */
+    backdrop-filter: blur(5px); /* Blur default */
+}
+
+.notification:hover {
+    background-color: rgba(255, 255, 255, 1); /* Warna solid saat hover */
+    color: black; /* Teks terlihat */
+    backdrop-filter: blur(0); /* Blur dihilangkan */
 }
 </style>
