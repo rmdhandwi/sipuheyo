@@ -45,9 +45,15 @@ Route::get('/dokter/rekammedik/detail/{id}', function (
     $id
 
 ) {
+    $user = Auth::user();
+    $dokter = Dokter::where("user_id", $user->id)->first();
+    $poli = Poli::where("dokter_id", $dokter->id)->first();
+
+    // dd($poli);
     return Inertia::render(
         'Dokter/DetailRekamMedik',
         [
+            "poli" => $poli,
             "rekammedik" => $rekamMedikService->getByDetailId($id)
         ]
     );

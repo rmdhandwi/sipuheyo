@@ -2,12 +2,12 @@
 import LogoKota from "@/Icons/LogoKota.vue";
 import LogoPuskesmas from "@/Icons/LogoPuskesmas.vue";
 import DokterLayout from "@/Layouts/DokterLayout.vue";
-import RekamMedik from "@/Models/RekamMedik";
 import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 const props = defineProps({
-    rekammedik: RekamMedik,
+    rekammedik: Array,
+    poli: Array,
 });
 
 function printResep() {
@@ -56,7 +56,7 @@ const activeTab = ref("kondisi");
 
 <template>
     <Head title="Detail Rekam Medik" />
-    <DokterLayout class="noprint">
+    <DokterLayout class="noprint" :poli="props.poli">
         <div class="p-5 mt-5 flex flex-col justify-center items-center">
             <h1 class="text-2xl font-semibold text-gray-800 uppercase">
                 Detail Rekam Medik
