@@ -175,7 +175,7 @@ class RekamMedikService
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
-            if ($jamSekarang < 5 || $jamSekarang > 10) {
+            if ($jamSekarang < 5 || $jamSekarang > 24) {
                 throw new \Exception("Pendaftaran hanya dibuka antara pukul 05:00 hingga 10:00 WIT.");
             }
 
