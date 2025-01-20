@@ -50,10 +50,10 @@ const filteredData = computed(() => {
             selectedYear.value === "" || selectedYear.value === itemYear;
         const matchPoli =
             selectedPoli.value === "" ||
-            item.poli.id.toString() === selectedPoli.value;
+            item.poli.id === selectedPoli.value;
         const matchDokter =
             selectedDokter.value === "" ||
-            item.dokter.id.toString() === selectedDokter.value;
+            item.dokter.id === selectedDokter.value;
 
         return matchMonth && matchYear && matchPoli && matchDokter;
     });
