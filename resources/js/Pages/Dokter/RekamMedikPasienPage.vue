@@ -21,9 +21,9 @@ const form = useForm({
     id: 0,
     konsultasi_berikut: null,
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0, tekanan_darah: "" },
-    keluhan: {},
-    penanganan:{},
-    resep:  { obat: "", dosisi: "", catatan: "" },
+    keluhan: [],
+    penanganan:[],
+    resep:  [],
     resep_manual: null,
     hasil_lab: null,
 });

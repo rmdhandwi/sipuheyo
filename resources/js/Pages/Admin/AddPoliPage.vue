@@ -15,7 +15,11 @@ const props = defineProps({
     poli: {
         type: Array,
     },
+    id: Number,
 });
+
+const id = props.id;
+console.log("inidatta:", id);
 
 const form = useForm({
     id: 0,
@@ -99,7 +103,8 @@ onMounted(() => {
         });
     }
 
-    if (props.poli) {
+
+    if (id) {
         form.id = props.poli.id;
         form.kode = props.poli.kode;
         form.nama = props.poli.nama;

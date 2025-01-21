@@ -24,7 +24,6 @@ class PoliRequest extends FormRequest
     public function rules(): array
     {
         $poliId = request()->route('id'); // ID poli yang sedang diedit (jika ada)
-        $kodePoli = request()->input('kode'); // Kode poli dari request
 
         return [
             'nama' => ['required', 'string', 'max:255'],

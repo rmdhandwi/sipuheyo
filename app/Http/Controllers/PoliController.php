@@ -6,6 +6,7 @@ use App\Models\Poli;
 use Inertia\Inertia;
 use App\Models\Pasien;
 use App\Models\Pegawai;
+use App\Models\RekamMedik;
 use App\services\PoliService;
 use App\services\DokterService;
 use Illuminate\Support\Facades\DB;
@@ -36,15 +37,24 @@ class PoliController extends Controller
             abort(403, 'Akses ditolak. Data poli tidak ditemukan. Anda telah logout.');
         }
 
-        // Hitung jumlah pasien yang memiliki rekam medis
+        // Mendapatkan awalan kode poli
+        $kodeAwal = substr($poli->kode, 0, 2); // Misal, "PA" dari "PA01"
+
+        // Hitung jumlah pasien yang memiliki rekam medis berdasarkan awalan kode dan pegawai_id
         $rmPasien = DB::table('rekam_mediks')
-            ->where('poli_id', $poli->id)
-            ->groupBy('pasien_id')
+            ->join('polis', 'rekam_mediks.poli_id', '=', 'polis.id')
+            ->where('polis.id', $poli->id)
+            ->where('polis.kode', 'LIKE', $kodeAwal . '%')
+            ->where('polis.pegawai_id', $pegawai->id)
+            ->groupBy('rekam_mediks.pasien_id')
             ->count();
 
-        // Hitung total rekam medis perbasien
+        // Hitung total rekam medis berdasarkan awalan kode dan pegawai_id
         $rmCount = DB::table('rekam_mediks')
-            ->where('poli_id', $poli->id)
+            ->join('polis', 'rekam_mediks.poli_id', '=', 'polis.id')
+            ->where('polis.id', $poli->id)
+            ->where('polis.kode', 'LIKE', $kodeAwal . '%')
+            ->where('polis.pegawai_id', $pegawai->id)
             ->count();
 
         return Inertia::render(
@@ -60,22 +70,50 @@ class PoliController extends Controller
     }
 
 
-
-
-    public function rekammedik(RekamMedikService $rekamMedikService)
+    public function rekammedik()
     {
+        // Mengambil ID user yang sedang login
         $userid = Auth::user()->id;
+
+        // Mencari pegawai berdasarkan user_id
         $pegawai = Pegawai::where('user_id', $userid)->first();
+
+        // Pastikan pegawai ditemukan
+        if (!$pegawai) {
+            abort(403, 'Pegawai Tidak Ditemukan');
+        }
+
+        // Mencari poli berdasarkan pegawai_id
         $poli = Poli::where('pegawai_id', $pegawai->id)->first();
-        $rekammedik = $rekamMedikService->getByPoli($poli->id);
 
+        // Pastikan poli ditemukan
+        if (!$poli) {
+            abort(403, 'Poli Tidak Ditemukan');
+        }
 
+        // Mendapatkan awalan kode dari poli
+        $kodeAwal = substr($poli->kode, 0, 2); // Mengambil awalan kode, misal "PA" dari "PA01"
+
+        // Mengambil data rekam medik berdasarkan awalan kode dan pegawai_id
+        $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
+            ->whereHas('poli', function ($query) use ($pegawai, $kodeAwal) {
+                // Filter poli berdasarkan awalan kode dan pegawai_id
+                $query->where('pegawai_id', $pegawai->id)
+                    ->where('kode', 'LIKE', $kodeAwal . '%'); // Awalan kode diikuti karakter lain
+            })
+            ->orderBy('tanggal', 'DESC') // Urutkan berdasarkan tanggal
+            ->paginate(10); // Paginasi, 10 data per halaman
+
+        // Menampilkan data melalui Inertia
         return Inertia::render('Poli/RekamMedik', [
             'pegawai' => $pegawai,
             'poli' => $poli,
             'data' => $rekammedik,
         ]);
     }
+
+
+
 
     public function daftar(PoliService $poliService, DokterService  $dokterService)
     {

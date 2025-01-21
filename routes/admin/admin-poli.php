@@ -17,10 +17,12 @@ Route::get('/admin/poli', function (PoliService $poliService) {
     return Inertia::render('Admin/PoliPage', ['data' => $poliService->all(10)]);
 })->name('admin.poli');
 
-Route::get('/admin/poli/add', function (DokterService $dokterService, PegawaiService $pegawaiService) {
+Route::get('/admin/poli/add', function (DokterService $dokterService, PegawaiService $pegawaiService, PoliService $poliService) {
     return Inertia::render('Admin/AddPoliPage', [
         'dokters' => $dokterService->data(),
-        'pegawais' => $pegawaiService->data()
+        'pegawais' => $pegawaiService->data(),
+        'poli' => $poliService->data(),
+        'id' => null,
     ]);
 })->name('admin.poli.add');
 
@@ -29,7 +31,8 @@ Route::get('/admin/poli/add/{id}', function (DokterService $dokterService, PoliS
     return Inertia::render('Admin/AddPoliPage', [
         "dokters" => $dokterService->data(),
         "pegawais" => $pegawaiService->data(),
-        "poli" => $poliService->getById($id)
+        "poli" => $poliService->getById($id),
+        "id" => $id,
     ]);
 })->name('admin.poli.add');
 

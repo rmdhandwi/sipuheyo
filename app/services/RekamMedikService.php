@@ -68,16 +68,16 @@ class RekamMedikService
 
 
 
-    public function getByPoli($poliId, $paginate = 10)
-    {
-        // Ambil data rekam medis beserta relasinya
-        $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
-            ->where("poli_id", $poliId)
-            ->orderBy('tanggal', 'DESC')
-            ->paginate($paginate);
+    // public function getByPoli($poliId, $paginate = 10)
+    // {
+    //     // Ambil data rekam medis beserta relasinya
+    //     $result = RekamMedik::with(['dokter', 'poli', 'pasien'])
+    //         ->where("poli_id", $poliId)
+    //         ->orderBy('tanggal', 'DESC')
+    //         ->paginate($paginate);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 
     public function getByPoliAndDate($poliId, $date)

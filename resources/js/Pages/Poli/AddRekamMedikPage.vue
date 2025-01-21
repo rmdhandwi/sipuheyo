@@ -34,7 +34,7 @@ const form = useForm({
     pasien_id: 0,
     poli_id: "",
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0, tekanan_darah: "" },
-    keluhan: {},
+    keluhan: [],
     status: "",
     file: null,
 });

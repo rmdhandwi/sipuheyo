@@ -143,15 +143,15 @@ const paginate = (url) => {
                             </th>
                             <th
                                 scope="col"
-                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Dokter
+                                Penyakit
                             </th>
                             <th
                                 scope="col"
                                 class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Status
+                                Dokter
                             </th>
                             <th
                                 scope="col"
@@ -191,8 +191,8 @@ const paginate = (url) => {
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap capitalize">
-                                    {{ item.dokter.nama }}
+                                <p class="whitespace-nowrap">
+                                    {{ item.poli.penyakit }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">

@@ -293,6 +293,11 @@ function paginate(url) {
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
+                                Penyakit
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
                                 Dokter
                             </th>
                             <th
@@ -324,6 +329,9 @@ function paginate(url) {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 {{ item.poli.nama }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                {{ item.poli.penyakit }}
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 {{ item.dokter.nama }}
