@@ -29,6 +29,7 @@ class DokterController extends Controller
         $rmPasien = DB::table('rekam_mediks')
             ->where('poli_id', $poli->id)
             ->where('status', '=', 'poli')
+            ->orwhere('status', '=', 'dokter')
             ->groupBy('pasien_id')
             ->count();
 
@@ -36,6 +37,7 @@ class DokterController extends Controller
         $rmCount = DB::table('rekam_mediks')
             ->where('poli_id', $poli->id)
             ->where('status', '=', 'poli')
+            ->orWhere('status', '=', 'dokter')
             ->count();
 
         return Inertia::render(
