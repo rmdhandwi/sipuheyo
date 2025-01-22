@@ -1,13 +1,9 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PoliController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Requests\PoliRequest;
 use App\services\DokterService;
 use App\services\PegawaiService;
 use App\services\PoliService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;

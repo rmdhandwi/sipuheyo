@@ -90,3 +90,4 @@ Route::group(['middleware' => 'role:pasien'], function () {
         );
     })->name('pasien.rekammedik.detail');
 });
+

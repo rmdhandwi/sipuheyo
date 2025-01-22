@@ -162,11 +162,7 @@ const paginate = (url) => {
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{
-                                        item.jk == "pria"
-                                            ? "Laki-Laki"
-                                            : "Perempuan"
-                                    }}
+                                    {{ item.jk }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">

@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ObatController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Requests\ObatRequest;
 use App\services\ObatService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;

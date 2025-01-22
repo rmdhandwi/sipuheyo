@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DokterController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Requests\DokterRequest;
 use App\services\DokterService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;

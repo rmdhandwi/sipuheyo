@@ -172,7 +172,7 @@ onMounted(() => {
                                 <InputError :message="form.errors['email']" />
                             </div>
                             <div class="flex flex-col p-3">
-                                <label class="mb-2">Kotak</label>
+                                <label class="mb-2">Kontak</label>
                                 <input
                                     type="text"
                                     v-model="form.kontak"
