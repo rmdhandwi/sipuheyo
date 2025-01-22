@@ -38,8 +38,10 @@ Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService)
     $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
         ->whereHas('poli', function ($query) use ($dokter, $kodeAwal) {
             // Filter poli berdasarkan awalan kode dan pegawai_id
-            $query->where('pegawai_id', $dokter->id)
-                ->where('kode', 'LIKE', $kodeAwal . '%'); // Awalan kode diikuti karakter lain
+            $query->where('dokter_id', $dokter->id)
+                ->where('kode', 'LIKE', $kodeAwal . '%') // Awalan kode diikuti karakter lain
+                ->where('status', '=', 'poli') // Awalan kode diikuti karakter lain
+                ->orWhere('status', '=', 'dokter'); // Awalan kode diikuti karakter lain
         })
         ->orderBy('tanggal', 'DESC') // Urutkan berdasarkan tanggal
         ->paginate(10); // Paginasi, 10 data per halaman
