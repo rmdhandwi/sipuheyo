@@ -24,7 +24,7 @@ Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService)
     }
 
     // Mencari poli berdasarkan dokter_id
-    $poli = Poli::where('pegawai_id', $dokter->id)->first();
+    $poli = Poli::where('dokter_id', $dokter->id)->first();
 
     // Pastikan poli ditemukan
     if (!$poli) {
