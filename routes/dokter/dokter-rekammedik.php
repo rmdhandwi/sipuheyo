@@ -45,7 +45,7 @@ Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService)
         ->paginate(10); // Paginasi, 10 data per halaman
 
     // Menampilkan data melalui Inertia
-    return Inertia::render('Poli/RekamMedik', [
+    return Inertia::render('Dokter/RekamMedikPage', [
         'dokter' => $dokter,
         'poli' => $poli,
         'data' => $rekammedik,
