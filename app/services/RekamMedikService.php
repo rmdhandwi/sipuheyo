@@ -237,6 +237,7 @@ class RekamMedikService
                 'poli_id' => $req->poli_id,
                 'pasien_id' => $pasien->id,
                 'dokter_id' => $req->dokter_id,
+                'konsultasi_berikut' => $req->dokter_id,
                 'status' => 'baru',
                 'keluhan' => json_encode($req->keluhan),
                 'penanganan' => json_encode($req->penanganan),

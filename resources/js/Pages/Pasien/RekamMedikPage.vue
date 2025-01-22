@@ -174,7 +174,10 @@ function deleteItem(item) {
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
+                                <p
+                                    v-if="item.status === 'dokter'"
+                                    class="whitespace-nowrap"
+                                >
                                     {{
                                         formattedDateTime(
                                             item.konsultasi_berikut

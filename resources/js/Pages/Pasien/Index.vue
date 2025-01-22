@@ -201,12 +201,21 @@ const paginate = (url) => {
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap capitalize">
+                                <p
+                                    v-if="item.konsultasi_berikut !== null"
+                                    class="whitespace-nowrap capitalize"
+                                >
                                     {{
                                         formattedDateTime(
                                             item.konsultasi_berikut
                                         )
                                     }}
+                                </p>
+                                <p
+                                    v-else
+                                    class="whitespace-nowrap capitalize text-gray-400"
+                                >
+                                    <i>Tidak ada konsultasi berikutnya</i>
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">

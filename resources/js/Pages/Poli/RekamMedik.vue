@@ -225,27 +225,42 @@ const onSearchText = (text) => {
                             v-for="item in filteredData"
                             :key="item.id"
                         >
-                            <td class="border-b border-gray-200 p-3 text-sm">
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
                                 {{ item.antrian }}
                             </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
                                 {{ getDate(item.tanggal) }}
                             </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
                                 {{ item.pasien.nama }}
                             </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
                                 {{ item.poli.penyakit }}
                             </td>
                             <td
-                                class="border-b border-gray-200 p-3 text-sm capitalize"
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm capitalize"
                             >
                                 {{ item.dokter.nama }}
                             </td>
                             <td
                                 class="border-b border-gray-200 p-3 text-sm capitalize"
                             >
-                                {{ formattedDateTime(item.konsultasi_berikut) }}
+                                <span
+                                    v-if="item.konsultasi_berikut !== null"
+                                    class="whitespace-nowrap capitalize"
+                                >
+                                    {{
+                                        formattedDateTime(
+                                            item.konsultasi_berikut
+                                        )
+                                    }}
+                                </span>
+                                <span
+                                    v-else
+                                    class="whitespace-nowrap capitalize text-gray-400"
+                                >
+                                    <i>Tidak ada konsultasi berikutnya</i>
+                                </span>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <span

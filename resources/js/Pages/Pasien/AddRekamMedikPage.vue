@@ -1,12 +1,6 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
-import { onMounted, reactive } from "vue";
-import Tab from "@/Components/Tab.vue";
-import Pasien from "@/Models/Pasien";
-import AddIcon from "@/Icons/AddIcon.vue";
-import DeleteIcon from "@/Icons/DeleteIcon.vue";
-import Helper from "@/heper";
 import PrintResep from "@/Components/PrintResep.vue";
 import PasienLayout from "@/Layouts/PasienLayout.vue";
 import InputError from "@/Components/InputError.vue";

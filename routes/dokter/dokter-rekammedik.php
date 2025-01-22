@@ -3,6 +3,7 @@
 use App\Http\Requests\DokterRekamMedikRequest;
 use App\Models\Dokter;
 use App\Models\Poli;
+use App\Models\RekamMedik;
 use App\services\DokterService;
 use App\services\ObatService;
 use App\services\RekamMedikService;
@@ -12,14 +13,42 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/dokter/rekammedik', function (RekamMedikService $rekammedikService) {
-    $user = Auth::user();
-    $dokter = Dokter::where("user_id", $user->id)->first();
-    $poli = Poli::where("dokter_id", $dokter->id)->first();
+    $user = Auth::user()->id;
 
-    return Inertia::render('Dokter/RekamMedikPage', [
-        'poli' => $poli,
+    // Mencari pegawai berdasarkan user_id
+    $dokter = Dokter::where("user_id", $user)->first();
+
+    // Pastikan dokter ditemukan
+    if (!$dokter) {
+        abort(403, 'Dokter Tidak Ditemukan');
+    }
+
+    // Mencari poli berdasarkan dokter_id
+    $poli = Poli::where('pegawai_id', $dokter->id)->first();
+
+    // Pastikan poli ditemukan
+    if (!$poli) {
+        abort(403, 'Poli Tidak Ditemukan');
+    }
+
+    // Mendapatkan awalan kode dari poli
+    $kodeAwal = substr($poli->kode, 0, 2); // Mengambil awalan kode, misal "PA" dari "PA01"
+
+    // Mengambil data rekam medik berdasarkan awalan kode dan dokter_id
+    $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
+        ->whereHas('poli', function ($query) use ($dokter, $kodeAwal) {
+            // Filter poli berdasarkan awalan kode dan pegawai_id
+            $query->where('pegawai_id', $dokter->id)
+                ->where('kode', 'LIKE', $kodeAwal . '%'); // Awalan kode diikuti karakter lain
+        })
+        ->orderBy('tanggal', 'DESC') // Urutkan berdasarkan tanggal
+        ->paginate(10); // Paginasi, 10 data per halaman
+
+    // Menampilkan data melalui Inertia
+    return Inertia::render('Poli/RekamMedik', [
         'dokter' => $dokter,
-        'data' => $rekammedikService->getByDokterId($dokter->id, 10)
+        'poli' => $poli,
+        'data' => $rekammedik,
     ]);
 })->name('dokter.rekammedik');
 
