@@ -29,9 +29,9 @@ const form = useForm({
     poli_id: "",
     konsultasi_berikut: null,
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0, tekanan_darah: "" },
-    keluhan: {},
-    penanganan: {},
-    resep: { obat: "", dosisi: "", catatan: "" },
+    keluhan: [],
+    penanganan: [],
+    resep: [],
 });
 
 function backAction() {
@@ -143,7 +143,7 @@ const selectPasien = (pasien) => {
                                         :value="item.id"
                                         v-for="item in polis"
                                     >
-                                        {{ item.nama }}
+                                        {{ item.nama + " - " + item.penyakit  }}
                                     </option>
                                 </select>
                                 <InputError :message="form.errors['poli_id']" />
@@ -159,7 +159,7 @@ const selectPasien = (pasien) => {
                                         :value="item.id"
                                         v-for="item in dokters"
                                     >
-                                        {{ item.nama }}
+                                        {{ item.nama}}
                                     </option>
                                 </select>
                                 <InputError
