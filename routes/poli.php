@@ -127,24 +127,37 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         $pegawai = Pegawai::where("user_id", $user->id)->first();
 
         if (!$pegawai) {
-            abort(403, 'Akses Di Tolak, Pegawai Tidak Ditemukan.');
+            abort(403, 'Akses Ditolak, Pegawai Tidak Ditemukan.');
         }
 
-        $poli = Poli::where("pegawai_id", $pegawai->id)->first();
+        $poli = Poli::where("pegawai_id", $pegawai->id)->get(); // Ambil semua poli yang dikelola pegawai
+        $poliname = Poli::where("pegawai_id", $pegawai->id)->first();
 
-        if (!$poli) {
-            abort(403, 'Akses Di Tolak, Poli Tidak Ditemukan.');
+        if ($poli->isEmpty()) {
+            abort(403, 'Akses Ditolak, Poli Tidak Ditemukan.');
         }
 
-        $data = $rekammedikService->getPasienByPoli($poli->id, 10);
+        // Ambil kode poli dan ekstrak kode sebelum angka (misal, PA01 -> PA)
+        $kodePoli = substr($poli->first()->kode, 0, -2); // Mengambil "RK" sebelum "01"
 
+        // Ambil data rekam medik berdasarkan poli_id dan kode poli
+        $dataPasien = RekamMedik::with('pasien')
+            ->whereIn('poli_id', $poli->pluck('id')) // Filter berdasarkan semua poli_id
+            ->whereHas('poli', function ($query) use ($kodePoli) {
+                $query->where('kode', 'like', "$kodePoli%"); // Ambil semua poli yang kode-nya diawali dengan "RK"
+            })
+            ->selectRaw('pasien_id, COUNT(*) as total_pemeriksaan, MAX(tanggal) as terakhir_diperiksa')
+            ->groupBy('pasien_id')
+            ->orderBy('terakhir_diperiksa', 'desc') // Mengurutkan berdasarkan tanggal terakhir diperiksa
+            ->paginate(10); // Sesuaikan jumlah data per halaman
 
         return Inertia::render('Poli/PasienPage', [
-            'poli' => $poli,
+            'poli' => $poliname,
             'pegawai' => $pegawai,
-            'data' => $data
+            'data' => $dataPasien,
         ]);
     })->name('pegawai.pasien');
+
 
     Route::get('/poli/pasien/{id}', function (
         RekamMedikService $rekammedikService,

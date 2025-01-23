@@ -44,7 +44,9 @@ const searchPasien = computed(() => {
     let matches = 0;
     return data.filter((item) => {
         if (
-            item.pasien.nama.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
+            item.pasien.nama
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) &&
             matches < 10
         ) {
             matches++;
@@ -62,7 +64,7 @@ const paginate = (url) => {
 </script>
 
 <template>
-    <Head title="Data Pasien"/>
+    <Head title="Data Pasien" />
     <PoliLayout :poli="props.poli" :dokter="props.dokter">
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA PASIEN</h1>
@@ -124,7 +126,10 @@ const paginate = (url) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="searchPasien.length" v-for="item in searchPasien">
+                        <tr
+                            v-if="searchPasien.length"
+                            v-for="item in searchPasien"
+                        >
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.pasien.nik }}

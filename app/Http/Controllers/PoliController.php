@@ -22,46 +22,48 @@ class PoliController extends Controller
         // Cari pegawai berdasarkan user_id
         $pegawai = Pegawai::where("user_id", $user->id)->first();
 
+
         // Jika pegawai tidak ditemukan, logout dan lempar exception
         if (!$pegawai) {
             Auth::logout();
             abort(403, 'Akses ditolak. Data pegawai tidak ditemukan. Anda telah logout.');
         }
 
-        // Cari poli berdasarkan pegawai_id
-        $poli = Poli::where("pegawai_id", $pegawai->id)->first();
+        // Cari semua poli berdasarkan pegawai_id
+        $poli = Poli::where("pegawai_id", $pegawai->id)->get();
+        $poliname = Poli::where("pegawai_id", $pegawai->id)->first();
 
         // Jika poli tidak ditemukan, logout dan lempar exception
-        if (!$poli) {
+        if ($poli->isEmpty()) {
             Auth::logout();
             abort(403, 'Akses ditolak. Data poli tidak ditemukan. Anda telah logout.');
         }
 
-        // Mendapatkan awalan kode poli
-        $kodeAwal = substr($poli->kode, 0, 2); // Misal, "PA" dari "PA01"
+        // Mendapatkan awalan kode poli dari poli yang ada
+        $kodeAwal = substr($poli->first()->kode, 0, 2); // Misal, "PA" dari "PA01"
 
-        // Hitung jumlah pasien yang memiliki rekam medis berdasarkan awalan kode dan pegawai_id
+        // Hitung jumlah pasien yang memiliki rekam medis berdasarkan poli dan pegawai_id
         $rmPasien = DB::table('rekam_mediks')
             ->join('polis', 'rekam_mediks.poli_id', '=', 'polis.id')
-            ->where('polis.id', $poli->id)
+            ->whereIn('polis.id', $poli->pluck('id')) // Menggunakan pluck untuk mendapatkan semua poli_id
             ->where('polis.kode', 'LIKE', $kodeAwal . '%')
             ->where('polis.pegawai_id', $pegawai->id)
-            ->groupBy('rekam_mediks.pasien_id')
-            ->count();
+            ->selectRaw('COUNT(DISTINCT rekam_mediks.pasien_id) as total_pasien') // Menghitung jumlah pasien unik
+            ->value('total_pasien'); // Ambil nilai total pasien
 
-        // Hitung total rekam medis berdasarkan awalan kode dan pegawai_id
+        // Hitung total rekam medis berdasarkan poli dan pegawai_id
         $rmCount = DB::table('rekam_mediks')
             ->join('polis', 'rekam_mediks.poli_id', '=', 'polis.id')
-            ->where('polis.id', $poli->id)
+            ->whereIn('polis.id', $poli->pluck('id')) // Menggunakan pluck untuk mendapatkan semua poli_id
             ->where('polis.kode', 'LIKE', $kodeAwal . '%')
             ->where('polis.pegawai_id', $pegawai->id)
-            ->count();
+            ->count(); // Hitung total rekam medis
 
         return Inertia::render(
             "Poli/Index",
             [
                 'pegawai' => $pegawai,
-                'poli' => $poli,
+                'poli' => $poliname,
                 'resep' => $rmCount,
                 'pasienCount' => $rmPasien,
                 'rekammedikCount' => $rmCount,
