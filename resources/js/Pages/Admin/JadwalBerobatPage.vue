@@ -111,6 +111,13 @@ const printReport = () => {
     }
     window.print();
 };
+
+// Handle pagination
+const paginate = (url) => {
+    if (url) {
+        window.location.href = url; // Navigate to the new page URL for pagination
+    }
+};
 </script>
 
 <template>
