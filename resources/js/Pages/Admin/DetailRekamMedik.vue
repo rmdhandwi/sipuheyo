@@ -2,6 +2,7 @@
 import Layout from "@/dashboard/Layout.vue";
 import LogoKota from "@/Icons/LogoKota.vue";
 import LogoPuskesmas from "@/Icons/LogoPuskesmas.vue";
+import PrinterIcon from "@/Icons/PrinterIcon.vue";
 import RekamMedik from "@/Models/RekamMedik";
 import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
@@ -52,6 +53,10 @@ const resep = JSON.parse(props.rekammedik[0].resep);
 
 // Active tab state
 const activeTab = ref("kondisi");
+
+function printAll() {
+    window.print();
+}
 </script>
 
 <template>
@@ -67,6 +72,23 @@ const activeTab = ref("kondisi");
         </div>
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center">
+                <button
+                    type="button"
+                    @click="backAction"
+                    class="bg-red-700 mb-2 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-all"
+                >
+                    Kembali
+                </button>
+                <button
+                    @click="printAll"
+                    class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+                >
+                    <PrinterIcon class="cursor-pointer w-6" />
+
+                    Cetak
+                </button>
+            </div>
             <div
                 class="bg-white rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
             >
@@ -407,6 +429,161 @@ const activeTab = ref("kondisi");
             </div>
         </div>
     </Layout>
+
+    <div id="print-all" class="p-6 bg-white shadow-lg rounded-lg">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b-2 pb-4 mb-4">
+            <!-- Logo Kota -->
+            <LogoKota class="w-16 h-16" />
+            <div class="text-center">
+                <h2 class="font-bold text-lg">PEMERINTAH KOTA JAYAPURA</h2>
+                <h2 class="font-bold text-lg">DINAS KESEHATAN</h2>
+                <h2 class="font-bold text-lg">PUSKESMAS HEBEYBHULU</h2>
+                <p class="text-sm">
+                    Jln. Yoka - Arso, Kampung Yoka, Distrik Heram, Kota Jayapura
+                    - Papua
+                </p>
+                <p class="text-sm">Kode Pos : 99531, No Telp: 081248227115</p>
+                <p class="text-sm">Email: puskesmayoka@gmail.com</p>
+            </div>
+            <!-- Logo Puskesmas -->
+            <LogoPuskesmas class="w-16 h-16" />
+        </div>
+
+        <!-- Detail Pasien -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-semibold text-gray-800 uppercase">
+                Detail Rekam Medik
+            </h1>
+            <h2 class="text-xl font-semibold text-gray-600">
+                No. Antrian: {{ props.rekammedik[0].antrian }}
+            </h2>
+            <h2 class="text-xl font-semibold text-gray-600">
+                Nama: {{ props.rekammedik[0].pasien.nama }}
+            </h2>
+            <h2 class="text-xl font-semibold text-gray-600">
+                Umur:
+                {{ calculateAge(props.rekammedik[0].pasien.tanggal_lahir) }}
+                Tahun
+            </h2>
+        </div>
+
+        <!-- Kondisi Pasien -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Kondisi Pasien
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-3">
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Berat Badan</h4>
+                    <p class="text-gray-500">{{ kondisi.berat }} kg</p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Tinggi Badan</h4>
+                    <p class="text-gray-500">{{ kondisi.tinggi }} cm</p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Lingkar Badan</h4>
+                    <p class="text-gray-500">{{ kondisi.lingkar_badan }} cm</p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Tekanan Darah</h4>
+                    <p class="text-gray-500">
+                        {{ kondisi.tekanan_darah }} mmHg
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keluhan Pasien -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Keluhan Pasien
+            </h3>
+            <ul class="mt-3">
+                <li
+                    v-for="(item, index) in keluhan"
+                    :key="index"
+                    class="p-3 bg-gray-100 rounded-lg shadow mb-2"
+                >
+                    {{ index + 1 }}. {{ item.value }}
+                </li>
+            </ul>
+            <p v-if="keluhan.length === 0" class="text-gray-500">
+                Tidak ada keluhan yang tercatat.
+            </p>
+        </div>
+
+        <!-- Penanganan -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Penanganan
+            </h3>
+            <ul class="mt-3">
+                <li
+                    v-for="(item, index) in penanganan"
+                    :key="index"
+                    class="p-3 bg-gray-100 rounded-lg shadow mb-2"
+                >
+                    {{ index + 1 }}. {{ item.value }}
+                </li>
+            </ul>
+            <p v-if="penanganan.length === 0" class="text-gray-500">
+                Tidak ada penanganan yang tercatat.
+            </p>
+        </div>
+
+        <!-- Resep Obat -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Resep Obat
+            </h3>
+            <div
+                v-if="resep.length > 0"
+                class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3"
+            >
+                <div
+                    v-for="(item, index) in resep"
+                    :key="index"
+                    class="p-4 bg-gray-100 rounded-lg shadow"
+                >
+                    <h4 class="font-medium text-gray-700">
+                        Obat: {{ item.obat_id }}
+                    </h4>
+                    <p class="text-gray-600">Dosis: {{ item.dosis }}</p>
+                    <p class="text-gray-600">Catatan: {{ item.catatan }}</p>
+                </div>
+            </div>
+            <p v-else class="text-gray-500">Tidak ada resep yang tercatat.</p>
+        </div>
+
+        <!-- Resep Manual -->
+        <div class="mb-6" v-if="props.rekammedik[0].resep_manual">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Resep Manual
+            </h3>
+            <p class="p-3 bg-gray-100 rounded-lg shadow mt-3">
+                {{ props.rekammedik[0].resep_manual }}
+            </p>
+        </div>
+
+        <!-- Hasil Lab -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Hasil Laboratorium
+            </h3>
+            <div v-if="props.rekammedik[0].hasil_lab" class="mt-3">
+                <img
+                    :src="props.rekammedik[0].hasil_lab"
+                    :alt="'Hasil lab untuk ' + props.rekammedik[0].pasien.nama"
+                    class="rounded-lg shadow-md w-full"
+                />
+            </div>
+            <p v-else class="text-gray-500">
+                Data hasil laboratorium belum tersedia.
+            </p>
+        </div>
+    </div>
 </template>
 
 <style scoped>

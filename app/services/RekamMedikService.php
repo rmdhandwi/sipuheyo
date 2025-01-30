@@ -175,7 +175,7 @@ class RekamMedikService
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
-            if ($jamSekarang < 5 || $jamSekarang > 24) {
+            if ($jamSekarang < 5 || $jamSekarang > 8) {
                 throw new \Exception("Pendaftaran hanya dibuka antara pukul 05:00 hingga 10:00 WIT.");
             }
 
@@ -307,6 +307,7 @@ class RekamMedikService
             $data->status = 'dokter';
 
             $data->save();
+            $this->infoKunjunganBerikut();
             DB::commit();
             return true;
         } catch (\Throwable $th) {
@@ -330,64 +331,101 @@ class RekamMedikService
         }
     }
 
-    // public function infoKunjunganBerikut()
-    // {
-    //     try {
-    //         $data = RekamMedik::where('konsultasi_berikut', "<>", null)
-    //             ->where(function ($q) {
-    //                 $q->where('kirimpesan1', null)
-    //                     ->orWhere('kirimpesan2', null);
-    //             })->get();
+    public function infoKunjunganBerikut()
+    {
+        try {
+            Log::info('Memulai pengecekan kunjungan berikut...');
 
-    //         $sekarang =  Carbon::create(date("d/m/Y H:s"));
-    //         $sekarang->setTimezone("Asia/Jayapura");
-    //         foreach ($data as $key => $rm) {
-    //             $rm->konsultasi_berikut->setTimezone('Asia/Jayapura');
-    //             $diff  = date_diff($sekarang, $rm->konsultasi_berikut);
-    //             if ($diff->h <= 24 && !$rm->kirimpesan1) {
-    //                 $sended = $this->sendWA($rm);
-    //                 if ($sended) {
-    //                     $rm->kirimpesan1 = $sekarang;
-    //                     $rm->save();
-    //                 }
-    //             } else if ($diff->h <= 3 && !$rm->kirimpesan2) {
-    //                 $sended = $this->sendWA($rm);
-    //                 if ($sended) {
-    //                     $rm->kirimpesan2 = $sekarang;
-    //                     $rm->save();
-    //                 }
-    //             }
-    //         }
-    //     } catch (\Throwable $th) {
-    //         Log::error($th->getMessage());
-    //     }
-    // }
+            // Ambil data rekam medis yang memiliki jadwal konsultasi berikut yang tidak null
+            $data = RekamMedik::whereNotNull('konsultasi_berikut')
+                ->where(function ($q) {
+                    $q->whereNull('kirimpesan1') // Belum kirim pesan pertama (12 jam sebelum)
+                        ->orWhere(function ($q2) {
+                            $q2->whereNotNull('kirimpesan1') // Sudah kirim pesan pertama
+                                ->whereNull('kirimpesan2');  // Tapi belum kirim pesan kedua
+                        });
+                })->get();
 
-    // public function sendWA($rm)
-    // {
-    //     try {
-    //         $pasien = $rm->pasien;
-    //         $poli = $rm->poli;
-    //         $pesan = 'Bapak/Ibu ' . $pasien->nama . ' Kami mengingatkan kembali untuk jadwal konsultasi pemeriksaan '
-    //             . $poli->penyakit . ' akan dilakukan pada tanggal ' . $rm->konsultasi_berikut . '. terimakasih.';
-    //         $data = [
-    //             "userkey" => env('ZIVA_USERKEY', ''),
-    //             "passkey" => env('ZIVA_PASSKEY'),
-    //             "to" => $pasien->kontak,
-    //             "message" => $pesan
-    //         ];
+            $sekarang = Carbon::now('Asia/Jayapura'); // Waktu sekarang dengan zona waktu Jayapura
+            // $sekarang = Carbon::createFromFormat('Y-m-d H:i:s', '2025-01-31 18:05:00', 'Asia/Jayapura');
+            foreach ($data as $rm) {
+                $jadwalKonsultasi = Carbon::parse($rm->konsultasi_berikut, 'Asia/Jayapura');
+                $diffHours = $sekarang->diffInHours($jadwalKonsultasi, false);
 
-    //         $response = Http::post('https://console.zenziva.net/wareguler/api/sendWA/', $data);
-    //         if ($response->successful()) {
-    //             Log::info("sended ");
-    //             return true;
-    //         } else {
-    //             $users = $response->json();
-    //             Log::info("error sended ");
-    //             return false;
-    //         }
-    //     } catch (\Throwable $th) {
-    //         throw $th;
-    //     }
-    // }
+                // Jika waktu konsultasi masih lebih dari 12 jam, cek apakah bisa kirim pesan 1
+                if ($diffHours <= 12 && $diffHours > 3 && is_null($rm->kirimpesan1)) {
+                    if ($this->sendWA($rm, 1)) {
+                        $rm->kirimpesan1 = $sekarang;
+                        $rm->save();
+                        Log::info("Pesan 1 dikirim ke: {$rm->pasien->kontak} ({$rm->pasien->nama})");
+                    }
+                }
+                // Jika sudah mendekati 3 jam terakhir, cek apakah bisa kirim pesan 2
+                elseif ($diffHours <= 3 && is_null($rm->kirimpesan2) && !is_null($rm->kirimpesan1)) {
+                    if ($this->sendWA($rm, 2)) {
+                        $rm->kirimpesan2 = $sekarang;
+                        $rm->save();
+                        Log::info("Pesan 2 dikirim ke: {$rm->pasien->kontak} ({$rm->pasien->nama})");
+                    }
+                } else {
+                    Log::info("Konsultasi berikutnya tidak ditemukan");
+                }
+            }
+        } catch (\Throwable $th) {
+            Log::error("Error dalam infoKunjunganBerikut: " . $th->getMessage());
+        }
+    }
+
+    public function sendWA($rm, $tipePesan)
+    {
+        try {
+            $pasien = $rm->pasien;
+            $dokter = $rm->dokter;
+            $poli = $rm->poli;
+
+            // Format nomor WhatsApp ke +62 jika belum sesuai
+            $kontak = $pasien->kontak;
+            if (substr($kontak, 0, 1) === '0') {
+                $kontak = '+62' . substr($kontak, 1);
+            }
+
+            // Format tanggal dan waktu konsultasi
+            $formattedDate = Carbon::parse($rm->konsultasi_berikut, 'Asia/Jayapura')->isoFormat('dddd, D MMMM YYYY');
+            $formattedTime = Carbon::parse($rm->konsultasi_berikut, 'Asia/Jayapura')->isoFormat('HH:mm');
+
+            // Pesan pengingat
+            $pesanTambahan = ($tipePesan == 1)
+                ? "🔔 Ini adalah pengingat 12 jam sebelum konsultasi."
+                : "⏳ Ini adalah pengingat terakhir 3 jam sebelum konsultasi.";
+
+            $pesan = "🌟 *Pengingat Konsultasi* 🌟\n\n"
+                . "Bapak/Ibu *{$pasien->nama}*,\n\n"
+                . "Kami dari *PUSKESMAS HEBEYBHULU YOKA* ingin mengingatkan kembali tentang jadwal konsultasi pemeriksaan *{$poli->penyakit}* di *{$poli->nama}*.\n\n"
+                . "🩺 *Dokter:* {$dokter->nama}\n"
+                . "📅 *Tanggal:* {$formattedDate}\n"
+                . "🕒 *Jam:* {$formattedTime} WIT\n\n"
+                . "{$pesanTambahan}\n\n"
+                . "🙏 Semoga sehat selalu!";
+
+            $data = [
+                "userkey" => env('ZIVA_USERKEY', ''),
+                "passkey" => env('ZIVA_PASSKEY'),
+                "to" => $kontak,
+                "message" => $pesan
+            ];
+
+            $response = Http::post('https://console.zenziva.net/wareguler/api/sendWA/', $data);
+
+            if ($response->successful()) {
+                Log::info("Pesan WA berhasil dikirim ke {$kontak}");
+                return true;
+            } else {
+                Log::error("Gagal mengirim pesan ke {$kontak}: " . json_encode($response->json()));
+                return false;
+            }
+        } catch (\Throwable $th) {
+            Log::error("Error dalam sendWA: " . $th->getMessage());
+            return false;
+        }
+    }
 }

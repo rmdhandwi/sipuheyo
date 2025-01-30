@@ -100,15 +100,15 @@ const filterData = computed(() => {
     if (searchTerm.value) {
         filteredData = filteredData.filter(
             (item) =>
-                (item.rekam_medik[0].pasien.nama
+                (item.pasien.nama
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) &&
                     matches < 10) ||
-                (item.rekam_medik[0].poli.nama
+                (item.poli.nama
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) &&
                     matches < 10) ||
-                (item.rekam_medik[0].status
+                (item.status
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) &&
                     matches < 10)
@@ -118,24 +118,21 @@ const filterData = computed(() => {
     // Filter by selected Poli
     if (selectedPoli.value) {
         filteredData = filteredData.filter(
-            (item) => item.rekam_medik[0].poli_id == selectedPoli.value
+            (item) => item.poli_id == selectedPoli.value
         );
     }
 
     // Filter by selected Month
     if (selectedMonth.value) {
         filteredData = filteredData.filter((item) => {
-            const itemMonth =
-                new Date(item.rekam_medik[0].tanggal).getMonth() + 1; // Get month as 1-based index
+            const itemMonth = new Date(item.tanggal).getMonth() + 1; // Get month as 1-based index
             return itemMonth == selectedMonth.value;
         });
     }
 
     if (selectedYear.value) {
         filteredData = filteredData.filter((item) => {
-            const itemYear = new Date(
-                item.rekam_medik[0].tanggal
-            ).getFullYear();
+            const itemYear = new Date(item.tanggal).getFullYear();
             return itemYear === parseInt(selectedYear.value);
         });
     }
@@ -222,7 +219,7 @@ function paginate(url) {
 
         <div class="flex justify-between items-center my-4">
             <div class="flex items-center">
-                <!-- <select
+                <select
                     v-model="selectedPoli"
                     class="mx-2 rounded-lg bg-transparent text-neutral-700"
                 >
@@ -259,7 +256,7 @@ function paginate(url) {
                     <option v-for="year in years" :key="year" :value="year">
                         {{ year }}
                     </option>
-                </select> -->
+                </select>
             </div>
 
             <Search
@@ -278,11 +275,35 @@ function paginate(url) {
                             >
                                 Kode
                             </th>
-
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Tanggal
+                            </th>
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Pasien
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Poli
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Penyakit
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Dokter
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Status
                             </th>
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
@@ -298,22 +319,70 @@ function paginate(url) {
                             :key="item.id"
                         >
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                {{ item.kode_rm }}
+                                {{ item.antrian }}
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                {{ item.rekam_medik[0].pasien.nama }}
+                                {{ getDate(item.tanggal) }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                {{ item.pasien.nama }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                {{ item.poli.nama }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                {{ item.poli.penyakit }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                {{ item.dokter.nama }}
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <span
+                                    v-if="item.status === 'Dokter'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <Check />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Baru'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full"
+                                >
+                                    <Info />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Poli'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-black bg-yellow-500 rounded-full"
+                                >
+                                    <Panding />
+                                    <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Batal'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
+                                >
+                                    <Wrong />
+                                    <span>{{ item.status }}</span>
+                                </span>
                             </td>
                             <td
                                 class="border-l border-gray-200 p-3 text-sm flex gap-2"
                             >
                                 <a
+                                    v-if="item.status !== 'Baru'"
                                     :href="
-                                        '/admin/rekammedik/pasien/' +
-                                        item.rekam_medik[0].pasien_id
+                                        '/admin/rekammedik/detail/' + item.id
                                     "
                                     class="text-blue-500 hover:text-blue-700"
                                 >
                                     <DetailListIcon class="w-5" />
+                                </a>
+                                <a
+                                    @click="deleteItem(item)"
+                                    class="cursor-pointer text-rose-600 hover:text-rose-900"
+                                >
+                                    <DeleteIcon class="w-5" />
                                 </a>
                             </td>
                         </tr>
@@ -426,7 +495,6 @@ function paginate(url) {
             </div>
             <hr />
 
-        
             <h3 class="text-center font-bold mb-4">
                 Data Rekam Medik
                 <span v-if="selectedPoli">

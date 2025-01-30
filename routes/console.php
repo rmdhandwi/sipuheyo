@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Log;
 // })->purpose('Display an inspiring quote')-> everyTenSeconds();
 
 
-Artisan::command('wa', function (RekamMedikService $rekamMedikService) {
+Artisan::command('wa:send', function (RekamMedikService $rekamMedikService) {
    $rekamMedikService->infoKunjunganBerikut();
 })->everyTenMinutes();

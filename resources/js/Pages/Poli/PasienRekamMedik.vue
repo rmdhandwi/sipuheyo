@@ -3,13 +3,38 @@ import { ref, computed } from "vue";
 import Swal from "sweetalert2";
 import Search from "@/Components/Search.vue";
 import PoliLayout from "@/Layouts/PoliLayout.vue";
+import EditIcon from "@/Icons/EditIcon.vue";
+import DeleteIcon from "@/Icons/DeleteIcon.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
+import Wrong from "@/Icons/Wrong.vue";
+import Check from "@/Icons/Check.vue";
+import Info from "@/Icons/Info.vue";
+import Panding from "@/Icons/Panding.vue";
 
 const props = defineProps({
     poli: Array,
     pegawai: Array,
     data: Object,
 });
+
+// Helpers: Format tanggal dan waktu
+function formattedDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString("id-ID", {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+}
+
+function getDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID");
+}
 
 // Generate tahun secara dinamis
 const years = computed(() => {
@@ -28,11 +53,11 @@ const selectedYear = ref("");
 
 // Filter data berdasarkan input
 const filteredData = computed(() => {
-    let filtered = props.data.data || [];
+    let filtered = props.data?.data || [];
 
     if (searchTerm.value) {
         filtered = filtered.filter((item) =>
-            item.rekam_medik[0].pasien.nama
+            item.pasien.nama
                 .toLowerCase()
                 .includes(searchTerm.value.toLowerCase())
         );
@@ -40,9 +65,7 @@ const filteredData = computed(() => {
 
     if (selectedYear.value) {
         filtered = filtered.filter((item) => {
-            const itemYear = new Date(
-                item.rekam_medik[0].tanggal
-            ).getFullYear();
+            const itemYear = new Date(item.tanggal).getFullYear();
             return itemYear === parseInt(selectedYear.value);
         });
     }
@@ -51,7 +74,7 @@ const filteredData = computed(() => {
         filtered = filtered.filter((item) => {
             const itemMonth = (
                 "0" +
-                (new Date(item.rekam_medik[0].tanggal).getMonth() + 1)
+                (new Date(item.tanggal).getMonth() + 1)
             ).slice(-2);
             return itemMonth === selectedMonth.value;
         });
@@ -110,8 +133,8 @@ const onSearchText = (text) => {
             <h1 class="text-xl font-semibold text-gray-700">
                 DATA REKAM MEDIK
             </h1>
-            <div class="flex justify-end items-center my-4">
-                <!-- <div class="flex items-center">
+            <div class="flex justify-between items-center my-4">
+                <div class="flex items-center">
                     <select
                         v-model="selectedMonth"
                         id="month"
@@ -141,7 +164,9 @@ const onSearchText = (text) => {
                             {{ year }}
                         </option>
                     </select>
-                </div> -->
+                </div>
+
+                <!-- Komponen Pencarian -->
                 <Search @on-search="onSearchText" />
             </div>
         </div>
@@ -154,17 +179,43 @@ const onSearchText = (text) => {
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                Kode Antrian
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Tanggal
                             </th>
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Pasien
                             </th>
+
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Penyakit
+                            </th>
+                            <th
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Dokter
+                            </th>
+                            <th
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Konsultasi Berikutnya
+                            </th>
+                            <th
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Status
+                            </th>
                             <th
                                 class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Aksi
+                                Action
                             </th>
                         </tr>
                     </thead>
@@ -174,29 +225,98 @@ const onSearchText = (text) => {
                             v-for="item in filteredData"
                             :key="item.id"
                         >
-                            <td
-                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
-                            >
-                                {{ item.kode_rm }}
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                                {{ item.antrian }}
                             </td>
-
-                            <td
-                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
-                            >
-                                {{ item.rekam_medik[0].pasien.nama }}
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                                {{ getDate(item.tanggal) }}
                             </td>
-
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                                {{ item.pasien.nama }}
+                            </td>
+                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                                {{ item.poli.penyakit }}
+                            </td>
+                            <td
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm capitalize"
+                            >
+                                {{ item.dokter.nama }}
+                            </td>
+                            <td
+                                class="border-b border-gray-200 p-3 text-sm capitalize"
+                            >
+                                <span
+                                    v-if="item.konsultasi_berikut !== null"
+                                    class="whitespace-nowrap capitalize"
+                                >
+                                    {{
+                                        formattedDateTime(
+                                            item.konsultasi_berikut
+                                        )
+                                    }}
+                                </span>
+                                <span
+                                    v-else
+                                    class="whitespace-nowrap capitalize text-gray-400"
+                                >
+                                    <i>Tidak ada konsultasi berikutnya</i>
+                                </span>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <span
+                                    v-if="item.status === 'Dokter'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <Check /> <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Baru'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full"
+                                >
+                                    <Info /> <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Poli'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-black bg-yellow-500 rounded-full"
+                                >
+                                    <Panding /> <span>{{ item.status }}</span>
+                                </span>
+                                <span
+                                    v-if="item.status === 'Batal'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
+                                >
+                                    <Wrong /> <span>{{ item.status }}</span>
+                                </span>
+                            </td>
                             <td
                                 class="border-l border-gray-200 gap-2 p-4 text-sm flex"
                             >
                                 <a
-                                    :href="
-                                        '/poli/rekammedik/pasien/' +
-                                        item.rekam_medik[0].pasien_id
+                                    v-if="
+                                        item.status === 'Baru' ||
+                                        item.status === 'Poli'
                                     "
+                                    :href="'/poli/rekammedik/' + item.id"
+                                    class="text-amber-500 hover:text-amber-700"
+                                >
+                                    <EditIcon class="w-5" />
+                                </a>
+                                <a
+                                    v-if="item.status === 'Dokter'"
+                                    :href="'/poli/rekammedik/detail/' + item.id"
                                     class="text-cyan-500 hover:text-cyan-700"
                                 >
                                     <DetailListIcon class="w-5" />
+                                </a>
+                                <a
+                                    v-if="
+                                        item.status !== 'Dokter' &&
+                                        item.status !== 'Poli'
+                                    "
+                                    @click="deleteItem(item)"
+                                    class="cursor-pointer text-rose-600 hover:text-rose-900"
+                                >
+                                    <DeleteIcon class="w-5" />
                                 </a>
                             </td>
                         </tr>

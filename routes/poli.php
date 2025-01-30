@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 Route::group(['middleware' => 'role:pegawai'], function () {
     Route::get('/poli', [PoliController::class, 'index'])->name('poli.index');
     Route::get('/poli/rekammedik', [PoliController::class, 'rekammedik'])->name('poli.rekammedik');
+    Route::get('/poli/rekammedik/pasien/{id}', [PoliController::class, 'rmPasien'])->name('poli.rmpasien');
     Route::get('/poli/rekammedik/add', [PoliController::class, 'daftar'])->name('poli.rekammedik.add');
 
     Route::get('/poli/rekammedik/{id}', function (

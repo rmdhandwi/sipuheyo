@@ -1,146 +1,88 @@
 <script setup>
-import DokterLayout from "@/Layouts/DokterLayout.vue";
-import EditIcon from "@/Icons/EditIcon.vue";
-import DeleteIcon from "@/Icons/DeleteIcon.vue";
-import Swal from "sweetalert2";
-import Check from "@/Icons/Check.vue";
-import Info from "@/Icons/Info.vue";
-import Panding from "@/Icons/Panding.vue";
-import Wrong from "@/Icons/Wrong.vue";
-import DetailListIcon from "@/Icons/DetailListIcon.vue";
 import { ref, computed } from "vue";
+import { Head, router } from "@inertiajs/vue3";
+import Swal from "sweetalert2";
+
+import DokterLayout from "@/Layouts/DokterLayout.vue";
 import Search from "@/Components/Search.vue";
-import { Head } from "@inertiajs/vue3";
+import DetailListIcon from "@/Icons/DetailListIcon.vue";
 
 const props = defineProps({
     poli: Array,
     dokter: Array,
-    data: Array,
+    data: Object, // Pagination object
 });
 
-function deleteItem(item) {
+const searchTerm = ref("");
+
+// **Perbaikan search function**
+const searchRekammedik = computed(() => {
+    if (!props.data || !props.data.data) return [];
+
+    return props.data.data.filter((item) =>
+        item.rekam_medik[0].pasien.nama
+            .toLowerCase()
+            .includes(searchTerm.value.toLowerCase())
+    );
+});
+
+// **Fungsi Paginasi Inertia.js**
+const paginate = (url) => {
+    if (url) {
+        router.get(url); // Gunakan Inertia.js untuk navigasi
+    }
+};
+
+// **Hapus Data**
+const deleteItem = (item) => {
     Swal.fire({
-        title: "Anda Yakin ?",
-        text: "Menghapus Data !",
+        title: "Anda Yakin?",
+        text: "Menghapus Data Ini!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Ya, Hapus!",
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route("admin.rekammedik.delete", item.id), {
-                onSuccess: (res) => {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Data Berhasil Di hapus.",
-                        icon: "success",
-                    });
+            router.delete(route("admin.rekammedik.delete", item.id), {
+                onSuccess: () => {
+                    Swal.fire("Deleted!", "Data Berhasil Dihapus.", "success");
                 },
                 onError: (err) => {
-                    Swal.fire({
-                        title: "Error",
-                        text: err,
-                        icon: "error",
-                    });
+                    Swal.fire("Error", err, "error");
                 },
             });
         }
     });
-}
-
-function getDate(dateString) {
-    const date = new Date(dateString);
-
-    // Mengambil Tahun, Bulan, dan Tanggal
-    const year = date.getFullYear();
-    const month = ("0" + (date.getMonth() + 1)).slice(-2);
-    const day = ("0" + date.getDate()).slice(-2);
-
-    return `${day}/${month}/${year}`;
-}
-
-const onChangeSearch = (text) => {
-    searchTerm.value = text;
-};
-
-const searchTerm = ref("");
-
-const searchRekammedik = computed(() => {
-    const data = props.data.data || [];
-
-    if (searchTerm.value === "") {
-        return data;
-    }
-
-    let matches = 0;
-    return data.filter((item) => {
-        if (
-            item.pasien.nama
-                .toLowerCase()
-                .includes(searchTerm.value.toLowerCase()) &&
-            matches < 10
-        ) {
-            matches++;
-            return item;
-        }
-    });
-});
-
-// Fungsi untuk navigasi pagination
-const paginate = (url) => {
-    if (url) {
-        window.location.href = url;
-    }
 };
 </script>
 
 <template>
     <Head title="Rekam Medik" />
-    <DokterLayout :poli="props.poli" :dokter="props.dokter">
+    <DokterLayout :poli="poli" :dokter="dokter">
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA REKAM MEDIK</h1>
-            <Search v-on:on-search="onChangeSearch"></Search>
+            <Search v-on:on-search="(text) => (searchTerm = text)"></Search>
         </div>
+
         <div class="py-5">
             <div class="max-w-full overflow-x-auto rounded-lg shadow">
                 <table class="w-full leading-normal">
                     <thead>
                         <tr>
                             <th
-                                scope="col"
-                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Antrian
+                                Kode
                             </th>
                             <th
-                                scope="col"
-                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
-                            >
-                                Tanggal
-                            </th>
-                            <th
-                                scope="col"
-                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Pasien
                             </th>
-
                             <th
-                                scope="col"
-                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
-                            >
-                                Penyakit
-                            </th>
-                            <th
-                                scope="col"
-                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
-                            >
-                                Status
-                            </th>
-                            <th
-                                scope="col"
-                                class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                                class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Aksi
                             </th>
@@ -150,89 +92,29 @@ const paginate = (url) => {
                         <tr
                             v-if="searchRekammedik.length"
                             v-for="item in searchRekammedik"
+                            :key="item.kode_rm"
                         >
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ item.antrian }}
-                                </p>
+                            <td class="border-b p-3 text-sm">
+                                {{ item.kode_rm }}
                             </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ getDate(item.tanggal) }}
-                                </p>
+                            <td class="border-b p-3 text-sm">
+                                {{ item.rekam_medik[0].pasien.nama }}
                             </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ item.pasien.nama }}
-                                </p>
-                            </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <p class="whitespace-nowrap">
-                                    {{ item.poli.penyakit }}
-                                </p>
-                            </td>
-                            <td class="border-b border-gray-200 p-3 text-sm">
-                                <span
-                                    v-if="item.status === 'Dokter'"
-                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
-                                >
-                                    <Check />
-                                    <span>{{ item.status }}</span>
-                                </span>
-                                <span
-                                    v-if="item.status === 'Baru'"
-                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full"
-                                >
-                                    <Info />
-                                    <span>{{ item.status }}</span>
-                                </span>
-                                <span
-                                    v-if="item.status === 'Poli'"
-                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-black bg-yellow-500 rounded-full"
-                                >
-                                    <Panding />
-                                    <span>{{ item.status }}</span>
-                                </span>
-                                <span
-                                    v-if="item.status === 'Batal'"
-                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
-                                >
-                                    <Wrong />
-                                    <span>{{ item.status }}</span>
-                                </span>
-                            </td>
-
-                            <td
-                                class="border-b border-gray-200 p-3 text-sm flex"
-                            >
+                            <td class="border-b p-3 text-sm flex space-x-2">
                                 <a
-                                    v-if="item.status === 'Dokter'"
                                     :href="
-                                        '/dokter/rekammedik/detail/' + item.id
+                                        '/dokter/rekammedik/pasien/' +
+                                        item.rekam_medik[0].pasien_id
                                     "
                                     class="text-blue-500 hover:text-blue-700"
                                 >
                                     <DetailListIcon class="w-5" />
                                 </a>
-                                <a
-                                    v-else-if="item.status === 'Poli'"
-                                    :href="'/dokter/rekammedik/' + item.id"
-                                    class="text-amber-500 hover:text-amber-700"
-                                >
-                                    <EditIcon class="w-5" />
-                                </a>
-                                <a
-                                    v-else
-                                    @click="deleteItem(item)"
-                                    class="cursor-pointer text-rose-600 hover:text-rose-900"
-                                >
-                                    <DeleteIcon class="w-5" />
-                                </a>
                             </td>
                         </tr>
                         <tr v-else>
                             <td
-                                colspan="8"
+                                colspan="3"
                                 class="text-gray-400 text-center py-4"
                             >
                                 Data Rekam Medik Tidak Ditemukan
@@ -241,39 +123,35 @@ const paginate = (url) => {
                     </tbody>
                 </table>
             </div>
-            <!-- Custom Pagination -->
+
+            <!-- Pagination -->
             <div class="flex justify-center mt-4">
                 <nav>
                     <ul class="flex items-center space-x-2">
-                        <li v-if="props.data.first_page_url">
+                        <li v-if="data.first_page_url">
                             <button
-                                @click.prevent="
-                                    paginate(props.data.first_page_url)
-                                "
+                                @click.prevent="paginate(data.first_page_url)"
                                 class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
                             >
                                 First
                             </button>
                         </li>
-                        <li v-if="props.data.prev_page_url">
+                        <li v-if="data.prev_page_url">
                             <button
-                                @click.prevent="
-                                    paginate(props.data.prev_page_url)
-                                "
+                                @click.prevent="paginate(data.prev_page_url)"
                                 class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
                             >
                                 Prev
                             </button>
                         </li>
-
                         <li
-                            v-for="(link, index) in props.data.links.filter(
+                            v-for="(link, index) in data.links.filter(
                                 (link) => !isNaN(link.label)
                             )"
                             :key="index"
                         >
                             <button
-                                v-if="link.url && searchRekammedik.length > 0"
+                                v-if="link.url"
                                 @click.prevent="paginate(link.url)"
                                 :class="{
                                     'px-4 py-2 bg-blue-500 text-white rounded-lg':
@@ -285,23 +163,17 @@ const paginate = (url) => {
                                 {{ link.label }}
                             </button>
                         </li>
-
-                        <li v-if="props.data.next_page_url">
+                        <li v-if="data.next_page_url">
                             <button
-                                @click.prevent="
-                                    paginate(props.data.next_page_url)
-                                "
+                                @click.prevent="paginate(data.next_page_url)"
                                 class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
                             >
                                 Next
                             </button>
                         </li>
-
-                        <li v-if="props.data.last_page_url">
+                        <li v-if="data.last_page_url">
                             <button
-                                @click.prevent="
-                                    paginate(props.data.last_page_url)
-                                "
+                                @click.prevent="paginate(data.last_page_url)"
                                 class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
                             >
                                 Last
