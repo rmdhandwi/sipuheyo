@@ -31,4 +31,10 @@ class Pasien extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Accessor untuk generate kode rekam medis
+    public function getKodeRMAttribute()
+    {
+        return 'RM' . str_pad($this->id, 8, '0', STR_PAD_LEFT);
+    }
+
 }

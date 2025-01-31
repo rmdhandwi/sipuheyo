@@ -10,7 +10,7 @@ import DetailListIcon from "@/Icons/DetailListIcon.vue";
 const props = defineProps({
     poli: Array,
     dokter: Array,
-    data: Object, // Pagination object
+    data: Object,
 });
 
 const searchTerm = ref("");
@@ -20,7 +20,7 @@ const searchRekammedik = computed(() => {
     if (!props.data || !props.data.data) return [];
 
     return props.data.data.filter((item) =>
-        item.rekam_medik[0].pasien.nama
+        item[0].pasien.nama
             .toLowerCase()
             .includes(searchTerm.value.toLowerCase())
     );
@@ -32,30 +32,6 @@ const paginate = (url) => {
         router.get(url); // Gunakan Inertia.js untuk navigasi
     }
 };
-
-// **Hapus Data**
-const deleteItem = (item) => {
-    Swal.fire({
-        title: "Anda Yakin?",
-        text: "Menghapus Data Ini!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Ya, Hapus!",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            router.delete(route("admin.rekammedik.delete", item.id), {
-                onSuccess: () => {
-                    Swal.fire("Deleted!", "Data Berhasil Dihapus.", "success");
-                },
-                onError: (err) => {
-                    Swal.fire("Error", err, "error");
-                },
-            });
-        }
-    });
-};
 </script>
 
 <template>
@@ -63,6 +39,7 @@ const deleteItem = (item) => {
     <DokterLayout :poli="poli" :dokter="dokter">
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA REKAM MEDIK</h1>
+
             <Search v-on:on-search="(text) => (searchTerm = text)"></Search>
         </div>
 
@@ -92,19 +69,19 @@ const deleteItem = (item) => {
                         <tr
                             v-if="searchRekammedik.length"
                             v-for="item in searchRekammedik"
-                            :key="item.kode_rm"
+                            :key="item.id"
                         >
                             <td class="border-b p-3 text-sm">
-                                {{ item.kode_rm }}
+                                {{ item[0].kode }}
                             </td>
                             <td class="border-b p-3 text-sm">
-                                {{ item.rekam_medik[0].pasien.nama }}
+                                {{ item[0].pasien.nama }}
                             </td>
                             <td class="border-b p-3 text-sm flex space-x-2">
                                 <a
                                     :href="
                                         '/dokter/rekammedik/pasien/' +
-                                        item.rekam_medik[0].pasien_id
+                                        item[0].pasien_id
                                     "
                                     class="text-blue-500 hover:text-blue-700"
                                 >

@@ -10,11 +10,14 @@ import Wrong from "@/Icons/Wrong.vue";
 import Check from "@/Icons/Check.vue";
 import Info from "@/Icons/Info.vue";
 import Panding from "@/Icons/Panding.vue";
+import { Head } from "@inertiajs/vue3";
+import BackIcon from "@/Icons/BackIcon.vue";
 
 const props = defineProps({
     poli: Array,
     pegawai: Array,
     data: Object,
+    kode: Object,
 });
 
 // Helpers: Format tanggal dan waktu
@@ -29,6 +32,10 @@ function formattedDateTime(dateString) {
         minute: "2-digit",
         hour12: false,
     });
+}
+
+function backAction() {
+    window.location = "/poli/rekammedik";
 }
 
 function getDate(dateString) {
@@ -56,10 +63,17 @@ const filteredData = computed(() => {
     let filtered = props.data?.data || [];
 
     if (searchTerm.value) {
-        filtered = filtered.filter((item) =>
-            item.pasien.nama
-                .toLowerCase()
-                .includes(searchTerm.value.toLowerCase())
+        filtered = filtered.filter(
+            (item) =>
+                item.pasien.nama
+                    .toLowerCase()
+                    .includes(searchTerm.value.toLowerCase()) ||
+                item.tanggal
+                    .toLowerCase()
+                    .includes(searchTerm.value.toLowerCase()) ||
+                item.poli.penyakit
+                    .toLowerCase()
+                    .includes(searchTerm.value.toLowerCase())
         );
     }
 
@@ -128,11 +142,21 @@ const onSearchText = (text) => {
 </script>
 
 <template>
+    <Head title="Detail Rekam Medik Pasien" />
     <PoliLayout :poli="props.poli" :pegawai="props.pegawai">
         <div class="mt-5">
-            <h1 class="text-xl font-semibold text-gray-700">
-                DATA REKAM MEDIK
-            </h1>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-700">
+                        DATA REKAM MEDIK
+                    </h1>
+                    <h1 class="text-xl font-semibold text-gray-700">
+                        {{ props.kode.kode }}
+                    </h1>
+                </div>
+                <BackIcon @click="backAction" class="w-9 cursor-pointer" />
+            </div>
+
             <div class="flex justify-between items-center my-4">
                 <div class="flex items-center">
                     <select
@@ -225,16 +249,24 @@ const onSearchText = (text) => {
                             v-for="item in filteredData"
                             :key="item.id"
                         >
-                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                            <td
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
+                            >
                                 {{ item.antrian }}
                             </td>
-                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                            <td
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
+                            >
                                 {{ getDate(item.tanggal) }}
                             </td>
-                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                            <td
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
+                            >
                                 {{ item.pasien.nama }}
                             </td>
-                            <td class="border-b whitespace-nowrap border-gray-200 p-3 text-sm">
+                            <td
+                                class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
+                            >
                                 {{ item.poli.penyakit }}
                             </td>
                             <td

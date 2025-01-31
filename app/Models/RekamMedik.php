@@ -15,6 +15,7 @@ class RekamMedik extends Model
     // protected $PrimaryKey = 'id';
     public $fillable = [
         'id',
+        'kode',
         'antrian',
         'tanggal',
         'poli_id',

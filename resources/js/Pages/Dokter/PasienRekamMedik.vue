@@ -17,6 +17,7 @@ const props = defineProps({
     poli: Array,
     dokter: Array,
     data: Array,
+    kode: Object,
 });
 
 function deleteItem(item) {
@@ -77,10 +78,18 @@ const searchRekammedik = computed(() => {
     let matches = 0;
     return data.filter((item) => {
         if (
-            item.pasien.nama
+            (item.pasien.nama
                 .toLowerCase()
                 .includes(searchTerm.value.toLowerCase()) &&
-            matches < 10
+                matches < 10) ||
+            (item.tanggal
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) &&
+                matches < 10) ||
+            (item.poli.penyakit
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) &&
+                matches < 10)
         ) {
             matches++;
             return item;
@@ -99,10 +108,15 @@ const paginate = (url) => {
 <template>
     <Head title="Rekam Medik" />
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
-        <div class="mt-5 flex justify-between">
-            <h1 class="text-xl">DATA REKAM MEDIK</h1>
+        <div class="mt-5 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl">DATA REKAM MEDIK</h1>
+                <h1 class="text-xl">
+                    {{ props.kode.kode }}
+                </h1>
+            </div>
             <Search v-on:on-search="onChangeSearch" />
-          </div>
+        </div>
         <div class="py-5">
             <div class="max-w-full overflow-x-auto rounded-lg shadow">
                 <table class="w-full leading-normal">

@@ -14,6 +14,17 @@ const props = defineProps({
     auth: Object,
 });
 
+function getDate(dateString) {
+    const date = new Date(dateString);
+
+    // Mengambil Tahun, Bulan, dan Tanggal
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+}
+
 function backAction() {
     window.location = "/poli/rekammedik";
 }
@@ -60,9 +71,6 @@ function printAll() {
             <h1 class="text-2xl font-semibold text-gray-800 uppercase">
                 Detail Rekam Medik
             </h1>
-            <h2 class="text-xl font-semibold text-gray-600 mt-2">
-                {{ props.rekammedik[0].antrian }}
-            </h2>
         </div>
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
@@ -82,6 +90,15 @@ function printAll() {
 
                     Cetak
                 </button>
+            </div>
+
+            <div class="my-2 flex justify-between">
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ props.rekammedik[0].kode }}
+                </h2>
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ getDate(props.rekammedik[0].tanggal) }}
+                </h2>
             </div>
 
             <div
@@ -270,7 +287,6 @@ function printAll() {
                             Data Resep
                         </h3>
                         <button
-                            v-if="props.auth.user.role === 'admin'"
                             @click="printResep"
                             class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition-all"
                         >
@@ -309,16 +325,13 @@ function printAll() {
                         <!-- Patient and Doctor Info for print -->
                         <div class="text-center mb-4 print-info">
                             <h3 class="font-semibold text-lg">
-                                Pasien:
-                                {{ props.rekammedik[0].pasien.nama }}
+                                Pasien: {{ props.rekammedik[0].pasien.nama }}
                             </h3>
                             <h4 class="text-md">
-                                Dokter:
-                                {{ props.rekammedik[0].dokter.nama }}
+                                Dokter: {{ props.rekammedik[0].dokter.nama }}
                             </h4>
                             <p class="text-sm">
-                                Tanggal:
-                                {{ new Date().toLocaleDateString() }}
+                                Tanggal: {{ new Date().toLocaleDateString() }}
                             </p>
                         </div>
 
@@ -455,16 +468,20 @@ function printAll() {
                 Detail Rekam Medik
             </h1>
             <h2 class="text-xl font-semibold text-gray-600">
-                No. Antrian: {{ props.rekammedik[0].antrian }}
+                {{ props.rekammedik[0].pasien.nama }}
             </h2>
             <h2 class="text-xl font-semibold text-gray-600">
-                Nama: {{ props.rekammedik[0].pasien.nama }}
-            </h2>
-            <h2 class="text-xl font-semibold text-gray-600">
-                Umur:
                 {{ calculateAge(props.rekammedik[0].pasien.tanggal_lahir) }}
                 Tahun
             </h2>
+            <div class="my-2 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ props.rekammedik[0].kode }}
+                </h2>
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ getDate(props.rekammedik[0].tanggal) }}
+                </h2>
+            </div>
         </div>
 
         <!-- Kondisi Pasien -->

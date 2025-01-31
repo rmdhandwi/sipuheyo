@@ -42,11 +42,14 @@ Route::get('/dokter/rekammedik/pasien/{id}', function ($id) {
         ->orderBy('tanggal', 'DESC')
         ->paginate(10); // **Pagination tetap digunakan**
 
+    $kode = RekamMedik::where('pasien_id', $id)->first();
+
     // Kirim data ke Inertia
     return Inertia::render('Dokter/PasienRekamMedik', [
         'dokter' => $dokter,
         'poli' => $poli,
         'data' => $rekammedik,
+        'kode' => $kode,
     ]);
 })->name('dokter.rekammedik');
 
@@ -77,26 +80,26 @@ Route::get('/dokter/rekammedik', function () {
                 ->whereIn('status', ['poli', 'dokter']);
         })
         ->get()
-        ->groupBy('pasien_id'); // **Mengelompokkan berdasarkan pasien_id**
-
-    // **Urutkan pasien berdasarkan nama secara abjad**
-    $rekammedikArray = $rekammedikQuery->sortBy(function ($group) {
-        return $group->first()->pasien->nama; // **Mengambil nama pasien pertama dalam grup**
-    })->values()->map(function ($group, $index) {
-        return [
-            'kode_rm' => 'RM' . str_pad($index + 1, 6, '0', STR_PAD_LEFT), // **Format RM000001, RM000002, dst.**
-            'rekam_medik' => $group,
-        ];
-    })->values()->toArray(); // **Reset indeks array setelah sorting**
+        ->groupBy('kode'); // **Mengelompokkan berdasarkan pasien_id**
 
     // **Pagination Manual**
     $perPage = 10; // **Jumlah data per halaman**
     $currentPage = request()->get('page', 1);
+
+    // Mengubah koleksi ke dalam bentuk array numerik agar bisa diproses dengan array_slice()
+    $rekammedikArray = $rekammedikQuery->values()->toArray();
+
+    // Menggunakan array_slice untuk paginasi manual
     $currentItems = array_slice($rekammedikArray, ($currentPage - 1) * $perPage, $perPage);
-    $rekammedikPaginated = new LengthAwarePaginator($currentItems, count($rekammedikArray), $perPage, $currentPage, [
-        'path' => request()->url(),
-        'query' => request()->query(),
-    ]);
+
+    // Membuat instance LengthAwarePaginator
+    $rekammedikPaginated = new LengthAwarePaginator(
+        $currentItems,
+        count($rekammedikArray),
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
 
     // **Kirim ke Inertia**
     return Inertia::render('Dokter/RekamMedikPage', [
@@ -105,8 +108,6 @@ Route::get('/dokter/rekammedik', function () {
         'data' => $rekammedikPaginated,
     ]);
 })->name('dokter.rekammedik');
-
-
 
 
 
@@ -125,6 +126,7 @@ Route::get('/dokter/rekammedik/{id}', function (
         ],
     );
 })->name('dokter.pasien.rekammedik');
+
 
 Route::get('/dokter/rekammedik/detail/{id}', function (
     RekamMedikService $rekamMedikService,

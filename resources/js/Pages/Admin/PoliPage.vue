@@ -69,8 +69,10 @@ const filterDataPoli = computed(() => {
     let matches = 0;
     return data.filter((item) => {
         if (
-            item.nama.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
-            matches < 10
+            (item.nama.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
+                matches < 10) ||
+            (item.kode.toLowerCase().includes(searchTerm.value.toLowerCase()) &&
+                matches < 10)
         ) {
             matches++;
             return item;

@@ -8,9 +8,8 @@ import InputError from "@/Components/InputError.vue";
 import Helper from "@/heper";
 
 const props = defineProps({
-    pasien: {
-        type: Pasien,
-    },
+    kode: String,
+    pasien: Pasien,
 });
 
 const form = useForm({
@@ -176,6 +175,15 @@ onMounted(() => {
                             </div>
                         </div>
                         <div>
+                            <div class="flex flex-col p-3">
+                                <label class="mb-2">Rekam Medik</label>
+                                <input
+                                    type="text"
+                                    :value="props.kode"
+                                    class="rounded-lg bg-transparent text-neutral-700"
+                                    disabled
+                                />
+                            </div>
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Tempat Lahir</label>
                                 <input

@@ -31,18 +31,20 @@ const filteredData = computed(() => {
     let filtered = props.data.data || [];
 
     if (searchTerm.value) {
-        filtered = filtered.filter((item) =>
-            item.rekam_medik[0].pasien.nama
-                .toLowerCase()
-                .includes(searchTerm.value.toLowerCase())
+        filtered = filtered.filter(
+            (item) =>
+                item[0].pasien.nama
+                    .toLowerCase()
+                    .includes(searchTerm.value.toLowerCase()) ||
+                item[0].kode
+                    .toLowerCase()
+                    .includes(searchTerm.value.toLowerCase())
         );
     }
 
     if (selectedYear.value) {
         filtered = filtered.filter((item) => {
-            const itemYear = new Date(
-                item.rekam_medik[0].tanggal
-            ).getFullYear();
+            const itemYear = new Date(item[0].tanggal).getFullYear();
             return itemYear === parseInt(selectedYear.value);
         });
     }
@@ -51,7 +53,7 @@ const filteredData = computed(() => {
         filtered = filtered.filter((item) => {
             const itemMonth = (
                 "0" +
-                (new Date(item.rekam_medik[0].tanggal).getMonth() + 1)
+                (new Date(item.tanggal).getMonth() + 1)
             ).slice(-2);
             return itemMonth === selectedMonth.value;
         });
@@ -72,11 +74,11 @@ function deleteItem(item) {
         confirmButtonText: "Ya, Hapus!",
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route("poli.rekammedik.delete", item.id), {
+            form.delete(route("poli.rekammedik.delete", item[0].id), {
                 onSuccess: () => {
                     Swal.fire("Deleted!", "Data Berhasil Dihapus.", "success");
                     props.data.data = props.data.data.filter(
-                        (i) => i.id !== item.id
+                        (i) => i.id !== item[0].id
                     );
                 },
                 onError: (err) => {
@@ -177,13 +179,13 @@ const onSearchText = (text) => {
                             <td
                                 class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
                             >
-                                {{ item.kode_rm }}
+                                {{ item[0].kode }}
                             </td>
 
                             <td
                                 class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
                             >
-                                {{ item.rekam_medik[0].pasien.nama }}
+                                {{ item[0].pasien.nama }}
                             </td>
 
                             <td
@@ -192,7 +194,7 @@ const onSearchText = (text) => {
                                 <a
                                     :href="
                                         '/poli/rekammedik/pasien/' +
-                                        item.rekam_medik[0].pasien_id
+                                        item[0].pasien_id
                                     "
                                     class="text-cyan-500 hover:text-cyan-700"
                                 >

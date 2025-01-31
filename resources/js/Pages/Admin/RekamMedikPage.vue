@@ -100,15 +100,11 @@ const filterData = computed(() => {
     if (searchTerm.value) {
         filteredData = filteredData.filter(
             (item) =>
-                (item.rekam_medik[0].pasien.nama
+                (item[0].pasien.nama
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) &&
                     matches < 10) ||
-                (item.rekam_medik[0].poli.nama
-                    .toLowerCase()
-                    .includes(searchTerm.value.toLowerCase()) &&
-                    matches < 10) ||
-                (item.rekam_medik[0].status
+                (item[0].kode
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) &&
                     matches < 10)
@@ -118,24 +114,21 @@ const filterData = computed(() => {
     // Filter by selected Poli
     if (selectedPoli.value) {
         filteredData = filteredData.filter(
-            (item) => item.rekam_medik[0].poli_id == selectedPoli.value
+            (item) => item.poli_id == selectedPoli.value
         );
     }
 
     // Filter by selected Month
     if (selectedMonth.value) {
         filteredData = filteredData.filter((item) => {
-            const itemMonth =
-                new Date(item.rekam_medik[0].tanggal).getMonth() + 1; // Get month as 1-based index
+            const itemMonth = new Date(item.tanggal).getMonth() + 1; // Get month as 1-based index
             return itemMonth == selectedMonth.value;
         });
     }
 
     if (selectedYear.value) {
         filteredData = filteredData.filter((item) => {
-            const itemYear = new Date(
-                item.rekam_medik[0].tanggal
-            ).getFullYear();
+            const itemYear = new Date(item.tanggal).getFullYear();
             return itemYear === parseInt(selectedYear.value);
         });
     }
@@ -208,64 +201,17 @@ function paginate(url) {
     <Layout>
         <div class="mt-5 flex justify-between">
             <h1 class="text-xl">DATA REKAM MEDIK</h1>
-            <div class="flex">
-                <AddIcon
-                    class="cursor-pointer text-teal-500 w-12"
-                    @click="addNewItem"
-                ></AddIcon>
-                <!-- <PrinterIcon
-                    class="cursor-pointer text-amber-600 w-12"
-                    @click="printReport"
-                ></PrinterIcon> -->
-            </div>
         </div>
 
-        <div class="flex justify-between items-center my-4">
-            <div class="flex items-center">
-                <!-- <select
-                    v-model="selectedPoli"
-                    class="mx-2 rounded-lg bg-transparent text-neutral-700"
-                >
-                    <option value="">Poli</option>
-                    <option
-                        v-for="item in props.polis"
-                        :key="item.id"
-                        :value="item.id"
-                    >
-                        {{ item.nama }}
-                    </option>
-                </select>
-
-                <select
-                    v-model="selectedMonth"
-                    class="mx-2 rounded-lg bg-transparent text-neutral-700"
-                >
-                    <option value="">Bulan</option>
-                    <option v-for="month in 12" :key="month" :value="month">
-                        {{
-                            new Date(0, month - 1).toLocaleString("default", {
-                                month: "long",
-                            })
-                        }}
-                    </option>
-                </select>
-
-                <select
-                    v-model="selectedYear"
-                    id="year"
-                    class="mx-2 rounded-lg bg-transparent text-neutral-700"
-                >
-                    <option value="">Tahun</option>
-                    <option v-for="year in years" :key="year" :value="year">
-                        {{ year }}
-                    </option>
-                </select> -->
-            </div>
-
+        <div class="flex justify-between items-center my-2">
             <Search
                 v-on:on-search="onSearchText"
                 placeholder="Cari nama pasien..."
             />
+            <AddIcon
+                class="cursor-pointer text-teal-500 w-12"
+                @click="addNewItem"
+            ></AddIcon>
         </div>
 
         <div class="py-5">
@@ -298,10 +244,10 @@ function paginate(url) {
                             :key="item.id"
                         >
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                {{ item.kode_rm }}
+                                {{ item[0].kode }}
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
-                                {{ item.rekam_medik[0].pasien.nama }}
+                                {{ item[0].pasien.nama }}
                             </td>
                             <td
                                 class="border-l border-gray-200 p-3 text-sm flex gap-2"
@@ -309,7 +255,7 @@ function paginate(url) {
                                 <a
                                     :href="
                                         '/admin/rekammedik/pasien/' +
-                                        item.rekam_medik[0].pasien_id
+                                        item[0].pasien_id
                                     "
                                     class="text-blue-500 hover:text-blue-700"
                                 >

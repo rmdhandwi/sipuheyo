@@ -175,7 +175,7 @@ class RekamMedikService
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
-            if ($jamSekarang < 5 || $jamSekarang > 8) {
+            if ($jamSekarang < 5 || $jamSekarang > 24) {
                 throw new \Exception("Pendaftaran hanya dibuka antara pukul 05:00 hingga 10:00 WIT.");
             }
 
@@ -215,6 +215,34 @@ class RekamMedikService
                 throw new \Exception("Nomor antrean di poli ini telah penuh.");
             }
 
+            // Cek apakah pasien sudah memiliki kode rekammedik
+            $rekamMedikSebelumnya = RekamMedik::where('pasien_id', $pasien->id)->first();
+
+            if ($rekamMedikSebelumnya) {
+                // Jika sudah ada, gunakan kode yang sama
+                $kodeRM = $rekamMedikSebelumnya->kode;
+                // dd($kodeRM);
+            } else {
+                // Jika belum ada, buat kode baru berdasarkan urutan terakhir di rekammedik
+                $lastKodeRM = RekamMedik::orderBy('kode', 'desc')->first();
+
+                if ($lastKodeRM) {
+                    // Ambil angka terakhir dari kode tanpa menggunakan ltrim
+                    $lastNumber = intval(substr($lastKodeRM->kode, 2));
+
+                    // Tambahkan 1 ke nomor terakhir
+                    $newNumber = $lastNumber + 1;
+
+                    // Pastikan panjang tetap 6 digit setelah "RM"
+                    $kodeRM = 'RM' . str_pad($newNumber, 8, '0', STR_PAD_LEFT);
+                    dd($kodeRM);
+                } else {
+                    // Jika belum ada data sama sekali, mulai dari RM000001
+                    $kodeRM = 'RM00000001';
+                }
+            }
+
+
             // Menangani exception untuk pasien
             try {
                 $pasien = Pasien::findOrFail($req->pasien_id);
@@ -232,6 +260,7 @@ class RekamMedikService
             $antrian = $poli->kode . '-' . $sekarang->format('dmY') . '-' . str_pad($jumlahAntrian + 1, 2, '0', STR_PAD_LEFT);
 
             return RekamMedik::create([
+                'kode' => $kodeRM,
                 'tanggal' => $sekarang->toDateString(),
                 'antrian' => $antrian,
                 'poli_id' => $req->poli_id,
@@ -247,6 +276,7 @@ class RekamMedikService
             throw new \Exception($th->getMessage());
         }
     }
+
 
 
     public function put(PoliRekamMedikRequest $req, $id)

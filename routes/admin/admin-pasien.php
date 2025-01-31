@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Requests\PasienRequest;
+use App\Models\Pasien;
 use App\services\PasienService;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -11,13 +12,26 @@ Route::get('/admin/pasien', function (PasienService $pasienService) {
 })->name('admin.pasien');
 
 Route::get('/admin/pasien/add', function () {
-    return Inertia::render('Admin/AddPasienPage');
+    // Hitung jumlah pasien yang ada
+    $jumlahPasien = Pasien::count();
+
+    // Buat kode RM berdasarkan jumlah pasien + 1
+    $kodeRM = 'RM' . str_pad($jumlahPasien + 1, 8, '0', STR_PAD_LEFT);
+
+    return Inertia::render('Admin/AddPasienPage', ['kode' => $kodeRM]);
 })->name('admin.pasien.add');
 
 
 Route::get('/admin/pasien/add/{id}', function (PasienService $pasienService, $id) {
+    // Hitung jumlah pasien yang ada
+    $jumlahPasien = Pasien::count();
+
+    // Buat kode RM berdasarkan jumlah pasien + 1
+    $kodeRM = 'RM' . str_pad($jumlahPasien + 1, 8, '0', STR_PAD_LEFT);
+
     return Inertia::render('Admin/AddPasienPage', [
-        "pasien" => $pasienService->getById($id)
+        "pasien" => $pasienService->getById($id),
+        "kode" => $kodeRM
     ]);
 })->name('admin.pasien.add');
 

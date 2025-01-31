@@ -139,6 +139,12 @@ const paginate = (url) => {
                                 scope="col"
                                 class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
+                                Email
+                            </th>
+                            <th
+                                scope="col"
+                                class="w-auto border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
                                 Kontak
                             </th>
                             <th
@@ -166,9 +172,15 @@ const paginate = (url) => {
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">{{ item.jk }}</p>
                             </td>
+
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
                                     {{ item.bagian }}
+                                </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <p class="whitespace-nowrap">
+                                    {{ item.email }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">

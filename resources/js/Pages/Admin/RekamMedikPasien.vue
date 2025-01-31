@@ -15,18 +15,20 @@ import Info from "@/Icons/Info.vue";
 import Panding from "@/Icons/Panding.vue";
 import Wrong from "@/Icons/Wrong.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
+import BackIcon from "@/Icons/BackIcon.vue";
 
 const props = defineProps({
-    data: {
-        type: Array,
-    },
-    polis: {
-        type: Array,
-    },
+    data: Array,
+    polis: Array,
+    kode: Object,
 });
 
 function addNewItem() {
     window.location = "/admin/rekammedik/add";
+}
+
+function backAction() {
+    window.location = "/admin/rekammedik";
 }
 
 function getDate(dateString) {
@@ -204,12 +206,19 @@ function paginate(url) {
     <Head title="Rekam Medik" />
     <Layout>
         <div class="mt-5 flex justify-between">
-            <h1 class="text-xl">DATA REKAM MEDIK</h1>
-            <div class="flex">
+            <div>
+                <h1 class="text-xl">DATA REKAM MEDIK</h1>
+                <p class="text-xl">{{ props.kode.kode }}</p>
+            </div>
+            <div class="flex gap-2">
+                <BackIcon
+                    class="cursor-pointer text-teal-500 w-9"
+                    @click="backAction"
+                />
                 <AddIcon
                     class="cursor-pointer text-teal-500 w-12"
                     @click="addNewItem"
-                ></AddIcon>
+                />
                 <!-- <PrinterIcon
                     class="cursor-pointer text-amber-600 w-12"
                     @click="printReport"
@@ -273,7 +282,7 @@ function paginate(url) {
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                Antrian
                             </th>
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
