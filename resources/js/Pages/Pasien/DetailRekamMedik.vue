@@ -54,6 +54,17 @@ const activeTab = ref("kondisi");
 function printAll() {
     window.print();
 }
+
+function getDate(dateString) {
+    const date = new Date(dateString);
+
+    // Mengambil Tahun, Bulan, dan Tanggal
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+}
 </script>
 
 <template>
@@ -63,9 +74,6 @@ function printAll() {
             <h1 class="text-2xl font-semibold text-gray-800 uppercase">
                 Detail Rekam Medik
             </h1>
-            <h2 class="text-xl font-semibold text-gray-600 mt-2">
-                {{ props.rekammedik[0].antrian }}
-            </h2>
         </div>
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
@@ -86,8 +94,16 @@ function printAll() {
                     Cetak
                 </button>
             </div>
+            <div class="flex justify-between items-center my-4">
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ props.rekammedik[0].kode }}
+                </h2>
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ getDate(props.rekammedik[0].tanggal) }}
+                </h2>
+            </div>
             <div
-                class="bg-white mt-4 rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
+                class="bg-white rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
             >
                 <h2 class="text-lg font-semibold text-black">
                     {{ props.rekammedik[0].poli.nama }}
@@ -454,16 +470,20 @@ function printAll() {
                 Detail Rekam Medik
             </h1>
             <h2 class="text-xl font-semibold text-gray-600">
-                No. Antrian: {{ props.rekammedik[0].antrian }}
+                {{ props.rekammedik[0].pasien.nama }}
             </h2>
             <h2 class="text-xl font-semibold text-gray-600">
-                Nama: {{ props.rekammedik[0].pasien.nama }}
-            </h2>
-            <h2 class="text-xl font-semibold text-gray-600">
-                Umur:
                 {{ calculateAge(props.rekammedik[0].pasien.tanggal_lahir) }}
                 Tahun
             </h2>
+            <div class="my-2 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ props.rekammedik[0].kode }}
+                </h2>
+                <h2 class="text-xl font-semibold text-gray-600">
+                    {{ getDate(props.rekammedik[0].tanggal) }}
+                </h2>
+            </div>
         </div>
 
         <!-- Kondisi Pasien -->
