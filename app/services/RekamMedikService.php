@@ -235,7 +235,7 @@ class RekamMedikService
 
                     // Pastikan panjang tetap 6 digit setelah "RM"
                     $kodeRM = 'RM' . str_pad($newNumber, 8, '0', STR_PAD_LEFT);
-                    dd($kodeRM);
+                    // dd($kodeRM);
                 } else {
                     // Jika belum ada data sama sekali, mulai dari RM000001
                     $kodeRM = 'RM00000001';
