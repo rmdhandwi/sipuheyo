@@ -23,17 +23,21 @@ const selectedDokter = ref("");
 
 // Fungsi format tanggal
 function formattedDateTime(dateString) {
-    const date = new Date(dateString);
-
-    // Ambil komponen tanggal dan waktu
-    const day = String(date.getDate()).padStart(2, '0'); // 01 - 31
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 01 - 12 (perlu +1 karena index bulan dimulai dari 0)
-    const year = date.getFullYear(); // 2025
-    const hours = String(date.getHours()).padStart(2, '0'); // 00 - 23
-    const minutes = String(date.getMinutes()).padStart(2, '0'); // 00 - 59
-
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+    const date = new Date(dateString); // Menambahkan 'Z' untuk menunjukkan bahwa waktu dalam UTC
+    const options = {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Jayapura", // Zona waktu lokal (WIT)
+    };
+    return date.toLocaleString("id-ID", options);
 }
+
+
 
 // Filter data berdasarkan poli, dokter, bulan, dan tahun
 const filteredData = computed(() => {
