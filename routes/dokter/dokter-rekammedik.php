@@ -80,7 +80,7 @@ Route::get('/dokter/rekammedik', function () {
                 ->whereIn('status', ['poli', 'dokter']);
         })
         ->get()
-        ->groupBy('kode'); // **Mengelompokkan berdasarkan pasien_id**
+        ->groupBy('pasien_id'); // **Mengelompokkan berdasarkan pasien_id**
 
     // **Pagination Manual**
     $perPage = 10; // **Jumlah data per halaman**
@@ -117,6 +117,7 @@ Route::get('/dokter/rekammedik/{id}', function (
     RekamMedikService $rekammedikService,
     $id
 ) {
+
     return Inertia::render(
         'Dokter/RekamMedikPasienPage',
         [

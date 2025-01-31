@@ -99,7 +99,7 @@ class PoliController extends Controller
             })
             ->orderBy('tanggal', 'DESC')
             ->get()
-            ->groupBy('kode'); // Kelompokkan berdasarkan pasien
+            ->groupBy('pasien_id'); // Kelompokkan berdasarkan pasien
 
 
         // **Pagination Manual**

@@ -16,13 +16,9 @@ const props = defineProps({
     dokters: Array,
     obats: Array,
     rekammedik: RekamMedik,
-
-    poli: {
-        type: Array,
-    },
-    pegawai: {
-        type: Array,
-    },
+    poli: Array,
+    pegawai: Array,
+    rm: Object,
 });
 
 const selectedTab = reactive({ id: 1 });
@@ -156,13 +152,29 @@ const readFile = () => {
         form.file = file; // Simpan file langsung ke form
     }
 };
+
+
+function getDate(dateString) {
+    const date = new Date(dateString);
+
+    // Mengambil Tahun, Bulan, dan Tanggal
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+}
 </script>
 
 <template>
     <Head title="Detail Pasien" />
     <PoliLayout class="noprint" :poli="props.poli" :pegawai="props.pegawai">
-        <div class="p-5 mt-5 flex justify-between">
+        <div class="p-5 mt-5 flex flex-col">
             <h1 class="text-xl">DETAIL BEROBAT</h1>
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl text-gray-500">{{ props.rm.kode }}</h1>
+                <h1 class="text-xl text-gray-500">{{ getDate(props.rm.tanggal) }}</h1>
+            </div>
         </div>
 
         <div class="p-5">

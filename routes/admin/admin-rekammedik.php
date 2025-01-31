@@ -20,7 +20,7 @@ Route::get('/admin/rekammedik', function () {
     $rekammedikQuery = RekamMedik::with(['dokter', 'poli', 'pasien'])
         ->orderBy('tanggal', 'DESC')
         ->get()
-        ->groupBy('kode'); // Mengelompokkan berdasarkan kode
+        ->groupBy('pasien_id'); // Mengelompokkan berdasarkan kode
 
     // **Pagination Manual**
     $perPage = 10; // Jumlah data per halaman

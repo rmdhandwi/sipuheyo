@@ -22,8 +22,8 @@ const form = useForm({
     konsultasi_berikut: null,
     kondisi: { berat: 0, tinggi: 0, lingkar_badan: 0, tekanan_darah: "" },
     keluhan: [],
-    penanganan:[],
-    resep:  [],
+    penanganan: [],
+    resep: [],
     resep_manual: null,
     hasil_lab: null,
 });
@@ -188,14 +188,29 @@ const tabs = [
     { id: 4, name: "Jadwal Berobat Selanjutnya" },
     { id: 5, name: "Hasil Lab" },
 ];
+
+function getDate(dateString) {
+    const date = new Date(dateString);
+
+    // Mengambil Tahun, Bulan, dan Tanggal
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return `${day}/${month}/${year}`;
+}
 </script>
 
 <template>
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
         <div class="p-5">
-            <a href="/send-reminder">Kirim Pengingat WA</a>
-
-            <h1 class="text-xl font-bold">Detail Rekam Medik</h1>
+            <h1 class="text-xl">Detail Rekam Medik</h1>
+            <div class="flex justify-between items-center my-2">
+                <h1 class="text-xl text-gray-500">{{ rekammedik.kode || "-" }}</h1>
+                <h1 class="text-xl text-gray-500">
+                    {{ getDate(rekammedik.tanggal) || "-" }}
+                </h1>
+            </div>
             <div class="bg-white shadow rounded-lg p-5">
                 <!-- Informasi Umum -->
                 <div class="grid grid-cols-2 gap-5 mb-5">

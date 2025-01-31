@@ -171,7 +171,8 @@ class RekamMedikService
     public function antrian(RekamMedikRequest $req)
     {
         try {
-            $sekarang = Carbon::now('Asia/Jayapura');
+            // $sekarang = Carbon::now('Asia/Jayapura');
+            $sekarang = Carbon::createFromFormat('Y-m-d H:i:s', '2025-01-31 10:05:00', 'Asia/Jayapura');
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
@@ -328,16 +329,24 @@ class RekamMedikService
                 throw new \Exception("Hanya Dokter yang dapat mengakses.");
             }
 
+            // Ambil data dari request
+            $konsultasiBerikut = $req['konsultasi_berikut'];
+
+            // Mengonversi menjadi format datetime menggunakan Carbon
+            $konsultasiBerikutDatetime = Carbon::parse($konsultasiBerikut);
+
+            // dd($konsultasiBerikutDatetime);
+
             $data->kondisi = json_encode($req['kondisi']);
             $data->keluhan = json_encode($req['keluhan']);
             $data->penanganan = json_encode($req['penanganan']);
             $data->resep = json_encode($req['resep']);
             $data->resep_manual = $req['resep_manual'];
-            $data->konsultasi_berikut = $req['konsultasi_berikut'];
-            $data->status = 'dokter';
+            $data->konsultasi_berikut = $konsultasiBerikutDatetime;
+            $data->status = 'Poli';
 
             $data->save();
-            $this->infoKunjunganBerikut();
+            // $this->infoKunjunganBerikut();
             DB::commit();
             return true;
         } catch (\Throwable $th) {

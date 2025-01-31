@@ -36,6 +36,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         $userid = Auth::user()->id;
         $pegawai = Pegawai::where('user_id', $userid)->first();
         $poli = Poli::where('pegawai_id', $pegawai->id)->first();
+        
         return Inertia::render(
             'Poli/AddRekamMedikPage',
             [
@@ -46,6 +47,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
                 'dokters' => $dokterService->data(),
                 'obats' => $obatService->data(),
                 "rekammedik" => $rekammedikService->getById($id),
+                "rm" => $rm,
             ],
         );
     })->name('poli.rekammedik.detail');
