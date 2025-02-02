@@ -171,8 +171,8 @@ class RekamMedikService
     public function antrian(RekamMedikRequest $req)
     {
         try {
-            // $sekarang = Carbon::now('Asia/Jayapura');
-            $sekarang = Carbon::createFromFormat('Y-m-d H:i:s', '2025-01-31 10:05:00', 'Asia/Jayapura');
+            $sekarang = Carbon::now('Asia/Jayapura');
+            // $sekarang = Carbon::createFromFormat('Y-m-d H:i:s', '2025-01-31 10:05:00', 'Asia/Jayapura');
             $jamSekarang = (int) $sekarang->format('H');
 
             // Validasi jam pendaftaran
