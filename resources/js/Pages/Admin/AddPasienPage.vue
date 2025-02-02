@@ -5,15 +5,18 @@ import Swal from "sweetalert2";
 import { onMounted } from "vue";
 import Pasien from "@/Models/Pasien";
 import InputError from "@/Components/InputError.vue";
-import Helper from "@/heper";
 
 const props = defineProps({
     kode: String,
     pasien: Pasien,
+    rekammedik: String,
 });
+
+const kode = props.rekammedik;
 
 const form = useForm({
     id: 0,
+    rekammedik: "",
     layanan: "",
     nik: "",
     email: "",
@@ -89,17 +92,20 @@ const save = () => {
 
 onMounted(() => {
     if (props.pasien) {
-        form.id = props.pasien.id;
-        form.kode = Helper.getKode(props.pasien.id, "Pasien");
-        form.nik = props.pasien.nik;
-        form.layanan = props.pasien.layanan;
-        form.nama = props.pasien.nama;
-        form.email = props.pasien.email;
-        form.jk = props.pasien.jk;
-        form.tempat_lahir = props.pasien.tempat_lahir;
-        form.tanggal_lahir = props.pasien.tanggal_lahir;
-        form.kontak = props.pasien.kontak;
-        form.alamat = props.pasien.alamat;
+        const data = props.pasien;
+        form.id = data.id;
+        form.rekammedik = data.rekammedik;
+        form.nik = data.nik;
+        form.layanan = data.layanan;
+        form.nama = data.nama;
+        form.email = data.email;
+        form.jk = data.jk;
+        form.tempat_lahir = data.tempat_lahir;
+        form.tanggal_lahir = data.tanggal_lahir;
+        form.kontak = data.kontak;
+        form.alamat = data.alamat;
+    } else {
+        form.rekammedik = kode;
     }
 });
 </script>
@@ -176,13 +182,14 @@ onMounted(() => {
                         </div>
                         <div>
                             <div class="flex flex-col p-3">
-                                <label class="mb-2">Rekam Medik</label>
+                                <label class="mb-2">Kode Rekam Medik</label>
                                 <input
                                     type="text"
-                                    :value="props.kode"
+                                    v-model="form.rekammedik"
+                                    readonly
                                     class="rounded-lg bg-transparent text-neutral-700"
-                                    disabled
                                 />
+                                <InputError :message="form.errors['kode']" />
                             </div>
                             <div class="flex flex-col p-3">
                                 <label class="mb-2">Tempat Lahir</label>

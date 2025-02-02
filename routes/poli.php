@@ -36,7 +36,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         $userid = Auth::user()->id;
         $pegawai = Pegawai::where('user_id', $userid)->first();
         $poli = Poli::where('pegawai_id', $pegawai->id)->first();
-        
+
         return Inertia::render(
             'Poli/AddRekamMedikPage',
             [

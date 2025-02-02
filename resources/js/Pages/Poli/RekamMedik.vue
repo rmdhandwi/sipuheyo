@@ -33,10 +33,10 @@ const filteredData = computed(() => {
     if (searchTerm.value) {
         filtered = filtered.filter(
             (item) =>
-                item[0].pasien.nama
+                item.pasien.nama
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase()) ||
-                item[0].kode
+                item.pasien.rekammedik
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase())
         );
@@ -44,7 +44,7 @@ const filteredData = computed(() => {
 
     if (selectedYear.value) {
         filtered = filtered.filter((item) => {
-            const itemYear = new Date(item[0].tanggal).getFullYear();
+            const itemYear = new Date(item.tanggal).getFullYear();
             return itemYear === parseInt(selectedYear.value);
         });
     }
@@ -74,11 +74,11 @@ function deleteItem(item) {
         confirmButtonText: "Ya, Hapus!",
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route("poli.rekammedik.delete", item[0].id), {
+            form.delete(route("poli.rekammedik.delete", item.id), {
                 onSuccess: () => {
                     Swal.fire("Deleted!", "Data Berhasil Dihapus.", "success");
                     props.data.data = props.data.data.filter(
-                        (i) => i.id !== item[0].id
+                        (i) => i.id !== item.id
                     );
                 },
                 onError: (err) => {
@@ -156,12 +156,22 @@ const onSearchText = (text) => {
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                Kode Rekam Medik
                             </th>
                             <th
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Pasien
+                            </th>
+                            <th
+                                class="text-center border-b border-gray-200 px-5 py-3 text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Antrian
+                            </th>
+                            <th
+                                class="text-center border-b border-gray-200 px-5 py-3 text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Jumlah
                             </th>
                             <th
                                 class="w-20 border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
@@ -179,13 +189,33 @@ const onSearchText = (text) => {
                             <td
                                 class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
                             >
-                                {{ item[0].kode }}
+                                {{ item.pasien.rekammedik }}
                             </td>
 
                             <td
                                 class="border-b whitespace-nowrap border-gray-200 p-3 text-sm"
                             >
-                                {{ item[0].pasien.nama }}
+                                {{ item.pasien.nama }}
+                            </td>
+
+                            <td
+                                class="border-b border-gray-200 p-3 text-sm text-center"
+                            >
+                                <span
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
+                                >
+                                    <span>{{ item.total_status_baru }}</span>
+                                </span>
+                            </td>
+
+                            <td
+                                class="border-b border-gray-200 p-3 text-sm text-center"
+                            >
+                                <span
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <span>{{ item.total_rekam_medik }}</span>
+                                </span>
                             </td>
 
                             <td
@@ -194,7 +224,7 @@ const onSearchText = (text) => {
                                 <a
                                     :href="
                                         '/poli/rekammedik/pasien/' +
-                                        item[0].pasien_id
+                                        item.pasien_id
                                     "
                                     class="text-cyan-500 hover:text-cyan-700"
                                 >
@@ -205,7 +235,7 @@ const onSearchText = (text) => {
 
                         <tr v-else>
                             <td
-                                colspan="8"
+                                colspan="5"
                                 class="text-gray-400 text-center py-4"
                             >
                                 Data Rekam Medik Tidak Ditemukan

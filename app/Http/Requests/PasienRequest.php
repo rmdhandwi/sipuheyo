@@ -24,6 +24,7 @@ class PasienRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+
     public function rules(): array
     {
         // Mendapatkan pasienId dari route parameter
@@ -34,14 +35,20 @@ class PasienRequest extends FormRequest
         // Jika pasien ditemukan, ambil user_id
         $userId = $pasien ? $pasien->user_id : null;
 
-        // Mengembalikan aturan validasi
         return [
             'nama' => 'required|string|max:255',
+            'rekammedik' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^\S*$/', 
+                Rule::unique('pasiens')->ignore($pasienId, 'id'),
+            ],
             'nik' => [
                 'required',
                 'numeric',
                 'digits:16',
-                Rule::unique('pasiens')->ignore($pasienId, 'id'), // Pengecualian untuk NIK berdasarkan pasien ID
+                Rule::unique('pasiens')->ignore($pasienId, 'id'),
             ],
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
@@ -52,7 +59,7 @@ class PasienRequest extends FormRequest
                 'required',
                 'numeric',
                 'digits_between:11,13',
-                Rule::unique('pasiens')->ignore($pasienId, 'id'), // Pengecualian untuk kontak berdasarkan pasien ID
+                Rule::unique('pasiens')->ignore($pasienId, 'id'),
             ],
             'email' => [
                 'nullable',
@@ -61,7 +68,6 @@ class PasienRequest extends FormRequest
                 'lowercase',
                 'max:255',
                 function ($attribute, $value, $fail) use ($userId, $pasienId) {
-                    // Periksa keberadaan email di tabel users
                     $existsInUsers = DB::table('users')
                         ->where('email', $value)
                         ->when($userId, function ($query, $userId) {
@@ -69,7 +75,6 @@ class PasienRequest extends FormRequest
                         })
                         ->exists();
 
-                    // Periksa keberadaan email di tabel pasiens
                     $existsInPasiens = DB::table('pasiens')
                         ->where('email', $value)
                         ->when($pasienId, function ($query, $pasienId) {
@@ -77,7 +82,6 @@ class PasienRequest extends FormRequest
                         })
                         ->exists();
 
-                    // Jika email ditemukan di salah satu tabel, gagal
                     if ($existsInUsers || $existsInPasiens) {
                         $fail(__('Email ini sudah digunakan oleh pengguna lain.'));
                     }
@@ -92,6 +96,12 @@ class PasienRequest extends FormRequest
             'nama.required' => 'Kolom nama tidak boleh kosong.',
             'nama.string' => 'Kolom nama harus berupa teks.',
             'nama.max' => 'Kolom nama tidak boleh lebih dari 255 karakter.',
+
+            'rekammedik.required' => 'Kolom kode rekam medik tidak boleh kosong.',
+            'rekammedik.string' => 'Kolom kode rekam medik harus berupa teks.',
+            'rekammedik.max' => 'Kolom kode rekam medik tidak boleh lebih dari 255 karakter.',
+            'rekammedik.unique' => 'Kode rekam medik ini sudah digunakan.',
+            'rekammedik.regex' => 'Kode rekam medik tidak boleh mengandung spasi.',
 
             'nik.required' => 'Kolom NIK tidak boleh kosong.',
             'nik.numeric' => 'Kolom NIK harus berupa angka.',
@@ -126,5 +136,4 @@ class PasienRequest extends FormRequest
             'email.max' => 'Kolom email tidak boleh lebih dari 255 karakter.',
         ];
     }
-
 }

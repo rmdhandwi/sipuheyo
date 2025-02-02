@@ -19,10 +19,14 @@ const searchTerm = ref("");
 const searchRekammedik = computed(() => {
     if (!props.data || !props.data.data) return [];
 
-    return props.data.data.filter((item) =>
-        item[0].pasien.nama
-            .toLowerCase()
-            .includes(searchTerm.value.toLowerCase())
+    return props.data.data.filter(
+        (item) =>
+            item.pasien.nama
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) ||
+            item.pasien.rekammedik
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase())
     );
 });
 
@@ -51,12 +55,22 @@ const paginate = (url) => {
                             <th
                                 class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kode
+                                Kode Rekam Medik
                             </th>
                             <th
                                 class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
                                 Pasien
+                            </th>
+                            <th
+                                class="text-center border-b px-5 py-3 text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Periksa
+                            </th>
+                            <th
+                                class="text-center border-b px-5 py-3 text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Jumlah
                             </th>
                             <th
                                 class="border-b px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
@@ -72,16 +86,38 @@ const paginate = (url) => {
                             :key="item.id"
                         >
                             <td class="border-b p-3 text-sm">
-                                {{ item[0].kode }}
+                                {{ item.pasien.rekammedik }}
                             </td>
+
                             <td class="border-b p-3 text-sm">
-                                {{ item[0].pasien.nama }}
+                                {{ item.pasien.nama }}
                             </td>
+
+                            <td
+                                class="border-b border-gray-200 p-3 text-sm text-center"
+                            >
+                                <span
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
+                                >
+                                    <span>{{ item.total_status_baru }}</span>
+                                </span>
+                            </td>
+
+                            <td
+                                class="border-b border-gray-200 p-3 text-sm text-center"
+                            >
+                                <span
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <span>{{ item.total_rekam_medik }}</span>
+                                </span>
+                            </td>
+
                             <td class="border-b p-3 text-sm flex space-x-2">
                                 <a
                                     :href="
                                         '/dokter/rekammedik/pasien/' +
-                                        item[0].pasien_id
+                                        item.pasien_id
                                     "
                                     class="text-blue-500 hover:text-blue-700"
                                 >
@@ -91,7 +127,7 @@ const paginate = (url) => {
                         </tr>
                         <tr v-else>
                             <td
-                                colspan="3"
+                                colspan="5"
                                 class="text-gray-400 text-center py-4"
                             >
                                 Data Rekam Medik Tidak Ditemukan

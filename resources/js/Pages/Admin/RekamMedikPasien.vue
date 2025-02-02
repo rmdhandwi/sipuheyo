@@ -208,7 +208,7 @@ function paginate(url) {
         <div class="mt-5 flex justify-between">
             <div>
                 <h1 class="text-xl">DATA REKAM MEDIK</h1>
-                <p class="text-xl">{{ props.kode.kode }}</p>
+                <p class="text-xl">{{props.kode.rekammedik }}</p>
             </div>
             <div class="flex gap-2">
                 <BackIcon

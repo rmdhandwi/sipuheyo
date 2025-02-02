@@ -92,41 +92,25 @@ class PoliController extends Controller
         $kodeAwal = substr($poli->kode, 0, 2); // Contoh: "PA" dari "PA01"
 
         // Mengambil data rekam medis berdasarkan poli
-        $rekammedikQuery = RekamMedik::with(['dokter', 'poli', 'pasien'])
+        $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
+            ->selectRaw('
+                pasien_id, 
+                COUNT(*) as total_rekam_medik, 
+                SUM(CASE WHEN status = "baru" THEN 1 ELSE 0 END) as total_status_baru
+            ')
             ->whereHas('poli', function ($query) use ($pegawai, $kodeAwal) {
                 $query->where('pegawai_id', $pegawai->id)
                     ->where('kode', 'LIKE', $kodeAwal . '%');
             })
-            ->orderBy('tanggal', 'DESC')
-            ->get()
-            ->groupBy('pasien_id'); // Kelompokkan berdasarkan pasien
 
-
-        // **Pagination Manual**
-        $perPage = 10;
-        $currentPage = request()->get('page', 1);
-
-        // Mengubah koleksi ke dalam bentuk array numerik agar bisa diproses dengan array_slice()
-        $rekammedikArray = $rekammedikQuery->values()->toArray();
-
-        // Menggunakan array_slice untuk paginasi manual
-        $currentItems = array_slice($rekammedikArray, ($currentPage - 1) * $perPage, $perPage);
-
-        // Membuat instance LengthAwarePaginator
-        $rekammedikPaginated = new LengthAwarePaginator(
-            $currentItems,
-            count($rekammedikArray),
-            $perPage,
-            $currentPage,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
-
+            ->groupBy('pasien_id') // Kelompokkan berdasarkan pasien
+            ->paginate(10);
 
         // Menampilkan data melalui Inertia
         return Inertia::render('Poli/RekamMedik', [
             'pegawai' => $pegawai,
             'poli' => $poli,
-            'data' => $rekammedikPaginated,
+            'data' => $rekammedik,
         ]);
     }
 
@@ -160,14 +144,14 @@ class PoliController extends Controller
             ->orderBy('tanggal', 'DESC')
             ->paginate(10);
 
-        $kode = RekamMedik::where('pasien_id', $id)->first();
+        $kode = RekamMedik::with('pasien')->where('pasien_id', $id)->first();
 
         // Menampilkan data melalui Inertia
         return Inertia::render('Poli/PasienRekamMedik', [
             'pegawai' => $pegawai,
             'poli' => $poli,
             'data' => $rekammedikQuery,
-            'kode' => $kode,
+            'rekammedik' => $kode,
         ]);
     }
 

@@ -1,4 +1,5 @@
 <script setup>
+import BackIcon from "@/Icons/BackIcon.vue";
 import LogoKota from "@/Icons/LogoKota.vue";
 import LogoPuskesmas from "@/Icons/LogoPuskesmas.vue";
 import PrinterIcon from "@/Icons/PrinterIcon.vue";
@@ -23,7 +24,7 @@ function printResep() {
 }
 
 function backAction() {
-    window.location = "/dokter/rekammedik";
+    window.location = "/dokter/rekammedik/pasien/" + props.rekammedik[0].pasien_id;
 }
 
 // Function to calculate age from birthdate
@@ -81,84 +82,103 @@ function getDate(dateString) {
 
         <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow-lg">
             <div class="flex justify-between items-center">
-                <button
-                    type="button"
-                    @click="backAction"
-                    class="bg-red-700 mb-2 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-all"
-                >
-                    Kembali
+                <button type="button" @click="backAction">
+                    <BackIcon class="cursor-pointer w-10" />
                 </button>
                 <button
                     @click="printAll"
                     class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
                 >
                     <PrinterIcon class="cursor-pointer w-6" />
-
                     Cetak
                 </button>
             </div>
 
-            <div class="my-2 flex justify-between">
-                <h2 class="text-xl font-semibold text-gray-600">
-                    {{ props.rekammedik[0].kode }}
-                </h2>
-                <h2 class="text-xl font-semibold text-gray-600">
-                    {{ getDate(props.rekammedik[0].tanggal) }}
-                </h2>
-            </div>
-
             <div
-                class="bg-white rounded-lg flex justify-between items-center shadow-md p-6 mb-5"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 my-3"
             >
-                <h2 class="text-lg font-semibold text-black">
-                    {{ props.rekammedik[0].poli.nama }}
-                </h2>
-                <h2 class="text-lg font-semibold text-black">
-                    {{ props.rekammedik[0].dokter.nama }}
-                </h2>
+                <!-- Patient Name -->
+                <div
+                    class="p-4 bg-white rounded-md shadow-md border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700 text-xl">
+                        Nomor Rekam Medik
+                    </h3>
+                    <p class="text-gray-500 text-xl">
+                        {{ props.rekammedik[0].pasien.rekammedik }}
+                    </p>
+                </div>
+
+                <!-- Age -->
+                <div
+                    class="p-4 bg-white rounded-md shadow-md border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700 text-xl">
+                        Tanggal Berobat
+                    </h3>
+                    <p class="text-gray-500 text-xl">
+                        {{ getDate(props.rekammedik[0].tanggal) }}
+                    </p>
+                </div>
+
+                <div
+                    class="p-4 bg-white rounded-md shadow-md border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700 text-xl">
+                        Poli/Ruang
+                    </h3>
+                    <p class="text-gray-500 text-xl">
+                        {{ props.rekammedik[0].poli.nama }}
+                    </p>
+                </div>
+                <div
+                    class="p-4 bg-white rounded-md shadow-md border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700 text-xl">Dokter</h3>
+                    <p class="text-gray-500 text-xl">
+                        {{ props.rekammedik[0].dokter.nama }}
+                    </p>
+                </div>
             </div>
 
             <!-- Patient Information Cards -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-5">
+
+            <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-6"
+            >
+                <!-- Patient Name -->
                 <div
-                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                    class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
                 >
-                    <!-- Patient Name -->
-                    <div
-                        class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
-                    >
-                        <h3 class="font-semibold text-gray-700">Nama Pasien</h3>
-                        <p class="text-gray-500">
-                            {{ props.rekammedik[0].pasien.nama }}
-                        </p>
-                    </div>
+                    <h3 class="font-semibold text-gray-700">Nama Pasien</h3>
+                    <p class="text-gray-500">
+                        {{ props.rekammedik[0].pasien.nama }}
+                    </p>
+                </div>
 
-                    <!-- Age -->
-                    <div
-                        class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
-                    >
-                        <h3 class="font-semibold text-gray-700">Umur</h3>
-                        <p class="text-gray-500">
-                            {{
-                                calculateAge(
-                                    props.rekammedik[0].pasien.tanggal_lahir
-                                )
-                            }}
-                            Tahun
-                        </p>
-                    </div>
+                <!-- Age -->
+                <div
+                    class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700">Umur</h3>
+                    <p class="text-gray-500">
+                        {{
+                            calculateAge(
+                                props.rekammedik[0].pasien.tanggal_lahir
+                            )
+                        }}
+                        Tahun
+                    </p>
+                </div>
 
-                    <!-- Gender -->
-                    <div
-                        class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
-                    >
-                        <h3 class="font-semibold text-gray-700">
-                            Jenis Kelamin
-                        </h3>
-                        <p class="text-gray-500">
-                            {{ props.rekammedik[0].pasien.jk }}
-                        </p>
-                    </div>
+                <!-- Gender -->
+                <div
+                    class="p-4 bg-white rounded-lg shadow-lg border hover:border-black transition-all duration-300"
+                >
+                    <h3 class="font-semibold text-gray-700">Jenis Kelamin</h3>
+                    <p class="text-gray-500">
+                        {{ props.rekammedik[0].pasien.jk }}
+                    </p>
                 </div>
             </div>
 
@@ -469,24 +489,49 @@ function getDate(dateString) {
         </div>
 
         <!-- Detail Pasien -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-800 uppercase">
+        <div class="text-left mb-6">
+            <h1
+                class="text-2xl text-center font-semibold text-gray-800 uppercase"
+            >
                 Detail Rekam Medik
             </h1>
-            <h2 class="text-xl font-semibold text-gray-600">
-                {{ props.rekammedik[0].pasien.nama }}
-            </h2>
-            <h2 class="text-xl font-semibold text-gray-600">
-                {{ calculateAge(props.rekammedik[0].pasien.tanggal_lahir) }}
-                Tahun
-            </h2>
-            <div class="my-2 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-600">
-                    {{ props.rekammedik[0].kode }}
-                </h2>
-                <h2 class="text-xl font-semibold text-gray-600">
-                    {{ getDate(props.rekammedik[0].tanggal) }}
-                </h2>
+        </div>
+
+        <!-- Kondisi Pasien -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-black border-b pb-2">
+                Data Umum
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-3">
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Nama Pasien</h4>
+                    <p class="text-gray-500">
+                        {{ props.rekammedik[0].pasien.nama }}
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Umur</h4>
+                    <p class="text-gray-500">
+                        {{
+                            calculateAge(
+                                props.rekammedik[0].pasien.tanggal_lahir
+                            )
+                        }}
+                        Tahun
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Nomor Rekam Medik</h4>
+                    <p class="text-gray-500">
+                        {{ props.rekammedik[0].pasien.rekammedik }}
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-100 rounded-lg shadow">
+                    <h4 class="font-medium text-gray-700">Tanggal Berobat</h4>
+                    <p class="text-gray-500">
+                        {{ getDate(props.rekammedik[0].tanggal) }}
+                    </p>
+                </div>
             </div>
         </div>
 

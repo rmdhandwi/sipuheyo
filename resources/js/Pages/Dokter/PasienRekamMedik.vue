@@ -12,13 +12,18 @@ import { ref, computed } from "vue";
 import Search from "@/Components/Search.vue";
 import { Head } from "@inertiajs/vue3";
 import Helper from "@/heper";
+import BackIcon from "@/Icons/BackIcon.vue";
 
 const props = defineProps({
     poli: Array,
     dokter: Array,
     data: Array,
-    kode: Object,
+    rekammedik: Object,
 });
+
+function backAction() {
+    window.location = "/dokter/rekammedik";
+}
 
 function deleteItem(item) {
     Swal.fire({
@@ -89,6 +94,10 @@ const searchRekammedik = computed(() => {
             (item.poli.penyakit
                 .toLowerCase()
                 .includes(searchTerm.value.toLowerCase()) &&
+                matches < 10) ||
+            (item.status
+                .toLowerCase()
+                .includes(searchTerm.value.toLowerCase()) &&
                 matches < 10)
         ) {
             matches++;
@@ -112,9 +121,14 @@ const paginate = (url) => {
             <div>
                 <h1 class="text-xl">DATA REKAM MEDIK</h1>
                 <h1 class="text-xl">
-                    {{ props.kode.kode }}
+                    {{ props.rekammedik.pasien.rekammedik }}
                 </h1>
             </div>
+        </div>
+        <div class="my-4 flex justify-between items-center">
+            <button type="button" @click="backAction">
+                <BackIcon class="cursor-pointer w-10" />
+            </button>
             <Search v-on:on-search="onChangeSearch" />
         </div>
         <div class="py-5">

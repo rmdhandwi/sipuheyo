@@ -42,14 +42,13 @@ Route::get('/dokter/rekammedik/pasien/{id}', function ($id) {
         ->orderBy('tanggal', 'DESC')
         ->paginate(10); // **Pagination tetap digunakan**
 
-    $kode = RekamMedik::where('pasien_id', $id)->first();
-
+    $kode = RekamMedik::with('pasien')->where('pasien_id', $id)->first();
     // Kirim data ke Inertia
     return Inertia::render('Dokter/PasienRekamMedik', [
         'dokter' => $dokter,
         'poli' => $poli,
         'data' => $rekammedik,
-        'kode' => $kode,
+        'rekammedik' => $kode,
     ]);
 })->name('dokter.rekammedik');
 
@@ -73,39 +72,26 @@ Route::get('/dokter/rekammedik', function () {
     $kodeAwal = substr($poli->kode, 0, 2);
 
     // Ambil data rekam medis berdasarkan dokter dan status
-    $rekammedikQuery = RekamMedik::with(['dokter', 'poli', 'pasien'])
+    $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
+        ->selectRaw('
+                pasien_id, 
+                COUNT(*) as total_rekam_medik, 
+                SUM(CASE WHEN status = "poli" THEN 1 ELSE 0 END) as total_status_baru
+            ')
         ->whereHas('poli', function ($query) use ($dokter, $kodeAwal) {
             $query->where('dokter_id', $dokter->id)
                 ->where('kode', 'LIKE', $kodeAwal . '%')
                 ->whereIn('status', ['poli', 'dokter']);
         })
-        ->get()
-        ->groupBy('pasien_id'); // **Mengelompokkan berdasarkan pasien_id**
+        ->groupBy('pasien_id')
+        ->paginate(10);
 
-    // **Pagination Manual**
-    $perPage = 10; // **Jumlah data per halaman**
-    $currentPage = request()->get('page', 1);
-
-    // Mengubah koleksi ke dalam bentuk array numerik agar bisa diproses dengan array_slice()
-    $rekammedikArray = $rekammedikQuery->values()->toArray();
-
-    // Menggunakan array_slice untuk paginasi manual
-    $currentItems = array_slice($rekammedikArray, ($currentPage - 1) * $perPage, $perPage);
-
-    // Membuat instance LengthAwarePaginator
-    $rekammedikPaginated = new LengthAwarePaginator(
-        $currentItems,
-        count($rekammedikArray),
-        $perPage,
-        $currentPage,
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
 
     // **Kirim ke Inertia**
     return Inertia::render('Dokter/RekamMedikPage', [
         'dokter' => $dokter,
         'poli' => $poli,
-        'data' => $rekammedikPaginated,
+        'data' => $rekammedik,
     ]);
 })->name('dokter.rekammedik');
 

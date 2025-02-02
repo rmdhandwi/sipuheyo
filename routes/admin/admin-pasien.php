@@ -12,13 +12,13 @@ Route::get('/admin/pasien', function (PasienService $pasienService) {
 })->name('admin.pasien');
 
 Route::get('/admin/pasien/add', function () {
-    // Hitung jumlah pasien yang ada
-    $jumlahPasien = Pasien::count();
+    $kode = Pasien::generateKodeRekamMedik();
 
-    // Buat kode RM berdasarkan jumlah pasien + 1
-    $kodeRM = 'RM' . str_pad($jumlahPasien + 1, 8, '0', STR_PAD_LEFT);
+    // dd($kode);
 
-    return Inertia::render('Admin/AddPasienPage', ['kode' => $kodeRM]);
+    return Inertia::render('Admin/AddPasienPage', [
+        'rekammedik'  => $kode
+    ]);
 })->name('admin.pasien.add');
 
 

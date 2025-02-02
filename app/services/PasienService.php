@@ -44,6 +44,8 @@ class PasienService
     {
         DB::beginTransaction();
         try {
+
+            // dd($req->all());
             // Jika email tidak diisi, buat email dari nama, jika diisi gunakan email inputan
             $email = $req['email'] ?? $this->generateEmailFromName($req['nama']);
 
@@ -59,6 +61,7 @@ class PasienService
             $result = Pasien::create([
                 'nama'      => strtoupper($req['nama']),
                 'nik'       => $req['nik'],
+                'rekammedik'=> strtoupper($req['rekammedik']),
                 'layanan'   => $req['layanan'],
                 'email'     => $email,
                 'jk'        => $req['jk'],
@@ -117,6 +120,7 @@ class PasienService
 
             // Perbarui data pasien
             $pasien->nama = strtoupper($req['nama']);
+            $pasien->rekammedik = strtoupper($req['rekammedik']);
             $pasien->nik = $req['nik'];
             $pasien->layanan = $req['layanan'];
             $pasien->email = $req['email'];

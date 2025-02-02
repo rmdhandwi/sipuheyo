@@ -17,7 +17,7 @@ const props = defineProps({
     poli: Array,
     pegawai: Array,
     data: Object,
-    kode: Object,
+    rekammedik: Object,
 });
 
 // Helpers: Format tanggal dan waktu
@@ -151,7 +151,7 @@ const onSearchText = (text) => {
                         DATA REKAM MEDIK
                     </h1>
                     <h1 class="text-xl font-semibold text-gray-700">
-                        {{ props.kode.kode }}
+                        {{ props.rekammedik.pasien.rekammedik }}
                     </h1>
                 </div>
                 <BackIcon @click="backAction" class="w-9 cursor-pointer" />

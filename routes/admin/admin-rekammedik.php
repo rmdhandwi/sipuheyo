@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Requests\RekamMedikRequest;
+use App\Models\Pasien;
 use App\Models\Poli;
 use App\Models\RekamMedik;
 use App\services\DokterService;
@@ -16,38 +17,24 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 
 Route::get('/admin/rekammedik', function () {
-    // Mengambil semua rekam medis dengan relasi dokter, poli, dan pasien
-    $rekammedikQuery = RekamMedik::with(['dokter', 'poli', 'pasien'])
-        ->orderBy('tanggal', 'DESC')
-        ->get()
-        ->groupBy('pasien_id'); // Mengelompokkan berdasarkan kode
-
-    // **Pagination Manual**
-    $perPage = 10; // Jumlah data per halaman
-    $currentPage = request()->get('page', 1);
-
-    // Mengubah koleksi ke dalam bentuk array numerik agar bisa diproses dengan array_slice()
-    $rekammedikArray = $rekammedikQuery->values()->toArray();
-
-    // Menggunakan array_slice untuk paginasi manual
-    $currentItems = array_slice($rekammedikArray, ($currentPage - 1) * $perPage, $perPage);
-
-    // Membuat instance LengthAwarePaginator
-    $rekammedikPaginated = new LengthAwarePaginator(
-        $currentItems,
-        count($rekammedikArray),
-        $perPage,
-        $currentPage,
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
+    // Mengambil data pasien yang memiliki rekam medik dengan grup berdasarkan pasien_id
+    $rekammedik = RekamMedik::with('pasien')
+    ->selectRaw('
+        pasien_id, 
+        COUNT(*) as total_rekam_medik, 
+        SUM(CASE WHEN status = "baru" THEN 1 ELSE 0 END) as total_status_baru
+    ')
+    ->groupBy('pasien_id')
+    ->paginate(10);
 
     // Ambil data poli
     $polis = Poli::all();
 
     // Menampilkan data melalui Inertia
     return Inertia::render('Admin/RekamMedikPage', [
-        'data' => $rekammedikPaginated,
+        'data' => $rekammedik,
         'polis' => $polis,
+
     ]);
 })->name('admin.rekammedik');
 
@@ -64,13 +51,14 @@ Route::get('/admin/rekammedik/pasien/{id}', function ($id) {
     $polis = Poli::all();
 
     // Mengambil hanya satu kode dari rekam medis pasien
-    $kodeRM = RekamMedik::where('pasien_id', $id)->first(); // Mengambil kode pertama yang ditemukan
+    $pasien = RekamMedik::where('pasien_id', $id)->first(); // Mengambil kode pertama yang ditemukan
+    $kode = Pasien::where('id', $pasien->pasien_id)->first();
 
     // Menampilkan data melalui Inertia
     return Inertia::render('Admin/RekamMedikPasien', [
         'data' => $rekammedik,
         'polis' => $polis,
-        'kode' => $kodeRM, // Mengirimkan kode ke frontend
+        'kode' => $kode, // Mengirimkan kode ke frontend
     ]);
 })->name('admin.rekammedik.pasien');
 
