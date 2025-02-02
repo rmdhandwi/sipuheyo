@@ -153,7 +153,6 @@ const readFile = () => {
     }
 };
 
-
 function getDate(dateString) {
     const date = new Date(dateString);
 
@@ -170,10 +169,20 @@ function getDate(dateString) {
     <Head title="Detail Pasien" />
     <PoliLayout class="noprint" :poli="props.poli" :pegawai="props.pegawai">
         <div class="p-5 mt-5 flex flex-col">
-            <h1 class="text-xl text-center mb-5">DETAIL BEROBAT</h1>
+            <h1 class="text-xl text-center mb-5 font-bold">DETAIL BEROBAT</h1>
             <div class="flex justify-between items-center">
-                <h1 class="text-xl text-gray-500">Nomor Rekam Medik : {{ props.rm.pasien.rekammedik }}</h1>
-                <h1 class="text-xl text-gray-500">Tanggal Berobat : {{ getDate(props.rm.tanggal) }}</h1>
+                <div>
+                    <h1 class="text-xl text-black">Nomor Rekam Medik</h1>
+                    <h1 class="text-xl text-gray-500">
+                        {{ props.rm.pasien.rekammedik }}
+                    </h1>
+                </div>
+                <div>
+                    <h1 class="text-xl text-black">Tanggal Berobat</h1>
+                    <h1 class="text-xl text-gray-500">
+                        {{ getDate(props.rm.tanggal) }}
+                    </h1>
+                </div>
             </div>
         </div>
 

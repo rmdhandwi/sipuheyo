@@ -314,7 +314,7 @@ class RekamMedikService
             $data->resep = json_encode($req['resep']);
             $data->resep_manual = $req['resep_manual'];
             $data->konsultasi_berikut = $konsultasiBerikutDatetime;
-            $data->status = 'Dokter';
+            $data->status = 'dokter';
 
             $data->save();
             // $this->infoKunjunganBerikut();

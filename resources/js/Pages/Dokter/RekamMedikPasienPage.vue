@@ -204,12 +204,20 @@ function getDate(dateString) {
 <template>
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
         <div class="p-5">
-            <h1 class="text-xl">Detail Rekam Medik</h1>
+            <h1 class="text-xl font-bold">Detail Rekam Medik</h1>
             <div class="flex justify-between items-center my-2">
-                <h1 class="text-xl text-gray-500">{{ rekammedik.kode || "-" }}</h1>
-                <h1 class="text-xl text-gray-500">
-                    {{ getDate(rekammedik.tanggal) || "-" }}
-                </h1>
+                <div>
+                    <h1 class="text-xl text-black">Nomor rekam Medik</h1>
+                    <h1 class="text-xl text-gray-500">
+                        {{ rekammedik.pasien.rekammedik || "-" }}
+                    </h1>
+                </div>
+                <div>
+                    <h1 class="text-xl text-black">Tanggal Berobat</h1>
+                    <h1 class="text-xl text-gray-500">
+                        {{ getDate(rekammedik.tanggal) || "-" }}
+                    </h1>
+                </div>
             </div>
             <div class="bg-white shadow rounded-lg p-5">
                 <!-- Informasi Umum -->
