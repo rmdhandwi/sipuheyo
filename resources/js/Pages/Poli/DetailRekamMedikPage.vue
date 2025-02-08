@@ -27,7 +27,8 @@ function getDate(dateString) {
 }
 
 function backAction() {
-    window.location = "/poli/rekammedik/pasien/" + props.rekammedik[0].pasien_id;
+    window.location =
+        "/poli/rekammedik/pasien/" + props.rekammedik[0].pasien_id;
 }
 
 const role = props.auth.user.role;
@@ -470,7 +471,7 @@ function printAll() {
             <div class="text-center">
                 <h2 class="font-bold text-lg">PEMERINTAH KOTA JAYAPURA</h2>
                 <h2 class="font-bold text-lg">DINAS KESEHATAN</h2>
-                <h2 class="font-bold text-lg">PUSKESMAS HEBEYBHULU</h2>
+                <h2 class="font-bold text-lg">PUSKESMAS YOKA HEBEYBHULU</h2>
                 <p class="text-sm">
                     Jln. Yoka - Arso, Kampung Yoka, Distrik Heram, Kota Jayapura
                     - Papua

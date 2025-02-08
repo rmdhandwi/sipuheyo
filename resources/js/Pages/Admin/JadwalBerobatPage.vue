@@ -21,23 +21,25 @@ const selectedYear = ref("");
 const selectedPoli = ref("");
 const selectedDokter = ref("");
 
-// Fungsi format tanggal
-function formattedDateTime(dateString) {
-    const date = new Date(dateString); // Menambahkan 'Z' untuk menunjukkan bahwa waktu dalam UTC
-    const options = {
+// Fungsi untuk memformat tanggal dan waktu secara terpisah
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
         weekday: "long",
         day: "2-digit",
         month: "long",
         year: "numeric",
+    });
+}
+
+function formatTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
-        timeZone: "Asia/Jayapura", // Zona waktu lokal (WIT)
-    };
-    return date.toLocaleString("id-ID", options);
+    });
 }
-
-
 
 // Filter data berdasarkan poli, dokter, bulan, dan tahun
 const filteredData = computed(() => {
@@ -53,8 +55,7 @@ const filteredData = computed(() => {
         const matchYear =
             selectedYear.value === "" || selectedYear.value === itemYear;
         const matchPoli =
-            selectedPoli.value === "" ||
-            item.poli.id === selectedPoli.value;
+            selectedPoli.value === "" || item.poli.id === selectedPoli.value;
         const matchDokter =
             selectedDokter.value === "" ||
             item.dokter.id === selectedDokter.value;
@@ -138,7 +139,10 @@ const paginate = (url) => {
         <div class="flex justify-between items-center mt-3 gap-4">
             <div class="flex items-center gap-4">
                 <!-- Dropdown Poli -->
-                <select v-model="selectedPoli" class="border p-2 w-[150px] rounded-md">
+                <select
+                    v-model="selectedPoli"
+                    class="border p-2 w-[150px] rounded-md"
+                >
                     <option value="">Semua Poli</option>
                     <option
                         v-for="poli in props.poli"
@@ -150,7 +154,10 @@ const paginate = (url) => {
                 </select>
 
                 <!-- Dropdown Dokter -->
-                <select v-model="selectedDokter" class="border p-2 w-[150px] rounded-md">
+                <select
+                    v-model="selectedDokter"
+                    class="border p-2 w-[150px] rounded-md"
+                >
                     <option value="">Semua Dokter</option>
                     <option
                         v-for="dokter in props.dokter"
@@ -162,7 +169,10 @@ const paginate = (url) => {
                 </select>
 
                 <!-- Dropdown Bulan -->
-                <select v-model="selectedMonth" class="border p-2 w-[150px] rounded-md">
+                <select
+                    v-model="selectedMonth"
+                    class="border p-2 w-[150px] rounded-md"
+                >
                     <option value="">Bulan</option>
                     <option
                         v-for="month in months"
@@ -174,7 +184,10 @@ const paginate = (url) => {
                 </select>
 
                 <!-- Dropdown Tahun -->
-                <select v-model="selectedYear" class="border p-2 w-[150px] rounded-md">
+                <select
+                    v-model="selectedYear"
+                    class="border p-2 w-[150px] rounded-md"
+                >
                     <option value="">Tahun</option>
                     <option v-for="year in years" :key="year" :value="year">
                         {{ year }}
@@ -191,6 +204,16 @@ const paginate = (url) => {
                 <table class="w-full leading-normal">
                     <thead>
                         <tr>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Tanggal Kunjungan
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Waktu Kunjungan
+                            </th>
                             <th
                                 scope="col"
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
@@ -225,11 +248,12 @@ const paginate = (url) => {
                         >
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{
-                                        formattedDateTime(
-                                            item.konsultasi_berikut
-                                        )
-                                    }}
+                                    {{ formatDate(item.konsultasi_berikut) }}
+                                </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <p class="whitespace-nowrap">
+                                    {{ formatTime(item.konsultasi_berikut) }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -364,7 +388,8 @@ const paginate = (url) => {
             <table class="w-full mt-3">
                 <thead>
                     <tr>
-                        <th>Kunjungan Berikut</th>
+                        <th>Tanggal Kunjungan</th>
+                        <th>Waktu Kunjungan</th>
                         <th>Pasien</th>
                         <th>Poli</th>
                         <th>Dokter</th>
@@ -374,7 +399,12 @@ const paginate = (url) => {
                     <tr v-for="item in searchJadwal">
                         <td>
                             <p class="whitespace-nowrap">
-                                {{ formattedDateTime(item.konsultasi_berikut) }}
+                                {{ formatDate(item.konsultasi_berikut) }}
+                            </p>
+                        </td>
+                        <td>
+                            <p class="whitespace-nowrap">
+                                {{ formatTime(item.konsultasi_berikut) }}
                             </p>
                         </td>
                         <td>

@@ -184,7 +184,7 @@ function printReport() {
               )}`
             : ""
     }`;
-    titleElement.classList.add("text-center", "font-bold", "mb-4");
+    titleElement.classList.add("text-center", "font-bold", "mb-3");
     printElement.prepend(titleElement);
 
     // Cetak halaman
@@ -208,7 +208,7 @@ function paginate(url) {
         <div class="mt-5 flex justify-between">
             <div>
                 <h1 class="text-xl">DATA REKAM MEDIK</h1>
-                <p class="text-xl">{{props.kode.rekammedik }}</p>
+                <p class="text-xl">{{ props.kode.rekammedik }}</p>
             </div>
             <div class="flex gap-2">
                 <BackIcon
@@ -219,10 +219,10 @@ function paginate(url) {
                     class="cursor-pointer text-teal-500 w-12"
                     @click="addNewItem"
                 />
-                <!-- <PrinterIcon
+                <PrinterIcon
                     class="cursor-pointer text-amber-600 w-12"
                     @click="printReport"
-                ></PrinterIcon> -->
+                ></PrinterIcon>
             </div>
         </div>
 
@@ -483,7 +483,7 @@ function paginate(url) {
         </div>
     </Layout>
 
-    <!-- <div class="print">
+    <div class="print">
         <div>
             <div class="w-full flex justify-between border-b-2 border-gray-900">
                 <LogoKota class="w-16 h-16"></LogoKota>
@@ -504,16 +504,32 @@ function paginate(url) {
             </div>
             <hr />
 
-            <h3 class="text-center font-bold mb-4">
-                Data Rekam Medik
-                <span v-if="selectedPoli">
-                    Poli:
+            <div class="flex flex-col justify-center items-center mt-2">
+                <h3 class="text-center text-2xl font-bold mb-2">
+                    Data Rekam Medik
+                </h3>
+                <h1 class="text-center text-xl font-bold mb-2">
+                    {{ props.kode.rekammedik }}
+                </h1>
+                <h1 class="text-center text-xl font-bold mb-3">
                     {{
-                        props.polis.find((p) => p.id == selectedPoli)?.nama
-                    }}</span
-                >
-                <span v-if="selectedMonth">
-                    Bulan:
+                        new Date().toLocaleDateString("id-ID", {
+                            weekday: "long",
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                        })
+                    }}
+                </h1>
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-lg" v-if="selectedPoli">
+                    Poli :
+                    {{ props.polis.find((p) => p.id == selectedPoli)?.nama }}
+                </span>
+                <span class="text-lg" v-if="selectedMonth">
+                    Bulan :
                     {{
                         new Date(0, selectedMonth - 1).toLocaleString(
                             "default",
@@ -523,7 +539,7 @@ function paginate(url) {
                         )
                     }}
                 </span>
-            </h3>
+            </div>
 
             <table class="w-full mt-3 border-collapse border border-gray-300">
                 <thead>
@@ -556,5 +572,5 @@ function paginate(url) {
                 </tbody>
             </table>
         </div>
-    </div> -->
+    </div>
 </template>

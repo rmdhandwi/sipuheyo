@@ -42,7 +42,7 @@ Route::get('/dokter/rekammedik/pasien/{id}', function ($id) {
         ->orderBy('tanggal', 'DESC')
         ->paginate(10); // **Pagination tetap digunakan**
 
-    $kode = RekamMedik::with('pasien')->where('pasien_id', $id)->first();
+    $kode = RekamMedik::with(['pasien', 'poli'])->where('pasien_id', $id)->first();
     // Kirim data ke Inertia
     return Inertia::render('Dokter/PasienRekamMedik', [
         'dokter' => $dokter,

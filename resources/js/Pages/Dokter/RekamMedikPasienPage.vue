@@ -1,6 +1,6 @@
 <script setup>
 import DokterLayout from "@/Layouts/DokterLayout.vue";
-import { router, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import { reactive, onMounted } from "vue";
 
@@ -202,6 +202,7 @@ function getDate(dateString) {
 </script>
 
 <template>
+    <Head title="Dokter Rekammedik" />
     <DokterLayout :poli="props.poli" :dokter="props.dokter">
         <div class="p-5">
             <h1 class="text-xl font-bold">Detail Rekam Medik</h1>
@@ -436,9 +437,10 @@ function getDate(dateString) {
                                         }})
                                     </option>
                                 </select>
+
                                 <input
                                     v-model="item.dosis"
-                                    placeholder="Dosis"
+                                    placeholder="Aturan Minum"
                                     class="w-40 border-gray-300 rounded px-3 py-2"
                                 />
                                 <input
@@ -478,7 +480,7 @@ function getDate(dateString) {
                             <h1 class="text-2xl">JADWAL BEROBAT SELANJUTNYA</h1>
                         </div>
                         <div class="flex flex-col p-3">
-                            <label class="mb-2">Tanggal</label>
+                            <label class="mb-2">Tanggal dan Waktu</label>
                             <input
                                 type="datetime-local"
                                 v-model="form.konsultasi_berikut"

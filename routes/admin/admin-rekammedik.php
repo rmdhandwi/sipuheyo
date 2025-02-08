@@ -19,13 +19,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
 Route::get('/admin/rekammedik', function () {
     // Mengambil data pasien yang memiliki rekam medik dengan grup berdasarkan pasien_id
     $rekammedik = RekamMedik::with('pasien')
-    ->selectRaw('
-        pasien_id, 
-        COUNT(*) as total_rekam_medik, 
-        SUM(CASE WHEN status = "baru" THEN 1 ELSE 0 END) as total_status_baru
-    ')
-    ->groupBy('pasien_id')
-    ->paginate(10);
+        ->selectRaw('
+            pasien_id, 
+            COUNT(*) as total_rekam_medik, 
+            SUM(CASE WHEN status = "baru" THEN 1 ELSE 0 END) as total_status_baru,
+            MAX(tanggal) as tanggal
+        ')
+        ->groupBy('pasien_id')
+        ->orderBy('total_status_baru', 'DESC')
+        ->orderBy('tanggal', 'DESC')
+        ->paginate(10);
 
     // Ambil data poli
     $polis = Poli::all();
@@ -34,9 +37,9 @@ Route::get('/admin/rekammedik', function () {
     return Inertia::render('Admin/RekamMedikPage', [
         'data' => $rekammedik,
         'polis' => $polis,
-
     ]);
 })->name('admin.rekammedik');
+
 
 
 

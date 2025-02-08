@@ -15,13 +15,20 @@ const props = defineProps({
     data: Array,
 });
 
-function formattedDateTime(dateString) {
+// Fungsi untuk memformat tanggal dan waktu secara terpisah
+function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleString("id-ID", {
+    return date.toLocaleDateString("id-ID", {
         weekday: "long",
         day: "2-digit",
         month: "long",
         year: "numeric",
+    });
+}
+
+function formatTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
@@ -43,14 +50,15 @@ const filteredData = computed(() => {
         const itemYear = date.getFullYear().toString();
 
         // Cek apakah bulan dan tahun sesuai
-        const matchMonth = selectedMonth.value === "" || selectedMonth.value === itemMonth;
-        const matchYear = selectedYear.value === "" || selectedYear.value === itemYear;
+        const matchMonth =
+            selectedMonth.value === "" || selectedMonth.value === itemMonth;
+        const matchYear =
+            selectedYear.value === "" || selectedYear.value === itemYear;
 
         // Hanya return item jika bulan dan tahun cocok
         return matchMonth && matchYear;
     });
 });
-
 
 // Cari data berdasarkan nama pasien
 const searchJadwal = computed(() => {
@@ -119,7 +127,10 @@ const months = [
         </div>
         <div class="flex justify-between items-center mt-3">
             <div class="flex items-center gap-4">
-                <select v-model="selectedMonth" class="border p-2 w-[150px] rounded-md">
+                <select
+                    v-model="selectedMonth"
+                    class="border p-2 w-[150px] rounded-md"
+                >
                     <option value="">Bulan</option>
                     <option
                         v-for="month in months"
@@ -149,10 +160,14 @@ const months = [
                     <thead>
                         <tr>
                             <th
-                                scope="col"
                                 class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
                             >
-                                Kunjungan Berikut
+                                Tanggal Kunjungan
+                            </th>
+                            <th
+                                class="border-b border-gray-200 px-5 py-3 text-left text-sm font-normal uppercase text-neutral-500"
+                            >
+                                Waktu Kunjungan
                             </th>
                             <th
                                 scope="col"
@@ -182,11 +197,12 @@ const months = [
                         >
                             <td class="border-b border-gray-200 p-3 text-sm">
                                 <p class="whitespace-nowrap">
-                                    {{
-                                        formattedDateTime(
-                                            item.konsultasi_berikut
-                                        )
-                                    }}
+                                    {{ formatDate(item.konsultasi_berikut) }}
+                                </p>
+                            </td>
+                            <td class="border-b border-gray-200 p-3 text-sm">
+                                <p class="whitespace-nowrap">
+                                    {{ formatTime(item.konsultasi_berikut) }}
                                 </p>
                             </td>
                             <td class="border-b border-gray-200 p-3 text-sm">
@@ -207,7 +223,7 @@ const months = [
                         </tr>
                         <tr v-else>
                             <td
-                                colspan="4"
+                                colspan="5"
                                 class="text-gray-400 text-center py-4"
                             >
                                 Data Jadwal Konsultasi Tidak Ditemukan
@@ -327,7 +343,8 @@ const months = [
             <table class="w-full mt-3">
                 <thead>
                     <tr>
-                        <th>Kunjungan Berikut</th>
+                        <th>Tanggal Kunjungan</th>
+                        <th>Waktu Kunjungan</th>
                         <th>Pasien</th>
                         <th>Poli</th>
                         <th>Dokter</th>
@@ -337,7 +354,12 @@ const months = [
                     <tr v-for="item in searchJadwal">
                         <td>
                             <p class="whitespace-nowrap">
-                                {{ formattedDateTime(item.konsultasi_berikut) }}
+                                {{ formatDate(item.konsultasi_berikut) }}
+                            </p>
+                        </td>
+                        <td>
+                            <p class="whitespace-nowrap">
+                                {{ formatTime(item.konsultasi_berikut) }}
                             </p>
                         </td>
                         <td>

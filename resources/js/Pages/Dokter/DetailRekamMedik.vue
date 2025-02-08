@@ -389,7 +389,7 @@ function getDate(dateString) {
                                         </h4>
                                         <p class="text-gray-600 mb-1">
                                             <span class="font-semibold"
-                                                >Dosis:</span
+                                                >Aturan Minum:</span
                                             >
                                             {{ item.dosis }}
                                         </p>
@@ -476,7 +476,7 @@ function getDate(dateString) {
             <div class="text-center">
                 <h2 class="font-bold text-lg">PEMERINTAH KOTA JAYAPURA</h2>
                 <h2 class="font-bold text-lg">DINAS KESEHATAN</h2>
-                <h2 class="font-bold text-lg">PUSKESMAS HEBEYBHULU</h2>
+                <h2 class="font-bold text-lg">PUSKESMAS YOKA HEBEYBHULU</h2>
                 <p class="text-sm">
                     Jln. Yoka - Arso, Kampung Yoka, Distrik Heram, Kota Jayapura
                     - Papua
@@ -617,7 +617,7 @@ function getDate(dateString) {
                     <h4 class="font-medium text-gray-700">
                         Obat: {{ item.obat_id }}
                     </h4>
-                    <p class="text-gray-600">Dosis: {{ item.dosis }}</p>
+                    <p class="text-gray-600">Aturan Minum: {{ item.dosis }}</p>
                     <p class="text-gray-600">Catatan: {{ item.catatan }}</p>
                 </div>
             </div>

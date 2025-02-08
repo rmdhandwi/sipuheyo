@@ -35,7 +35,8 @@ function printResep() {
 }
 
 function backAction() {
-    window.location = "/admin/rekammedik/pasien/" + props.rekammedik[0].pasien_id;
+    window.location =
+        "/admin/rekammedik/pasien/" + props.rekammedik[0].pasien_id;
 }
 
 // Function to calculate age from birthdate
@@ -476,7 +477,7 @@ function printAll() {
             <div class="text-center">
                 <h2 class="font-bold text-lg">PEMERINTAH KOTA JAYAPURA</h2>
                 <h2 class="font-bold text-lg">DINAS KESEHATAN</h2>
-                <h2 class="font-bold text-lg">PUSKESMAS HEBEYBHULU</h2>
+                <h2 class="font-bold text-lg">PUSKESMAS YOKA HEBEYBHULU</h2>
                 <p class="text-sm">
                     Jln. Yoka - Arso, Kampung Yoka, Distrik Heram, Kota Jayapura
                     - Papua
