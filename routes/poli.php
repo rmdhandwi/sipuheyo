@@ -23,6 +23,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
     Route::get('/poli/rekammedik/pasien/{id}', [PoliController::class, 'rmPasien'])->name('poli.rmpasien');
     Route::get('/poli/rekammedik/add', [PoliController::class, 'daftar'])->name('poli.rekammedik.add');
 
+    // 
     Route::get('/poli/rekammedik/{id}', function (
         ObatService $obatService,
         PoliService $poliService,
@@ -52,6 +53,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         );
     })->name('poli.rekammedik.detail');
 
+    // 
     Route::get('/poli/rekammedik/detail/{id}', function (
         RekamMedikService $rekamMedikService,
         $id
@@ -71,7 +73,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         );
     })->name('poli.detail.rekammedik');
 
-
+    // 
     Route::post('/poli/rekammedik/{id}', function (PoliRekamMedikRequest $rekamMedikRequest, RekamMedikService $rekamMedikService, $id) {
         try {
             // Dapatkan rekam medik yang sedang diupdate
@@ -112,7 +114,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         }
     })->name('poli.rekammedik.put');
 
-
+    // 
     Route::delete('/rekammedik/{id}', function (RekamMedikService $rekamMedikService, $id) {
         try {
             $result = $rekamMedikService->delete($id);
@@ -124,7 +126,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         }
     })->name('poli.rekammedik.delete');
 
-
+    // 
     Route::get('/poli/pasien', function (RekamMedikService $rekammedikService) {
         $user = Auth::user();
         $pegawai = Pegawai::where("user_id", $user->id)->first();
@@ -161,7 +163,7 @@ Route::group(['middleware' => 'role:pegawai'], function () {
         ]);
     })->name('pegawai.pasien');
 
-
+    // 
     Route::get('/poli/pasien/{id}', function (
         RekamMedikService $rekammedikService,
         $pasienId

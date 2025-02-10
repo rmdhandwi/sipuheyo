@@ -6,6 +6,7 @@ import Search from "@/Components/Search.vue";
 import AddIcon from "@/Icons/AddIcon.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
 import Info from "@/Icons/Info.vue";
+import Check from "@/Icons/Check.vue";
 
 const props = defineProps({
     data: Array,
@@ -119,9 +120,20 @@ function paginate(url) {
                                 class="border-b border-gray-200 p-3 text-sm text-center"
                             >
                                 <span
+                                    v-if="item.total_status_sum > 0"
                                     class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
                                 >
-                                    <span>{{ item.total_status_baru }}</span>
+                                    <span
+                                        >Ada
+                                        {{ item.total_status_sum }}
+                                        Antrian</span
+                                    >
+                                </span>
+                                <span
+                                    v-else
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <Check /> Selesai
                                 </span>
                             </td>
                             <td

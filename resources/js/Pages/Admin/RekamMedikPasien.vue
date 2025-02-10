@@ -20,6 +20,7 @@ import BackIcon from "@/Icons/BackIcon.vue";
 const props = defineProps({
     data: Array,
     polis: Array,
+    dokters: Array,
     kode: Object,
 });
 
@@ -87,6 +88,7 @@ const years = computed(() => {
 // State for search and filters
 const searchTerm = ref("");
 const selectedPoli = ref("");
+const selectedDokter = ref("");
 const selectedMonth = ref("");
 const selectedYear = ref("");
 
@@ -121,6 +123,13 @@ const filterData = computed(() => {
     if (selectedPoli.value) {
         filteredData = filteredData.filter(
             (item) => item.poli_id == selectedPoli.value
+        );
+    }
+
+    // Filter by selected Dokter
+    if (selectedDokter.value) {
+        filteredData = filteredData.filter(
+            (item) => item.dokter_id == selectedDokter.value
         );
     }
 
@@ -235,6 +244,20 @@ function paginate(url) {
                     <option value="">Poli</option>
                     <option
                         v-for="item in props.polis"
+                        :key="item.id"
+                        :value="item.id"
+                    >
+                        {{ item.nama }}
+                    </option>
+                </select>
+
+                <select
+                    v-model="selectedDokter"
+                    class="mx-2 rounded-lg bg-transparent text-neutral-700"
+                >
+                    <option value="">Dokter</option>
+                    <option
+                        v-for="item in props.dokters"
                         :key="item.id"
                         :value="item.id"
                     >

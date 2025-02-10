@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Requests\RekamMedikRequest;
+use App\Models\Dokter;
 use App\Models\Pasien;
 use App\Models\Poli;
 use App\Models\RekamMedik;
@@ -22,11 +23,12 @@ Route::get('/admin/rekammedik', function () {
         ->selectRaw('
             pasien_id, 
             COUNT(*) as total_rekam_medik, 
-            SUM(CASE WHEN status = "baru" THEN 1 ELSE 0 END) as total_status_baru,
+            SUM(CASE WHEN status = "Baru" THEN 1 ELSE 0 END) as total_status_baru,
+            SUM(CASE WHEN status = "Poli" THEN 1 ELSE 0 END) as total_status_poli,
+            (SUM(CASE WHEN status = "Baru" THEN 1 ELSE 0 END) + SUM(CASE WHEN status = "Poli" THEN 1 ELSE 0 END)) as total_status_sum,
             MAX(tanggal) as tanggal
         ')
         ->groupBy('pasien_id')
-        ->orderBy('total_status_baru', 'DESC')
         ->orderBy('tanggal', 'DESC')
         ->paginate(10);
 
@@ -42,28 +44,30 @@ Route::get('/admin/rekammedik', function () {
 
 
 
-
 Route::get('/admin/rekammedik/pasien/{id}', function ($id) {
     // Mengambil rekam medis berdasarkan pasien_id yang diberikan
     $rekammedik = RekamMedik::with(['dokter', 'poli', 'pasien'])
         ->where('pasien_id', $id)
-        ->orderBy('tanggal', 'DESC')
+        ->orderByRaw("FIELD(status, 'Baru', 'Poli','Dokter')") // Status "baru" lebih dulu
+        ->orderBy('tanggal', 'DESC') // Jika status sama, urutkan berdasarkan tanggal terbaru
         ->paginate(10); // Paginasi dengan 10 data per halaman
 
     // Ambil semua data poli
     $polis = Poli::all();
+    $dokters = Dokter::all();
 
-    // Mengambil hanya satu kode dari rekam medis pasien
-    $pasien = RekamMedik::where('pasien_id', $id)->first(); // Mengambil kode pertama yang ditemukan
-    $kode = Pasien::where('id', $pasien->pasien_id)->first();
+    // Mengambil informasi pasien
+    $pasien = Pasien::find($id);
 
     // Menampilkan data melalui Inertia
     return Inertia::render('Admin/RekamMedikPasien', [
         'data' => $rekammedik,
         'polis' => $polis,
-        'kode' => $kode, // Mengirimkan kode ke frontend
+        'dokters' => $dokters,
+        'kode' => $pasien, // Mengirimkan data pasien ke frontend
     ]);
 })->name('admin.rekammedik.pasien');
+
 
 
 Route::get('/admin/rekammedik/add', function (PoliService $poliService, DokterService $dokterService, PasienService $pasienService) {

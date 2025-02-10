@@ -17,6 +17,7 @@ const props = defineProps({
     poli: Array,
     pegawai: Array,
     data: Object,
+    dokter: Array,
     rekammedik: Object,
 });
 
@@ -55,12 +56,13 @@ const years = computed(() => {
 
 // State
 const searchTerm = ref("");
+const selectedDokter = ref("");
 const selectedMonth = ref("");
 const selectedYear = ref("");
 
 // Filter data berdasarkan input
 const filteredData = computed(() => {
-    let filtered = props.data?.data || [];
+    let filtered = props.data.data || [];
 
     if (searchTerm.value) {
         filtered = filtered.filter(
@@ -74,6 +76,12 @@ const filteredData = computed(() => {
                 item.poli.penyakit
                     .toLowerCase()
                     .includes(searchTerm.value.toLowerCase())
+        );
+    }
+
+    if (selectedDokter.value) {
+        filtered = filtered.filter(
+            (item) => item.dokter_id == selectedDokter.value
         );
     }
 
@@ -159,6 +167,20 @@ const onSearchText = (text) => {
 
             <div class="flex justify-between items-center my-4">
                 <div class="flex items-center">
+                    <select
+                        v-model="selectedDokter"
+                        class="mx-2 rounded-lg bg-transparent text-neutral-700"
+                    >
+                        <option value="">Dokter</option>
+                        <option
+                            v-for="item in props.dokter"
+                            :key="item.id"
+                            :value="item.id"
+                        >
+                            {{ item.nama }}
+                        </option>
+                    </select>
+
                     <select
                         v-model="selectedMonth"
                         id="month"

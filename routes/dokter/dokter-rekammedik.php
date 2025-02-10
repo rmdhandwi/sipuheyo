@@ -39,6 +39,7 @@ Route::get('/dokter/rekammedik/pasien/{id}', function ($id) {
                 ->where('kode', 'LIKE', $kodeAwal . '%')
                 ->whereIn('status', ['poli', 'dokter']);
         })
+        ->orderByRaw("FIELD(status, 'Baru', 'Poli','Dokter')") // Status "baru" lebih dulu
         ->orderBy('tanggal', 'DESC')
         ->paginate(10); // **Pagination tetap digunakan**
 

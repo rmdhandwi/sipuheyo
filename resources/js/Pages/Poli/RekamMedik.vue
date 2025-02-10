@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import Search from "@/Components/Search.vue";
 import PoliLayout from "@/Layouts/PoliLayout.vue";
 import DetailListIcon from "@/Icons/DetailListIcon.vue";
+import Check from "@/Icons/Check.vue";
 
 const props = defineProps({
     poli: Array,
@@ -202,9 +203,20 @@ const onSearchText = (text) => {
                                 class="border-b border-gray-200 p-3 text-sm text-center"
                             >
                                 <span
+                                    v-if="item.total_status_baru > 0"
                                     class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded-full"
                                 >
-                                    <span>{{ item.total_status_baru }}</span>
+                                    <span
+                                        >Ada
+                                        {{ item.total_status_baru }}
+                                        Antrian</span
+                                    >
+                                </span>
+                                <span
+                                    v-else
+                                    class="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-white bg-green-500 rounded-full"
+                                >
+                                    <Check /> Selesai
                                 </span>
                             </td>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokter;
 use App\Models\Poli;
 use Inertia\Inertia;
 use App\Models\Pasien;
@@ -131,6 +132,8 @@ class PoliController extends Controller
             abort(403, 'Poli Tidak Ditemukan');
         }
 
+        $dokter = Dokter::all();
+
         // Mendapatkan awalan kode dari poli
         $kodeAwal = substr($poli->kode, 0, 2);
 
@@ -141,6 +144,7 @@ class PoliController extends Controller
                 $query->where('pegawai_id', $pegawai->id)
                     ->where('kode', 'LIKE', $kodeAwal . '%');
             })
+            ->orderByRaw("FIELD(status, 'Baru', 'Poli','Dokter')") // Status "baru" lebih dulu
             ->orderBy('tanggal', 'DESC')
             ->paginate(10);
 
@@ -150,6 +154,7 @@ class PoliController extends Controller
         return Inertia::render('Poli/PasienRekamMedik', [
             'pegawai' => $pegawai,
             'poli' => $poli,
+            'dokter' => $dokter,
             'data' => $rekammedikQuery,
             'rekammedik' => $kode,
         ]);
